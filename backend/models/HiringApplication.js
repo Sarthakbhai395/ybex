@@ -5,6 +5,8 @@ const hiringSchema = new mongoose.Schema({
   phone:      { type: String, default: '' },
   position:   { type: String, default: '' },
   resumeLink: { type: String, default: '' },
+  portfolioLink: { type: String, default: '' },
+  message:    { type: String, default: '' },
   status:     { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
   deletedAt: { type: Date, default: null },
   deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },

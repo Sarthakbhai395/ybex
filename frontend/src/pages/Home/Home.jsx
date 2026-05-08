@@ -838,8 +838,6 @@ export default function Home() {
         </div>
       </section>
 
-      <AboutStorySection />
-
       <section className="section-block talents-section">
         <div className="container">
           {(() => {

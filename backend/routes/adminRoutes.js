@@ -13,6 +13,8 @@ const {
 const Influencer = require('../models/Influencer');
 const Brand = require('../models/Brand');
 
+const HiringApplication = require('../models/HiringApplication');
+
 const router = express.Router();
 
 // ── Multer ────────────────────────────────────────────────────────
@@ -122,6 +124,41 @@ router.delete('/brands/:id', async (req, res, next) => {
       const fp = path.join(__dirname, '../uploads', path.basename(brand.logoUrl));
       if (fs.existsSync(fp)) fs.unlinkSync(fp);
     }
+    res.json({ success: true });
+  } catch (e) { next(e); }
+});
+
+// ── Hiring Applications ───────────────────────────────────────────
+router.get('/hiring', async (req, res, next) => {
+  try {
+    const filter = { deletedAt: null };
+    if (req.query.status && req.query.status !== 'all') filter.status = req.query.status;
+    const applications = await HiringApplication.find(filter).sort({ createdAt: -1 });
+    res.json({ success: true, applications });
+  } catch (e) { next(e); }
+});
+
+router.patch('/hiring/:id', async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!['pending', 'accepted', 'rejected'].includes(status))
+      return res.status(400).json({ message: 'Invalid status' });
+    const application = await HiringApplication.findByIdAndUpdate(
+      req.params.id, { status }, { new: true }
+    );
+    if (!application) return res.status(404).json({ message: 'Not found' });
+    res.json({ success: true, application });
+  } catch (e) { next(e); }
+});
+
+router.delete('/hiring/:id', async (req, res, next) => {
+  try {
+    const app = await HiringApplication.findByIdAndUpdate(
+      req.params.id,
+      { deletedAt: new Date(), deletedBy: req.user._id },
+      { new: true }
+    );
+    if (!app) return res.status(404).json({ message: 'Not found' });
     res.json({ success: true });
   } catch (e) { next(e); }
 });

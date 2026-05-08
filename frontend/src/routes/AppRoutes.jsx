@@ -16,6 +16,9 @@ import AdminPlaceholder from '../pages/Admin/AdminPlaceholder';
 import AdminAboutTeam from '../pages/Admin/AdminAboutTeam';
 import AdminInfluencers from '../pages/Admin/AdminInfluencers';
 import AdminBrands from '../pages/Admin/AdminBrands';
+import AdminHiring from '../pages/Admin/AdminHiring';
+import AdminInvoices from '../pages/Admin/AdminInvoices';
+import AdminSuccessStories from '../pages/Admin/AdminSuccessStories';
 import AdminScholarship from '../pages/Admin/AdminScholarship';
 import AdminRoute from '../components/common/AdminRoute';
 import SubAdminDashboard from '../pages/Admin/SubAdminDashboard';
@@ -39,14 +42,14 @@ const AppRoutes = () => {
       <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
       <Route path="/admin/suggestions" element={<AdminRoute><AdminSuggestions /></AdminRoute>} />
       <Route path="/admin/about-team" element={<AdminRoute><AdminAboutTeam /></AdminRoute>} />
-      <Route path="/admin/hiring" element={<AdminRoute><AdminPlaceholder title="Hiring" icon="job" description="Manage job listings and hiring applications." /></AdminRoute>} />
+      <Route path="/admin/hiring" element={<AdminRoute><AdminHiring /></AdminRoute>} />
       <Route path="/admin/influencers" element={<AdminRoute><AdminInfluencers /></AdminRoute>} />
       <Route path="/admin/brands" element={<AdminRoute><AdminBrands /></AdminRoute>} />
       <Route path="/admin/school-mentors" element={<AdminRoute><AdminPlaceholder title="School Mentors" icon="edu" description="Manage school mentor profiles and assignments." /></AdminRoute>} />
       <Route path="/admin/success-stories" element={<AdminRoute><AdminPlaceholder title="Success Stories" icon="win" description="Manage and publish success stories." /></AdminRoute>} />
       <Route path="/admin/scholarship" element={<AdminRoute><AdminScholarship /></AdminRoute>} />
       <Route path="/admin/activity-logs" element={<AdminRoute><AdminPlaceholder title="Activity Logs" icon="log" description="View all admin and user activity logs." /></AdminRoute>} />
-      <Route path="/admin/invoices" element={<AdminRoute><AdminPlaceholder title="Invoices" icon="bill" description="Manage and track all invoices." /></AdminRoute>} />
+      <Route path="/admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
       <Route path="/admin/ybex-story" element={<AdminRoute><AdminPlaceholder title="YBEX Story" icon="story" description="Manage the YBEX brand story and timeline." /></AdminRoute>} />
       <Route path="/admin/portfolio" element={<AdminRoute><AdminPlaceholder title="Portfolio" icon="port" description="Manage portfolio projects and case studies." /></AdminRoute>} />
       <Route path="/admin/bin" element={<AdminRoute><AdminPlaceholder title="Bin" icon="bin" description="Review and restore deleted items." /></AdminRoute>} />

@@ -4748,3 +4748,239 @@ img, video, iframe {
     font-size: 0.8rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   HOME PAGE MOBILE RESPONSIVE FIXES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Hero section mobile fixes */
+@media (max-width: 768px) {
+  .hero-gallery-stage {
+    min-height: auto !important;
+    padding: 24px 16px !important;
+  }
+  
+  .hero-headline {
+    font-size: clamp(1.8rem, 6vw, 3rem) !important;
+    line-height: 1.1 !important;
+  }
+  
+  .hero-subhead {
+    font-size: clamp(0.9rem, 3vw, 1.1rem) !important;
+  }
+  
+  .hero-cta-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  
+  .hero-cta-row .button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* Services section mobile */
+@media (max-width: 768px) {
+  .service-ribbon {
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 24px 16px !important;
+  }
+  
+  .service-card {
+    width: 100% !important;
+    min-width: auto !important;
+  }
+}
+
+/* Stats section mobile */
+@media (max-width: 768px) {
+  .stats-row-luxury {
+    flex-direction: column !important;
+    gap: 24px !important;
+    padding: 32px 16px !important;
+  }
+  
+  .stat-item {
+    text-align: center !important;
+  }
+  
+  .stat-number {
+    font-size: 2.5rem !important;
+  }
+}
+
+/* Clients section mobile */
+@media (max-width: 768px) {
+  .clients-section {
+    padding: 40px 16px !important;
+  }
+  
+  .clients-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+  
+  .client-logo {
+    padding: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .clients-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Talents section mobile */
+@media (max-width: 768px) {
+  .talents-section {
+    padding: 40px 16px !important;
+  }
+  
+  .talents-title {
+    font-size: 1.5rem !important;
+  }
+  
+  .talent-card {
+    width: 140px !important;
+    height: 180px !important;
+  }
+  
+  .talent-card span {
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Footer mobile */
+@media (max-width: 768px) {
+  .footer-grid-premium {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+    padding: 40px 16px !important;
+  }
+  
+  .footer-brand {
+    text-align: center !important;
+  }
+  
+  .footer-links {
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+  }
+}
+
+/* General mobile improvements */
+@media (max-width: 768px) {
+  .section-block {
+    padding-top: 48px !important;
+    padding-bottom: 48px !important;
+  }
+  
+  .section-eyebrow {
+    font-size: 0.7rem !important;
+    letter-spacing: 0.15em !important;
+  }
+  
+  .section-title {
+    font-size: clamp(1.5rem, 5vw, 2.5rem) !important;
+  }
+  
+  .container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* Marquee mobile fixes */
+@media (max-width: 768px) {
+  .marquee-row {
+    padding: 12px 0 !important;
+  }
+  
+  .marquee-item {
+    font-size: 0.8rem !important;
+    padding: 8px 16px !important;
+  }
+}
+
+/* Contact form mobile */
+@media (max-width: 768px) {
+  .contact-form-premium {
+    padding: 24px 16px !important;
+  }
+  
+  .form-row {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  
+  .form-row .field {
+    width: 100% !important;
+  }
+}
+
+/* Project grid mobile */
+@media (max-width: 768px) {
+  .project-grid-cinematic {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  
+  .project-card {
+    aspect-ratio: 16/10 !important;
+  }
+}
+
+/* Service highlights mobile */
+@media (max-width: 768px) {
+  .service-highlights-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  
+  .highlight-card {
+    padding: 24px !important;
+  }
+}
+
+/* Navigation mobile improvements */
+@media (max-width: 768px) {
+  .mobile-menu {
+    padding: 80px 20px 20px !important;
+  }
+  
+  .mobile-menu a {
+    font-size: 1.1rem !important;
+    padding: 12px 0 !important;
+  }
+}
+
+/* Ensure no horizontal scroll */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Images responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Touch improvements for mobile */
+@media (max-width: 768px) {
+  .button,
+  .service-card,
+  .client-logo,
+  .talent-card,
+  .project-card {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  a, button {
+    touch-action: manipulation;
+  }
+}
