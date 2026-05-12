@@ -13,6 +13,8 @@ import GetStarted from './pages/GetStarted/GetStarted';
 import Offerings from './pages/Offerings/Offerings';
 import Invoice from './pages/Invoice/Invoice';
 
+
+
 // Admin pages
 import AdminLogin from './pages/Admin/AdminLogin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
@@ -23,6 +25,7 @@ import AdminInfluencers from './pages/Admin/AdminInfluencers';
 import AdminBrands from './pages/Admin/AdminBrands';
 import AdminPlaceholder from './pages/Admin/AdminPlaceholder';
 import AdminHiring from './pages/Admin/AdminHiring';
+import AdminPortfolio from './pages/Admin/AdminPortfolio';
 import AdminInvoices from './pages/Admin/AdminInvoices';
 import AdminSuccessStories from './pages/Admin/AdminSuccessStories';
 import AdminActivity from './pages/Admin/AdminActivity';
@@ -71,7 +74,7 @@ export default function App() {
       <Route path="/admin/activity-logs" element={<AdminRoute><AdminActivity /></AdminRoute>} />
       <Route path="/admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
       <Route path="/admin/ybex-story" element={<AdminRoute><AdminPlaceholder title="YBEX Story" icon="📖" description="Manage the YBEX brand story and timeline." /></AdminRoute>} />
-      <Route path="/admin/portfolio" element={<AdminRoute><AdminPlaceholder title="Portfolio" icon="🗂️" description="Manage portfolio projects and case studies." /></AdminRoute>} />
+      <Route path="/admin/portfolio" element={<AdminRoute><AdminPortfolio /></AdminRoute>} />
       <Route path="/admin/bin" element={<AdminRoute><AdminBin /></AdminRoute>} />
       <Route path="/admin/website-settings" element={<AdminRoute><AdminPlaceholder title="Website Settings" icon="⚙️" description="Configure global website settings and preferences." /></AdminRoute>} />
     </Routes>

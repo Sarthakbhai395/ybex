@@ -45,8 +45,6 @@ export default function Footer() {
           ))}
         </div>
       </div>
-
-      <div className="footer-watermark">YBEX</div>
     </footer>
   );
 }

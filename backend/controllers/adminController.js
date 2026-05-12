@@ -81,8 +81,14 @@ const replyContact = async (req, res, next) => {
 
     const originalStatus = contact.status;
 
-    // AWAIT the email — admin needs to know if it succeeded or failed
-    await sendEmail({
+    // Save reply to database first — always succeeds regardless of email config
+    contact.adminReply = replyMessage;
+    contact.repliedAt = new Date();
+    contact.isRead = true;
+    await contact.save();
+
+    // Send email NON-BLOCKING — never fails the request
+    sendEmail({
       to: contact.email,
       subject: `Re: ${contact.subject} — YBEX Studio`,
       html: `
@@ -100,12 +106,10 @@ const replyContact = async (req, res, next) => {
           </p>
         </div>
       `,
+    }).catch((err) => {
+      // Log but never crash the request
+      console.warn('⚠ Email reply skipped (check EMAIL_USER/EMAIL_PASS in .env):', err.message);
     });
-
-    contact.adminReply = replyMessage;
-    contact.repliedAt = new Date();
-    contact.isRead = true;
-    await contact.save();
 
     // Log activity
     await logActivity({

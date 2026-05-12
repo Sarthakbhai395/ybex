@@ -12,7 +12,7 @@ const {
 } = require('../controllers/adminController');
 const Influencer = require('../models/Influencer');
 const Brand = require('../models/Brand');
-
+const Project = require('../models/Project');
 const HiringApplication = require('../models/HiringApplication');
 
 const router = express.Router();
@@ -159,6 +159,81 @@ router.delete('/hiring/:id', async (req, res, next) => {
       { new: true }
     );
     if (!app) return res.status(404).json({ message: 'Not found' });
+    res.json({ success: true });
+  } catch (e) { next(e); }
+});
+
+// ── Portfolio Projects ────────────────────────────────────────────
+router.get('/projects', async (req, res, next) => {
+  try {
+    const projects = await Project.find().sort({ sortOrder: 1, createdAt: -1 });
+    res.json({ success: true, projects });
+  } catch (e) { next(e); }
+});
+
+router.post('/projects', upload.single('coverImage'), async (req, res, next) => {
+  try {
+    const { brandName, title, tagBadge, year, description, category, bgColor, accentColor, stats, projectLink, sortOrder } = req.body;
+    if (!brandName?.trim()) return res.status(400).json({ message: 'Brand name is required' });
+    if (!title?.trim())     return res.status(400).json({ message: 'Title is required' });
+    const coverImage = req.file ? `/uploads/${req.file.filename}` : null;
+    const project = await Project.create({
+      brandName: brandName.trim(),
+      title: title.trim(),
+      tagBadge: tagBadge?.trim() || '',
+      year: year?.trim() || new Date().getFullYear().toString(),
+      description: description?.trim() || '',
+      category: category || 'Brand Identity',
+      bgColor: bgColor?.trim() || '#111111',
+      accentColor: accentColor?.trim() || '#e4f141',
+      stats: stats?.trim() || '',
+      coverImage,
+      projectLink: projectLink?.trim() || '',
+      sortOrder: parseInt(sortOrder) || 0,
+    });
+    res.status(201).json({ success: true, project });
+  } catch (e) { next(e); }
+});
+
+router.patch('/projects/:id', upload.single('coverImage'), async (req, res, next) => {
+  try {
+    const { brandName, title, tagBadge, year, description, category, bgColor, accentColor, stats, projectLink, sortOrder } = req.body;
+    const existing = await Project.findById(req.params.id);
+    if (!existing) return res.status(404).json({ message: 'Not found' });
+    const updates = {
+      brandName: brandName?.trim() || existing.brandName,
+      title: title?.trim() || existing.title,
+      tagBadge: tagBadge?.trim() ?? existing.tagBadge,
+      year: year?.trim() || existing.year,
+      description: description?.trim() ?? existing.description,
+      category: category || existing.category,
+      bgColor: bgColor?.trim() || existing.bgColor,
+      accentColor: accentColor?.trim() || existing.accentColor,
+      stats: stats?.trim() ?? existing.stats,
+      projectLink: projectLink?.trim() ?? existing.projectLink,
+      sortOrder: sortOrder !== undefined ? parseInt(sortOrder) : existing.sortOrder,
+    };
+    if (req.file) {
+      // Delete old image if local
+      if (existing.coverImage && existing.coverImage.startsWith('/uploads/')) {
+        const fp = path.join(__dirname, '../uploads', path.basename(existing.coverImage));
+        if (fs.existsSync(fp)) fs.unlinkSync(fp);
+      }
+      updates.coverImage = `/uploads/${req.file.filename}`;
+    }
+    const project = await Project.findByIdAndUpdate(req.params.id, updates, { new: true });
+    res.json({ success: true, project });
+  } catch (e) { next(e); }
+});
+
+router.delete('/projects/:id', async (req, res, next) => {
+  try {
+    const project = await Project.findByIdAndDelete(req.params.id);
+    if (!project) return res.status(404).json({ message: 'Not found' });
+    if (project.coverImage && project.coverImage.startsWith('/uploads/')) {
+      const fp = path.join(__dirname, '../uploads', path.basename(project.coverImage));
+      if (fs.existsSync(fp)) fs.unlinkSync(fp);
+    }
     res.json({ success: true });
   } catch (e) { next(e); }
 });

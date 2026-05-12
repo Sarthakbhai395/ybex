@@ -53,6 +53,17 @@ app.get('/api/brands', async (req, res) => {
   } catch (e) { res.status(500).json({ message: 'Server error' }); }
 });
 
+// Public projects endpoint (no auth required)
+const Project = require('./models/Project');
+app.get('/api/projects', async (req, res) => {
+  try {
+    const { category } = req.query;
+    const filter = category && category !== 'all' ? { category } : {};
+    const projects = await Project.find(filter).sort({ sortOrder: 1, createdAt: -1 });
+    res.json({ success: true, projects });
+  } catch (e) { res.status(500).json({ message: 'Server error' }); }
+});
+
 // Public influencers endpoint (no auth required)
 const Influencer = require('./models/Influencer');
 app.get('/api/influencers', async (req, res) => {
