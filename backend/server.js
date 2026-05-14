@@ -83,5 +83,19 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT} — accessible at http://192.168.0.113:${PORT}`);
+  // Detect local network IP dynamically
+  const { networkInterfaces } = require('os');
+  const nets = networkInterfaces();
+  let localIP = 'localhost';
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+      if (net.family === 'IPv4' && !net.internal) {
+        localIP = net.address;
+        break;
+      }
+    }
+  }
+  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`   Local:   http://localhost:${PORT}`);
+  console.log(`   Network: http://${localIP}:${PORT}`);
 });

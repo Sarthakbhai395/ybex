@@ -9,11 +9,15 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'http://127.0.0.1:5174',
   'http://127.0.0.1:3000',
+  'http://192.168.0.113:5173',
+  'http://192.168.0.113:4173',
   // Allow any IP address on common ports
   /^http:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:517[3-9]$/,
+  /^http:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:4173$/,
   /^http:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:3000$/,
   /^http:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:5000$/,
-  process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL_IP,
 ].filter(Boolean);
 
 const corsOptions = {

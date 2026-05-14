@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { motion, AnimatePresence } from "motion/react";
 import axiosInstance from "../../api/axiosInstance";
+import { getUploadUrl } from "../../api/getUploadUrl";
 
 const CATEGORIES = ['Brand Identity', 'Social Media', 'Campaigns', 'Product'];
 const CAT_COLORS = {
@@ -12,10 +13,7 @@ const CAT_COLORS = {
 };
 
 function getImageUrl(img) {
-  if (!img) return null;
-  if (img.startsWith('http') || img.startsWith('data:')) return img;
-  const base = axiosInstance.defaults.baseURL?.replace('/api', '') || '';
-  return `${base}${img}`;
+  return getUploadUrl(img);
 }
 
 function ProjectCard({ project, index }) {

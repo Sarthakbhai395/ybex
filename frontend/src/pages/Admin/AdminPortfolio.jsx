@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import AdminLayout from "./AdminLayout";
 import axiosInstance from "../../api/axiosInstance";
+import { getUploadUrl } from "../../api/getUploadUrl";
 
 const ACCENT = '#e4f141';
 const DIM = 'rgba(255,255,255,0.08)';
@@ -104,7 +105,7 @@ function ProjectModal({ open, onClose, onSave, editing }) {
           projectLink: editing.projectLink || '',
           sortOrder: editing.sortOrder ?? 0,
         });
-        setCoverPreview(editing.coverImage ? (editing.coverImage.startsWith('/uploads/') ? `${axiosInstance.defaults.baseURL?.replace('/api','') || ''}${editing.coverImage}` : editing.coverImage) : null);
+        setCoverPreview(editing.coverImage ? getUploadUrl(editing.coverImage) : null);
       } else {
         setForm({ brandName: '', title: '', tagBadge: '', year: new Date().getFullYear().toString(), description: '', category: 'Brand Identity', bgColor: '#111111', accentColor: '#e4f141', stats: '', projectLink: '', sortOrder: 0 });
         setCoverPreview(null);
@@ -361,12 +362,7 @@ function ProjectCard({ project, index, onEdit, onDelete }) {
   const accent = project.accentColor || '#e4f141';
   const catColor = CAT_COLORS[project.category] || '#a78bfa';
 
-  const getImageUrl = (img) => {
-    if (!img) return null;
-    if (img.startsWith('http') || img.startsWith('data:')) return img;
-    const base = axiosInstance.defaults.baseURL?.replace('/api', '') || '';
-    return `${base}${img}`;
-  };
+  const getImageUrl = (img) => getUploadUrl(img);
 
   const handleDelete = async () => {
     if (!window.confirm(`Delete "${project.brandName}"?`)) return;

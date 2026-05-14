@@ -259,8 +259,8 @@ export const academyTracks = [
 ];
 
 export const contactDetails = [
-  { label: 'Email', value: 'hello@ybexmedia.com' },
-  { label: 'Location', value: 'India' },
+  { label: 'Email', value: 'info@ybexmedia@com' },
+  { label: 'Location', value: 'Hyperfocus Building D-Block Sector 63 Noida ' },
   { label: 'Focus', value: 'Strategy, content, talent, growth' },
 ];
 
