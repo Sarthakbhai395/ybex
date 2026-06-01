@@ -322,7 +322,7 @@ function Step2({ invoiceData, updateInvoiceData }) {
 }
 
 // ─── Step 3 ───────────────────────────────────────────────────────────────────
-function Step3({ invoiceData, setInvoiceData, subtotal, tax, grandTotal }) {
+function Step3({ invoiceData, setInvoiceData, subtotal, discount, tax, grandTotal }) {
   const addItem = () => setInvoiceData(p => ({
     ...p, items: [...p.items, { id: Date.now(), description: '', quantity: 1, rate: 0, amount: 0 }]
   }));
@@ -430,6 +430,21 @@ function Step3({ invoiceData, setInvoiceData, subtotal, tax, grandTotal }) {
         <button className="add-item-btn" onClick={addItem}><Plus size={20} />Add Item</button>
         <div className="items-total">
           <div className="total-row"><span>Subtotal</span><span>₹{subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></div>
+          
+          {/* Discount input row */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.3rem 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.65)' }}>Discount</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <input type="number" min="0" max="100" value={invoiceData.discountPercent ?? 0}
+                  onChange={e => setInvoiceData(p => ({ ...p, discountPercent: parseFloat(e.target.value) || 0 }))}
+                  style={{ width: '52px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', color: '#fff', padding: '0.2rem 0.4rem', fontSize: '0.82rem', outline: 'none', textAlign: 'center', fontFamily: 'inherit' }} />
+                <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)' }}>%</span>
+              </div>
+            </div>
+            <span style={{ fontSize: '0.875rem', color: '#00d26a', fontWeight: 600 }}>-₹{discount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+          </div>
+
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.3rem 0' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.65)' }}>GST</span>
@@ -950,7 +965,7 @@ function Step6({ invoiceData, grandTotal }) {
 }
 
 // ─── PDF Generator — captures the live preview div (pixel-perfect match) ─────
-const generateInvoicePDF = async (invoiceData, subtotal, tax, grandTotal, action = 'download', previewRef = null) => {
+const generateInvoicePDF = async (invoiceData, subtotal, discount, tax, grandTotal, action = 'download', previewRef = null) => {
   // If we have a ref to the preview DOM node, use html2canvas for pixel-perfect output
   if (previewRef && previewRef.current) {
     const node = previewRef.current;
@@ -1110,15 +1125,29 @@ const generateInvoicePDF = async (invoiceData, subtotal, tax, grandTotal, action
 
   const totalsWidth = 75, totalsX = pageWidth - margin - totalsWidth, totalsStartY = yPos;
   doc.setDrawColor(0, 102, 204); doc.setLineWidth(0.5);
-  doc.rect(totalsX, totalsStartY - 6, totalsWidth, 40);
+  doc.rect(totalsX, totalsStartY - 6, totalsWidth, discount > 0 ? 48 : 40);
   const lx = totalsX + 5, vx = totalsX + totalsWidth - 5;
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(0, 0, 0);
   doc.text('Sub Total', lx, totalsStartY + 3); doc.text('Rs.' + fmtNum(subtotal), vx, totalsStartY + 3, { align: 'right' });
-  doc.text('Tax (18%)', lx, totalsStartY + 14); doc.text('Rs.' + fmtNum(tax), vx, totalsStartY + 14, { align: 'right' });
-  doc.setDrawColor(200, 200, 200); doc.line(lx, totalsStartY + 20, vx, totalsStartY + 20);
+  
+  let currentY = totalsStartY + 14;
+  if (discount > 0) {
+    doc.setTextColor(0, 128, 0); // Green for discount
+    doc.text(`Discount (${invoiceData.discountPercent}%)`, lx, currentY);
+    doc.text('-Rs.' + fmtNum(discount), vx, currentY, { align: 'right' });
+    doc.setTextColor(0, 0, 0);
+    currentY += 10;
+  }
+  
+  doc.text(`Tax (${invoiceData.gstPercent ?? 18}%)`, lx, currentY);
+  doc.text('Rs.' + fmtNum(tax), vx, currentY, { align: 'right' });
+  currentY += 6;
+  
+  doc.setDrawColor(200, 200, 200); doc.line(lx, currentY, vx, currentY);
+  currentY += 10;
   doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(0, 51, 102);
-  doc.text('TOTAL', lx, totalsStartY + 30); doc.text('Rs.' + fmtNum(grandTotal), vx, totalsStartY + 30, { align: 'right' });
-  yPos = totalsStartY + 50;
+  doc.text('TOTAL', lx, currentY); doc.text('Rs.' + fmtNum(grandTotal), vx, currentY, { align: 'right' });
+  yPos = currentY + 20;
 
   if (invoiceData.bankDetails.accountNumber) {
     doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(0, 51, 102);
@@ -1142,7 +1171,7 @@ const generateInvoicePDF = async (invoiceData, subtotal, tax, grandTotal, action
 };
 
 // ─── Share Modal ──────────────────────────────────────────────────────────────
-function ShareModal({ open, onClose, invoiceData, subtotal, tax, grandTotal, previewRef }) {
+function ShareModal({ open, onClose, invoiceData, subtotal, discount, tax, grandTotal, previewRef }) {
   const [sharing, setSharing] = React.useState(null);
   const [copied,  setCopied]  = React.useState(false);
   const [shareError, setShareError] = React.useState(null);
@@ -1159,7 +1188,7 @@ function ShareModal({ open, onClose, invoiceData, subtotal, tax, grandTotal, pre
     setShareError(null);
     
     try {
-      const blob = await generateInvoicePDF(invoiceData, subtotal, tax, grandTotal, 'share', previewRef);
+      const blob = await generateInvoicePDF(invoiceData, subtotal, discount, tax, grandTotal, 'share', previewRef);
       const fileName = `${invoiceData.invoiceNumber || 'Invoice'}.pdf`;
       const text = `Invoice ${invoiceData.invoiceNumber || ''} from ${invoiceData.billedBy.name || 'YBEX'} — Amount: ₹${Number(grandTotal).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
 
@@ -1324,7 +1353,7 @@ function ShareModal({ open, onClose, invoiceData, subtotal, tax, grandTotal, pre
 }
 
 // ─── Step 7: Done ────────────────────────────────────────────────────────────
-function Step7({ invoiceData, subtotal, tax, grandTotal, previewRef }) {
+function Step7({ invoiceData, subtotal, discount, tax, grandTotal, previewRef }) {
   const [shareOpen, setShareOpen] = React.useState(false);
   const [saved,     setSaved]     = React.useState(false);
   const [dlAnim,    setDlAnim]    = React.useState(false);
@@ -1354,6 +1383,8 @@ function Step7({ invoiceData, subtotal, tax, grandTotal, previewRef }) {
       })),
       bankDetails: invoiceData.bankDetails,
       subtotal:    Number(subtotal),
+      discountPercent: Number(invoiceData.discountPercent || 0),
+      discount:    Number(discount),
       tax:         Number(tax),
       grandTotal:  Number(grandTotal),
       status:      'generated',
@@ -1383,7 +1414,7 @@ function Step7({ invoiceData, subtotal, tax, grandTotal, previewRef }) {
   const handleDownload = async () => {
     setDlAnim(true);
     setTimeout(() => setDlAnim(false), 1200);
-    await generateInvoicePDF(invoiceData, subtotal, tax, grandTotal, 'download', previewRef);
+    await generateInvoicePDF(invoiceData, subtotal, discount, tax, grandTotal, 'download', previewRef);
     await saveToBackend();
   };
 
@@ -1460,6 +1491,7 @@ function Step7({ invoiceData, subtotal, tax, grandTotal, previewRef }) {
         onClose={() => setShareOpen(false)}
         invoiceData={invoiceData}
         subtotal={subtotal}
+        discount={discount}
         tax={tax}
         grandTotal={grandTotal}
         previewRef={previewRef}
@@ -1544,7 +1576,7 @@ function Step7({ invoiceData, subtotal, tax, grandTotal, previewRef }) {
   );
 }
 // ─── Live Invoice Preview ─────────────────────────────────────────────────────
-function InvoicePreview({ invoiceData, subtotal, tax, grandTotal }) {
+function InvoicePreview({ invoiceData, subtotal, tax, grandTotal, isPDF = false }) {
   const fmtMoney = (val) =>
     Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -1558,20 +1590,32 @@ function InvoicePreview({ invoiceData, subtotal, tax, grandTotal }) {
   const ap = invoiceData.appearance || {};
   const payMethod = invoiceData.paymentMethod || 'skip';
   const gstPct = invoiceData.gstPercent ?? 18;
-  const S = { sectionGap: '20px', rowPad: '8px 6px', xs: '7px', sm: '8px', base: '10px', md: '11px', lg: '14px', xl: '22px' };
+  const discount = subtotal * ((invoiceData.discountPercent ?? 0) / 100);
+
+  // Use a slightly larger and more readable font/padding scale for the PDF generation to prevent compressed overlapping text
+  const S = isPDF
+    ? { sectionGap: '24px', rowPad: '10px 8px', xs: '10px', sm: '11px', base: '13px', md: '15px', lg: '18px', xl: '26px' }
+    : { sectionGap: '20px', rowPad: '8px 6px', xs: '7px', sm: '8px', base: '10px', md: '11px', lg: '14px', xl: '22px' };
+
+  const fontFamily = isPDF
+    ? "Arial, Helvetica, sans-serif"
+    : "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+
+  const letterSpacing = isPDF ? '0.01em' : '-0.01em';
+  const mainLineHeight = isPDF ? 1.6 : 1.5;
 
   return (
-    <div style={{ fontFamily: "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", color: '#000', fontSize: S.base, lineHeight: 1.5, letterSpacing: '-0.01em', background: '#fff', display: 'flex', flexDirection: 'column', minHeight: '100%', padding: '12px' }}>
+    <div style={{ fontFamily, color: '#000', fontSize: S.base, lineHeight: mainLineHeight, letterSpacing, background: '#fff', display: 'flex', flexDirection: 'column', minHeight: '100%', padding: isPDF ? '24px' : '12px' }}>
 
       {/* ── HEADER ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: S.sectionGap, paddingBottom: '14px', borderBottom: '2.5px solid #000' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: S.sectionGap, paddingBottom: '14px', borderBottom: isPDF ? '1px solid #e0e0e0' : '2.5px solid #000' }}>
         <div>
           {ap.logoType === 'image' && ap.logoImage ? (
             <div style={{ overflow: 'hidden', marginBottom: '4px' }}>
               <img src={ap.logoImage} alt="logo" style={{ height: `${(ap.logoZoom || 100) * 0.55}px`, maxWidth: '180px', objectFit: 'contain', display: 'block', transform: `translateX(${(ap.logoPosX || 50) - 50}%)` }} />
             </div>
           ) : (
-            <div style={{ fontSize: S.xl, fontWeight: 900, color: '#000', letterSpacing: '-0.02em', marginBottom: '3px', lineHeight: 1.1 }}>
+            <div style={{ fontSize: S.xl, fontWeight: 900, color: '#000', letterSpacing: isPDF ? 'normal' : '-0.02em', marginBottom: '3px', lineHeight: 1.1 }}>
               {ap.logoText || invoiceData.billedBy.name || 'YBEX'}
             </div>
           )}
@@ -1579,14 +1623,14 @@ function InvoicePreview({ invoiceData, subtotal, tax, grandTotal }) {
         </div>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontSize: S.xs, color: '#666', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '3px', fontWeight: 500 }}>Invoice No.</div>
-          <div style={{ fontSize: S.lg, fontWeight: 700, color: '#000', letterSpacing: '-0.02em' }}>#{invoiceData.invoiceNumber || 'INV-001'}</div>
+          <div style={{ fontSize: S.lg, fontWeight: 700, color: '#000', letterSpacing: isPDF ? 'normal' : '-0.02em' }}>#{invoiceData.invoiceNumber || 'INV-001'}</div>
           {invoiceData.referenceNumber && <div style={{ fontSize: S.xs, color: '#999', marginTop: '3px' }}>REF: {invoiceData.referenceNumber}</div>}
           <div style={{ fontSize: S.xs, color: '#999', marginTop: '3px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{invoiceData.invoiceType || 'Standard'} Invoice</div>
         </div>
       </div>
 
       {/* ── SENDER / CLIENT ── */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: S.sectionGap, paddingBottom: '16px', borderBottom: '1px solid #e8e8e8' }}>
+      <div style={{ display: 'flex', gap: '16px', marginBottom: S.sectionGap, paddingBottom: '16px', borderBottom: isPDF ? '1px solid #f0f0f0' : '1px solid #e8e8e8' }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: S.xs, fontWeight: 800, color: '#999', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' }}>Sender Details</div>
           <div style={{ fontWeight: 700, fontSize: S.md, color: '#000', marginBottom: '3px' }}>{invoiceData.billedBy.name || '—'}</div>
@@ -1604,7 +1648,7 @@ function InvoicePreview({ invoiceData, subtotal, tax, grandTotal }) {
       </div>
 
       {/* ── DATES ── */}
-      <div style={{ display: 'flex', gap: '32px', marginBottom: S.sectionGap, paddingBottom: '14px', borderBottom: '1px solid #e8e8e8' }}>
+      <div style={{ display: 'flex', gap: '32px', marginBottom: S.sectionGap, paddingBottom: '14px', borderBottom: isPDF ? '1px solid #f0f0f0' : '1px solid #e8e8e8' }}>
         <div>
           <div style={{ fontSize: S.xs, fontWeight: 800, color: '#999', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Issue Date</div>
           <div style={{ fontSize: S.md, fontWeight: 700, color: '#000' }}>{dateStr}</div>
@@ -1620,7 +1664,7 @@ function InvoicePreview({ invoiceData, subtotal, tax, grandTotal }) {
       {/* ── ITEMS TABLE ── */}
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: S.sectionGap, fontSize: S.base }}>
         <thead>
-          <tr style={{ borderBottom: '2px solid #000', borderTop: '1px solid #000' }}>
+          <tr style={{ borderBottom: isPDF ? '1px solid #e0e0e0' : '2px solid #000', borderTop: isPDF ? 'none' : '1px solid #000' }}>
             <th style={{ padding: S.rowPad, textAlign: 'left', fontWeight: 800, fontSize: S.sm, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Description</th>
             <th style={{ padding: S.rowPad, textAlign: 'center', fontWeight: 800, fontSize: S.sm, textTransform: 'uppercase', letterSpacing: '0.08em', width: '36px' }}>QTY</th>
             <th style={{ padding: S.rowPad, textAlign: 'right', fontWeight: 800, fontSize: S.sm, textTransform: 'uppercase', letterSpacing: '0.08em', width: '70px' }}>Rate</th>
@@ -1629,7 +1673,7 @@ function InvoicePreview({ invoiceData, subtotal, tax, grandTotal }) {
         </thead>
         <tbody>
           {invoiceData.items.map((item) => (
-            <tr key={item.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
+            <tr key={item.id} style={{ borderBottom: isPDF ? '1px solid #f5f5f5' : '1px solid #f0f0f0' }}>
               <td style={{ padding: S.rowPad, color: '#222', fontWeight: 600 }}>{item.description || <span style={{ color: '#ccc' }}>—</span>}</td>
               <td style={{ padding: S.rowPad, textAlign: 'center', color: '#555' }}>{item.quantity}</td>
               <td style={{ padding: S.rowPad, textAlign: 'right', color: '#555' }}>INR {fmtMoney(item.rate)}</td>
@@ -1644,7 +1688,7 @@ function InvoicePreview({ invoiceData, subtotal, tax, grandTotal }) {
         <div style={{ flex: 1 }}>
           {payMethod === 'bank' && invoiceData.bankDetails.accountNumber && (
             <div style={{ fontSize: S.sm, lineHeight: 1.8 }}>
-              <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px', fontSize: S.xs, color: '#666', borderBottom: '1px solid #eee', paddingBottom: '4px' }}>Bank Transfer Details</div>
+              <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px', fontSize: S.xs, color: '#666', borderBottom: isPDF ? '1px solid #f0f0f0' : '1px solid #eee', paddingBottom: '4px' }}>Bank Transfer Details</div>
               {invoiceData.bankDetails.bankName && <div><span style={{ color: '#888', fontSize: S.xs }}>Bank: </span>{invoiceData.bankDetails.bankName}</div>}
               {invoiceData.bankDetails.accountName && <div><span style={{ color: '#888', fontSize: S.xs }}>Account Name: </span>{invoiceData.bankDetails.accountName}</div>}
               {invoiceData.bankDetails.accountNumber && <div><span style={{ color: '#888', fontSize: S.xs }}>Account No: </span><strong>{invoiceData.bankDetails.accountNumber}</strong></div>}
@@ -1653,35 +1697,40 @@ function InvoicePreview({ invoiceData, subtotal, tax, grandTotal }) {
           )}
           {payMethod === 'upi' && invoiceData.bankDetails.upiId && (
             <div style={{ fontSize: S.sm }}>
-              <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '5px', fontSize: S.xs, color: '#666', borderBottom: '1px solid #eee', paddingBottom: '4px' }}>UPI Payment</div>
+              <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '5px', fontSize: S.xs, color: '#666', borderBottom: isPDF ? '1px solid #f0f0f0' : '1px solid #eee', paddingBottom: '4px' }}>UPI Payment</div>
               <div style={{ fontWeight: 700, fontSize: S.md }}>{invoiceData.bankDetails.upiId}</div>
             </div>
           )}
           {payMethod === 'qr' && invoiceData.bankDetails.qrImage && (
             <div style={{ fontSize: S.sm }}>
-              <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px', fontSize: S.xs, color: '#666', borderBottom: '1px solid #eee', paddingBottom: '4px' }}>Scan to Pay</div>
+              <div style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px', fontSize: S.xs, color: '#666', borderBottom: isPDF ? '1px solid #f0f0f0' : '1px solid #eee', paddingBottom: '4px' }}>Scan to Pay</div>
               <img src={invoiceData.bankDetails.qrImage} alt="QR Code" style={{ width: '80px', height: '80px', objectFit: 'contain', display: 'block', marginBottom: '5px' }} />
               {invoiceData.bankDetails.upiId && <div style={{ fontWeight: 700, fontSize: S.sm, color: '#333' }}>{invoiceData.bankDetails.upiId}</div>}
             </div>
           )}
         </div>
-        <div style={{ width: '170px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: S.sm, color: '#666', borderBottom: '1px solid #eee' }}>
+        <div style={{ width: isPDF ? '200px' : '170px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: S.sm, color: '#666', borderBottom: isPDF ? 'none' : '1px solid #eee' }}>
             <span>Subtotal</span><span>INR {fmtMoney(subtotal)}</span>
           </div>
+          {invoiceData.discountPercent > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: S.sm, color: isPDF ? '#2e7d32' : '#00d26a', fontWeight: 600, borderBottom: isPDF ? 'none' : '1px solid #eee' }}>
+              <span>Discount ({invoiceData.discountPercent}%)</span><span>-INR {fmtMoney(discount)}</span>
+            </div>
+          )}
           {gstPct > 0 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: S.sm, color: '#666', borderBottom: '1px solid #eee' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: S.sm, color: '#666', borderBottom: isPDF ? 'none' : '1px solid #eee' }}>
               <span>GST ({gstPct}%)</span><span>INR {fmtMoney(tax)}</span>
             </div>
           )}
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', fontSize: S.md, fontWeight: 900, color: '#000', borderTop: '2.5px solid #000', marginTop: '2px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', fontSize: S.md, fontWeight: 900, color: '#000', borderTop: isPDF ? '1.5px solid #333' : '2.5px solid #000', marginTop: '2px' }}>
             <span>TOTAL</span><span>INR {fmtMoney(grandTotal)}</span>
           </div>
         </div>
       </div>
 
       {/* ── FOOTER: notes + signature ── */}
-      <div style={{ borderTop: '1px solid #ddd', paddingTop: '16px', display: 'flex', gap: '16px', alignItems: 'flex-end', paddingBottom: '8px' }}>
+      <div style={{ borderTop: isPDF ? '1px solid #eaeaea' : '1px solid #ddd', paddingTop: '16px', display: 'flex', gap: '16px', alignItems: 'flex-end', paddingBottom: '8px' }}>
         <div style={{ flex: 1 }}>
           {ap.notes && (
             <div style={{ marginBottom: '10px' }}>
@@ -1708,7 +1757,7 @@ function InvoicePreview({ invoiceData, subtotal, tax, grandTotal }) {
           ) : (
             <div style={{ height: '38px', marginBottom: '6px', borderBottom: '1px solid #ccc' }} />
           )}
-          <div style={{ borderTop: '1.5px solid #000', paddingTop: '5px' }}>
+          <div style={{ borderTop: isPDF ? '1px solid #e0e0e0' : '1.5px solid #000', paddingTop: '5px' }}>
             <div style={{ fontSize: S.xs, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#555' }}>Authorised Signatory</div>
             <div style={{ fontSize: '6px', color: '#bbb', marginTop: '2px' }}>Computer generated — no physical signature required</div>
           </div>
@@ -1735,6 +1784,7 @@ const makeDefaultData = () => ({
   currency:        'INR',
   placeOfSupply:   '',
   gstPercent:      18,
+  discountPercent: 0,
   paymentMethod:   'skip',
   invoiceFor:      '',
   clientPhone:     '',
@@ -1772,9 +1822,11 @@ export default function Invoice() {
     }
   };
 
-  const subtotal   = useMemo(() => invoiceData.items.reduce((s, i) => s + Number(i.quantity) * Number(i.rate), 0), [invoiceData.items]);
-  const tax        = useMemo(() => subtotal * ((invoiceData.gstPercent ?? 18) / 100), [subtotal, invoiceData.gstPercent]);
-  const grandTotal = useMemo(() => subtotal + tax,  [subtotal, tax]);
+  const subtotal      = useMemo(() => invoiceData.items.reduce((s, i) => s + Number(i.quantity) * Number(i.rate), 0), [invoiceData.items]);
+  const discount      = useMemo(() => subtotal * ((invoiceData.discountPercent ?? 0) / 100), [subtotal, invoiceData.discountPercent]);
+  const taxableAmount = useMemo(() => subtotal - discount, [subtotal, discount]);
+  const tax           = useMemo(() => taxableAmount * ((invoiceData.gstPercent ?? 18) / 100), [taxableAmount, invoiceData.gstPercent]);
+  const grandTotal    = useMemo(() => taxableAmount + tax,  [taxableAmount, tax]);
 
   const goNext = () => setCurrentStep(s => Math.min(s + 1, 7));
   const goPrev = () => setCurrentStep(s => Math.max(s - 1, 1));
@@ -1783,11 +1835,11 @@ export default function Invoice() {
     switch (currentStep) {
       case 1: return <Step1 invoiceData={invoiceData} setInvoiceData={setInvoiceData} />;
       case 2: return <Step2 invoiceData={invoiceData} updateInvoiceData={updateInvoiceData} />;
-      case 3: return <Step3 invoiceData={invoiceData} setInvoiceData={setInvoiceData} subtotal={subtotal} tax={tax} grandTotal={grandTotal} />;
+      case 3: return <Step3 invoiceData={invoiceData} setInvoiceData={setInvoiceData} subtotal={subtotal} discount={discount} tax={tax} grandTotal={grandTotal} />;
       case 4: return <Step4 invoiceData={invoiceData} setInvoiceData={setInvoiceData} />;
       case 5: return <Step5 invoiceData={invoiceData} setInvoiceData={setInvoiceData} updateInvoiceData={updateInvoiceData} />;
       case 6: return <Step6 invoiceData={invoiceData} grandTotal={grandTotal} />;
-      case 7: return <Step7 invoiceData={invoiceData} subtotal={subtotal} tax={tax} grandTotal={grandTotal} previewRef={previewRef} />;
+      case 7: return <Step7 invoiceData={invoiceData} subtotal={subtotal} discount={discount} tax={tax} grandTotal={grandTotal} previewRef={previewRef} />;
       default: return null;
     }
   };
@@ -2610,6 +2662,7 @@ export default function Invoice() {
             subtotal={subtotal}
             tax={tax}
             grandTotal={grandTotal}
+            isPDF={true}
           />
         </div>
       </div>
