@@ -194,18 +194,17 @@ export default function Navbar() {
         .desktop-nav {
           display: flex;
           align-items: center;
-          gap: 28px;
-          flex: 1;
-          justify-content: center;
-          margin: 0;
+          gap: 22px;
+          margin: 0 0 0 12px;
+          margin-right: auto;
         }
         .desktop-nav a {
           position: relative;
           font-family: 'Plus Jakarta Sans', sans-serif;
           font-weight: 500;
-          font-size: 0.95rem;
+          font-size: 0.84rem;
           transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-          padding: 8px 0;
+          padding: 6px 0;
           color: rgba(255, 255, 255, 0.7);
         }
         .desktop-nav a:hover {
@@ -501,10 +500,10 @@ export default function Navbar() {
                         transition={{ duration: 0.2 }}
                         style={{
                           position: 'absolute',
-                          inset: '-8px -16px',
+                          inset: '-5px -10px',
                           background: item.highlight ? 'rgba(255, 215, 0, 0.08)' : 'rgba(210, 245, 60, 0.08)',
                           border: item.highlight ? '1px solid rgba(255, 215, 0, 0.25)' : '1px solid rgba(210, 245, 60, 0.2)',
-                          borderRadius: '12px',
+                          borderRadius: '8px',
                           zIndex: -1,
                         }}
                       />
