@@ -5,7 +5,6 @@ export const navItems = [
   { label: 'Portfolio', path: '/portfolio' },
   { label: 'Academy', path: '/academy' },
   { label: 'About', path: '/about' },
-  { label: 'Contact', path: '/contact' },
   { label: 'Invoice', path: '/invoice', highlight: true },
 ];
 

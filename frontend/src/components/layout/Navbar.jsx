@@ -160,30 +160,40 @@ export default function Navbar() {
           flex: 0 0 auto;
           position: relative;
         }
-        .brand-mark img {
-          display: block;
-          height: 72px;
-          width: auto;
-          object-fit: contain;
-          transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        .logo-simple {
+          display: flex;
+          align-items: center;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-weight: 800;
+          font-size: 1.85rem;
+          letter-spacing: -0.04em;
+          color: #ffffff;
+          user-select: none;
+          transition: color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .site-header.is-scrolled .brand-mark img {
-          height: 62px;
+        .logo-simple .logo-dot {
+          color: #E4F141;
+          transition: color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .brand-mark:hover .logo-simple {
+          color: #E4F141;
+        }
+        .brand-mark:hover .logo-simple .logo-dot {
+          color: #ffffff;
+        }
+        .site-header.is-scrolled .logo-simple {
+          font-size: 1.6rem;
         }
         .brand-glow {
           position: absolute;
-          left: 10px;
+          left: -10px;
           width: 110px;
           height: 55px;
-          background: radial-gradient(circle at center, rgba(210, 245, 60, 0.25) 0%, transparent 70%);
-          filter: blur(14px);
-          opacity: 0;
-          transition: opacity 0.3s ease;
+          background: radial-gradient(circle at center, rgba(228, 241, 65, 0.4) 0%, transparent 75%);
+          filter: blur(16px);
+          opacity: 0.5;
           z-index: -1;
           pointer-events: none;
-        }
-        .brand-mark:hover .brand-glow {
-          opacity: 1;
         }
         .nav-actions {
           display: flex;
@@ -195,8 +205,7 @@ export default function Navbar() {
           display: flex;
           align-items: center;
           gap: 22px;
-          margin: 0 0 0 12px;
-          margin-right: auto;
+          margin: 0;
         }
         .desktop-nav a {
           position: relative;
@@ -357,8 +366,8 @@ export default function Navbar() {
           .site-header .container {
             padding: 0 12px;
           }
-          .brand-mark img { height: 52px; }
-          .site-header.is-scrolled .brand-mark img { height: 46px; }
+           .logo-simple { font-size: 1.5rem; }
+          .site-header.is-scrolled .logo-simple { font-size: 1.35rem; }
         }
 
         /* Mobile Drawer */
@@ -434,21 +443,18 @@ export default function Navbar() {
             <motion.div 
               className="brand-glow"
               animate={{ 
-                opacity: [0.3, 0.6, 0.3],
-                scale: [1, 1.1, 1]
+                opacity: [0.4, 0.75, 0.4],
+                scale: [0.95, 1.05, 0.95]
               }}
               transition={{ 
-                duration: 3, 
+                duration: 2.5, 
                 repeat: Infinity, 
                 ease: 'easeInOut' 
               }}
             />
-            <motion.img
-              src="/fgdfg.png"
-              alt="YBEX logo"
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            />
+            <div className="logo-simple">
+              Ybex<span className="logo-dot">.</span>
+            </div>
           </Link>
 
           {/* Desktop nav */}
@@ -522,13 +528,13 @@ export default function Navbar() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6, duration: 0.4 }}
             >
-              <Link to="/get-started" className="button button-primary nav-cta">
+              <Link to="/contact" className="button button-primary nav-cta">
                 <motion.span
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   style={{ display: 'inline-block' }}
                 >
-                  GET STARTED
+                  CONTACT US
                 </motion.span>
               </Link>
             </motion.div>
