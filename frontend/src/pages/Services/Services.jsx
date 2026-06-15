@@ -322,7 +322,7 @@ export default function Services() {
                 <div>
                   <h4 style={{ margin: '0 0 8px 0', fontSize: '1.2rem' }}>Want to bring this magic in-house?</h4>
                   <p style={{ margin: 0, color: 'var(--text-secondary, #888)', fontSize: '0.95rem', lineHeight: 1.5 }}>
-                    We help you hire, train, design the studio, and set up a full-time creator team right in your office.
+                    We help you hire, train, design the studio, and set up a full-time creator team right in your office. 
                   </p>
                 </div>
                 <Link to="/inhouse-team" className="inhouse-inline-btn">

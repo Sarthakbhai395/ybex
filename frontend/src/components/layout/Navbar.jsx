@@ -5,7 +5,7 @@ import { navItems } from '../../content/siteData';
 import { useTheme } from '../../context/ThemeContext';
 
 // Magnetic button effect component
-function MagneticLink({ children, to, className, isActive, onClick }) {
+function MagneticLink({ children, to, className, isActive, onClick, highlight }) {
   const ref = useRef(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -50,8 +50,11 @@ function MagneticLink({ children, to, className, isActive, onClick }) {
               left: '0',
               right: '0',
               height: '2px',
-              background: 'linear-gradient(90deg, #E4F141, #E4F141)',
+              background: highlight 
+                ? 'linear-gradient(90deg, #ffd700, #ffa500)' 
+                : 'linear-gradient(90deg, #d2f53c, #bbf32c)',
               borderRadius: '2px',
+              boxShadow: highlight ? '0 0 8px rgba(255, 215, 0, 0.6)' : '0 0 8px rgba(210, 245, 60, 0.6)',
             }}
             transition={{ type: 'spring', stiffness: 380, damping: 30 }}
           />
@@ -99,214 +102,179 @@ export default function Navbar() {
         
         .site-header {
           position: fixed;
-          top: 0;
+          top: 16px;
           left: 0;
           right: 0;
-          z-index: 900;
-          transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-          height: auto;
-          min-height: 90px;
+          margin: 0 auto;
+          width: calc(100% - 48px);
+          max-width: 1240px;
+          z-index: 990;
+          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          height: 88px;
           display: flex;
-          justify-content: center;
-          padding: 16px 20px 0;
-          background: transparent !important;
-          border: none !important;
-          backdrop-filter: none !important;
+          align-items: center;
+          padding: 0 !important;
+          background: rgba(0, 0, 0, 0.45) !important;
+          border: 1px solid rgba(255, 255, 255, 0.12) !important;
+          border-radius: 44px !important;
+          backdrop-filter: blur(20px) saturate(180%) !important;
+          -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+        .site-header.is-scrolled {
+          top: 12px;
+          background: rgba(0, 0, 0, 0.65) !important;
+          border: 1px solid rgba(255, 255, 255, 0.18) !important;
+          border-radius: 44px !important;
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
         .site-header .container {
-          max-width: 1200px;
+          max-width: 1240px;
           width: 100%;
           margin: 0 auto;
-          padding: 0;
+          padding: 0 20px;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
         .nav-shell {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0 24px;
-          min-height: 96px;
-          height: auto;
-          gap: 24px;
-          border-radius: 999px;
-          background: rgba(6, 4, 14, 0.55);
-          border: 1px solid transparent;
-          backdrop-filter: blur(0px);
-          -webkit-backdrop-filter: blur(0px);
-          box-shadow: none;
-          transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-          position: relative;
-        }
-        /* No gradient border glow initially */
-        .nav-shell::before {
-          content: '';
-          position: absolute;
-          inset: -1px;
-          border-radius: 999px;
-          background: transparent;
-          pointer-events: none;
-          opacity: 0;
-          transition: opacity 0.4s ease;
-        }
-        .nav-shell:hover::before {
-          opacity: 0;
-        }
-        /* Scrolled state — dark glass with black border */
-        .site-header.is-scrolled .nav-shell {
-          background: rgba(4, 3, 10, 0.92);
-          border-color: rgba(0, 0, 0, 0.85);
-          backdrop-filter: blur(28px);
-          -webkit-backdrop-filter: blur(28px);
-          min-height: 90px;
-          height: auto;
-          box-shadow:
-            0 0 0 1px rgba(255, 255, 255, 0.04),
-            0 4px 24px rgba(0, 0, 0, 0.6),
-            0 1px 0 rgba(255, 255, 255, 0.03) inset;
-        }
-        :root.light-theme .nav-shell {
-          background: rgba(255, 255, 255, 0.55);
-          border-color: transparent;
-          backdrop-filter: blur(0px);
-          -webkit-backdrop-filter: blur(0px);
-          box-shadow: none;
-        }
-        :root.light-theme .nav-shell::before {
-          background: transparent;
-          opacity: 0;
-        }
-        :root.light-theme .site-header.is-scrolled .nav-shell {
-          background: rgba(255, 255, 255, 0.96);
-          border-color: rgba(0, 0, 0, 0.12);
-          backdrop-filter: blur(28px);
-          -webkit-backdrop-filter: blur(28px);
-          box-shadow:
-            0 4px 24px rgba(0, 0, 0, 0.08),
-            0 1px 0 rgba(0, 0, 0, 0.04) inset;
+          width: 100%;
+          height: 100%;
+          gap: 28px;
+          padding: 0 !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          border: none !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          box-shadow: none !important;
         }
         .brand-mark {
-          position: relative;
-          overflow: visible;
           display: flex;
           align-items: center;
           text-decoration: none;
           flex: 0 0 auto;
-          padding: 0;
-          border-right: none;
-          margin: 0;
+          position: relative;
+          margin-right: 8px;
         }
         .brand-mark img {
           display: block;
-          height: 84px;
+          height: 72px;
           width: auto;
           object-fit: contain;
+          transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .site-header.is-scrolled .brand-mark img {
+          height: 72px;
         }
         .brand-glow {
           position: absolute;
-          inset: -10px;
-          background: radial-gradient(circle at center, rgba(228,241,65,0.28) 0%, transparent 70%);
-          filter: blur(18px);
+          left: 10px;
+          width: 110px;
+          height: 55px;
+          background: radial-gradient(circle at center, rgba(210, 245, 60, 0.25) 0%, transparent 70%);
+          filter: blur(14px);
           opacity: 0;
           transition: opacity 0.3s ease;
           z-index: -1;
+          pointer-events: none;
         }
         .brand-mark:hover .brand-glow {
           opacity: 1;
         }
+        .nav-links-shell {
+          display: flex;
+          align-items: center;
+          gap: 28px;
+          flex: 1;
+          min-width: 0;
+        }
         .nav-actions {
           display: flex;
           align-items: center;
-          gap: 24px;
           flex: 0 0 auto;
         }
         .desktop-nav {
           display: flex;
           align-items: center;
-          gap: 24px;
-          margin-left: 0;
-          flex: 1 1 auto;
+          gap: 28px;
           min-width: 0;
-          justify-content: center;
-          flex-wrap: nowrap;
         }
         .desktop-nav a {
           position: relative;
-          white-space: nowrap;
-          overflow: visible;
           font-family: 'Plus Jakarta Sans', sans-serif;
-          font-weight: 600;
-          font-size: 0.95rem;
-          letter-spacing: 0.01em;
+          font-weight: 500;
+          font-size: 0.9rem;
           transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-          padding: 8px 0;
-          color: rgba(255, 255, 255, 0.8);
-          border-right: none;
-        }
-        .desktop-nav a:last-child {
-          border-right: none;
+          padding: 6px 0;
+          color: rgba(255, 255, 255, 0.75);
         }
         .desktop-nav a:hover {
           transform: translateY(-2px);
-          text-shadow: 0 4px 20px rgba(228, 241, 65, 0.35);
-          color: #E4F141;
+          text-shadow: 0 4px 20px rgba(210, 245, 60, 0.35);
+          color: #d2f53c;
         }
         .nav-cta {
           position: relative;
           overflow: hidden;
-          padding: 0.65rem 1.4rem !important;
-          font-size: 0.85rem !important;
-          min-height: 44px;
+          padding: 0.65rem 1.6rem !important;
+          font-size: 0.88rem !important;
+          min-height: 42px;
           display: flex;
           align-items: center;
           justify-content: center;
           font-family: 'Plus Jakarta Sans', sans-serif;
           font-weight: 700;
-          letter-spacing: 0.02em;
+          letter-spacing: 0.05rem;
           transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-          border-radius: 999px;
-          background: #E4F141 !important;
-          color: #000 !important;
+          border-radius: 12px !important;
+          background: linear-gradient(135deg, #d2f53c, #bbf32c) !important;
+          color: #000000 !important;
           text-decoration: none;
+          border: 1px solid rgba(0, 0, 0, 0.1) !important;
+          text-shadow: none;
+          box-shadow: 0 4px 20px rgba(210, 245, 60, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
-        .nav-cta:hover {
-          transform: translateY(-3px) scale(1.05);
-          box-shadow: 0 20px 40px rgba(228, 241, 65, 0.35);
+        @keyframes shine-sweep {
+          0% {
+            left: -150%;
+          }
+          50% {
+            left: 150%;
+          }
+          100% {
+            left: 150%;
+          }
         }
         .nav-cta::before {
           content: '';
           position: absolute;
           top: 0;
-          left: -100%;
-          width: 100%;
+          left: -150%;
+          width: 60%;
           height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-          transition: left 0.5s ease;
+          background: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.9) 50%,
+            rgba(255, 255, 255, 0) 100%
+          );
+          transform: skewX(-25deg);
+          animation: shine-sweep 2.5s infinite ease-in-out;
         }
-        .nav-cta:hover::before {
-          left: 100%;
+        .nav-cta:hover {
+          transform: translateY(-2px);
+          background: linear-gradient(135deg, #cbf33b, #d2f53c) !important;
+          border: 1px solid rgba(0, 0, 0, 0.15) !important;
+          box-shadow: 0 0 28px rgba(210, 245, 60, 0.85), 0 0 12px rgba(255, 255, 255, 0.2);
+          text-shadow: none;
         }
         .theme-toggle-btn {
-          width: 36px;
-          height: 36px;
-          borderRadius: 10px;
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(10px);
-          display: flex;
-          align-items: center;
-          justifyContent: center;
-          fontSize: 1rem;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-          padding: 0;
-        }
-        .theme-toggle-btn:hover {
-          background: rgba(228, 241, 65, 0.12);
-          border-color: rgba(228, 241, 65, 0.45);
-          transform: translateY(-2px);
-        }
-        :root.light-theme .theme-toggle-btn {
-          border-color: rgba(0, 0, 0, 0.1);
-          background: rgba(0, 0, 0, 0.05);
+          display: none !important;
         }
         
         /* Menu Toggle */
@@ -317,60 +285,86 @@ export default function Navbar() {
         @media (max-width: 960px) {
           .desktop-nav { display: none !important; }
           .nav-cta { display: none !important; }
+          .nav-actions {
+            flex: 1;
+            justify-content: flex-end;
+            margin-left: 0;
+          }
           .menu-toggle {
             display: flex !important;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 42px;
-            height: 42px;
-            borderRadius: 12px;
-            border: 2px solid rgba(228, 241, 65, 0.45);
-            background: rgba(228, 241, 65, 0.12);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 2px solid rgba(210, 245, 60, 0.6) !important;
+            background: rgba(210, 245, 60, 0.18) !important;
             backdrop-filter: blur(10px);
             cursor: pointer;
-            padding: 10px;
+            padding: 8px;
             gap: 4px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(228, 241, 65, 0.25);
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 12px rgba(210, 245, 60, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+          }
+          .menu-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 80%;
+            height: 100%;
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.6) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
+            transform: skewX(-25deg);
+            animation: shine-sweep 3s infinite ease-in-out;
           }
           .menu-toggle:hover {
-            background: rgba(228, 241, 65, 0.2);
-            border-color: rgba(228, 241, 65, 0.8);
-            transform: scale(1.05);
+            background: rgba(210, 245, 60, 0.3) !important;
+            border-color: rgba(210, 245, 60, 1) !important;
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(210, 245, 60, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.2);
           }
           .menu-toggle span {
             display: block;
-            width: 22px;
-            height: 2.5px;
+            width: 20px;
+            height: 2px;
             border-radius: 3px;
             transition: all 0.3s ease;
-            box-shadow: 0 0 8px rgba(228, 241, 65, 0.35);
-            background: #E4F141;
+            background: #d2f53c !important;
+            box-shadow: 0 0 4px rgba(210, 245, 60, 0.8);
           }
         }
         
         @media (max-width: 768px) {
           .site-header {
-            min-height: auto;
-            padding: 10px 12px 0;
+            top: 10px;
+            left: 12px;
+            right: 12px;
+            width: auto;
+            margin: 0;
+            height: 64px;
+            padding: 0 !important;
+            border-radius: 32px !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
           }
-          .nav-shell {
-            height: 44px;
-            padding: 0 16px;
-            border-radius: 999px;
+          .site-header.is-scrolled {
+            top: 8px;
+            height: 60px;
+            border-radius: 30px !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
           }
-          .brand-mark { font-size: 1.1rem !important; border-right: none; padding: 0 12px; }
-          .brand-mark img { height: 56px !important; max-height: 56px !important; }
-          .menu-toggle {
-            width: 36px !important;
-            height: 36px !important;
-            padding: 8px !important;
+          .site-header .container {
+            padding: 0 12px;
           }
-          .menu-toggle span {
-            width: 18px !important;
-            height: 2px !important;
-          }
+          .brand-mark img { height: 52px; }
+          .site-header.is-scrolled .brand-mark img { height: 46px; }
         }
 
         /* Mobile Drawer */
@@ -424,10 +418,10 @@ export default function Navbar() {
         }
         .mobile-nav-link:hover {
           padding-left: 10px;
-          color: #E4F141;
+          color: #d2f53c;
         }
         .mobile-nav-link.is-active {
-          color: #E4F141;
+          color: #d2f53c;
           font-weight: 600;
         }
       `}</style>
@@ -463,133 +457,125 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="desktop-nav" aria-label="Primary navigation">
-            {navItems.map((item, i) => (
-              <motion.div
-                key={item.path}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ 
-                  delay: 0.3 + i * 0.08, 
-                  duration: 0.4,
-                  ease: [0.22, 1, 0.36, 1]
-                }}
-                onMouseEnter={() => setHoveredItem(item.path)}
-                onMouseLeave={() => setHoveredItem(null)}
-                style={{ position: 'relative' }}
-              >
-                <MagneticLink
-                  to={item.path}
-                  className={location.pathname === item.path ? 'is-active' : ''}
-                  isActive={location.pathname === item.path}
+          {/* Navigation group */}
+          <div className="nav-links-shell">
+            <nav className="desktop-nav" aria-label="Primary navigation">
+              {navItems.map((item, i) => (
+                <motion.div
+                  key={item.path}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    delay: 0.3 + i * 0.08, 
+                    duration: 0.4,
+                    ease: [0.22, 1, 0.36, 1]
+                  }}
+                  onMouseEnter={() => setHoveredItem(item.path)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  style={{ position: 'relative' }}
                 >
-                  <span style={{ 
-                    position: 'relative',
-                    zIndex: 2,
-                    color: item.highlight
-                      ? '#e4f141'
-                      : hoveredItem === item.path ? '#E4F141' : 'inherit',
-                    transition: 'color 0.3s ease',
-                    fontWeight: item.highlight ? 700 : undefined,
-                  }}>
-                    {item.label}
-                    {item.highlight && (
-                      <span style={{
-                        marginLeft: '5px',
-                        fontSize: '0.6rem',
-                        background: 'rgba(228,241,65,0.15)',
-                        border: '1px solid rgba(228,241,65,0.35)',
-                        borderRadius: '4px',
-                        padding: '1px 5px',
-                        verticalAlign: 'middle',
-                        letterSpacing: '0.04em',
-                        color: '#e4f141',
-                      }}>FREE</span>
-                    )}
-                  </span>
-                  
-                  {/* Hover glow */}
-                  <AnimatePresence>
-                    {hoveredItem === item.path && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.2 }}
-                        style={{
-                          position: 'absolute',
-                          inset: '-8px -16px',
-                          background: 'rgba(228,241,65,0.08)',
-                          border: '1px solid rgba(228,241,65,0.15)',
-                          borderRadius: '12px',
-                          zIndex: -1,
-                        }}
-                      />
-                    )}
-                  </AnimatePresence>
-                </MagneticLink>
-              </motion.div>
-            ))}
-          </nav>
+                  <MagneticLink
+                    to={item.path}
+                    className={location.pathname === item.path ? 'is-active' : ''}
+                    isActive={location.pathname === item.path}
+                    highlight={item.highlight}
+                  >
+                    <span style={{ 
+                      position: 'relative',
+                      zIndex: 2,
+                      color: item.highlight
+                        ? '#ffd700'
+                        : hoveredItem === item.path ? '#d2f53c' : 'inherit',
+                      textShadow: item.highlight
+                        ? (hoveredItem === item.path 
+                            ? '0 0 15px rgba(255, 215, 0, 1), 0 0 25px rgba(255, 215, 0, 0.8)' 
+                            : '0 0 8px rgba(255, 215, 0, 0.6), 0 0 15px rgba(255, 215, 0, 0.3)')
+                        : undefined,
+                      transition: 'all 0.3s ease',
+                      fontWeight: item.highlight ? 600 : undefined,
+                    }}>
+                      {item.label}
+                    </span>
+                    <AnimatePresence>
+                      {hoveredItem === item.path && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          transition={{ duration: 0.2 }}
+                          style={{
+                            position: 'absolute',
+                            inset: '-5px -10px',
+                            background: item.highlight ? 'rgba(255, 215, 0, 0.08)' : 'rgba(210, 245, 60, 0.08)',
+                            border: item.highlight ? '1px solid rgba(255, 215, 0, 0.25)' : '1px solid rgba(210, 245, 60, 0.2)',
+                            borderRadius: '8px',
+                            zIndex: -1,
+                          }}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </MagneticLink>
+                </motion.div>
+              ))}
+            </nav>
 
-          {/* Actions */}
-          <div className="nav-actions">
-            {/* CTA Button */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.6, duration: 0.4 }}
-            >
-              <Link to="/get-started" className="button button-primary nav-cta">
-                <motion.span
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{ display: 'inline-block' }}
-                >
-                  GET STARTED
-                </motion.span>
-              </Link>
-            </motion.div>
-            
-            {/* Mobile Menu Toggle */}
-            <motion.button
-              type="button"
-              className="menu-toggle"
-              onClick={() => setIsOpen((v) => !v)}
-              aria-label={isOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={isOpen}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.7, duration: 0.4 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <motion.span 
-                animate={{
-                  rotate: isOpen ? 45 : 0,
-                  y: isOpen ? 6 : 0,
-                }}
-                transition={{ duration: 0.3 }}
-              />
-              <motion.span 
-                animate={{
-                  opacity: isOpen ? 0 : 1,
-                  scaleX: isOpen ? 0 : 1,
-                }}
-                transition={{ duration: 0.2 }}
-              />
-              <motion.span 
-                animate={{
-                  rotate: isOpen ? -45 : 0,
-                  y: isOpen ? -6 : 0,
-                }}
-                transition={{ duration: 0.3 }}
-              />
-            </motion.button>
+            <div className="nav-actions">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6, duration: 0.4 }}
+              >
+                <Link to="/contact" className="button button-primary nav-cta">
+                  <motion.span
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    style={{ display: 'inline-block' }}
+                  >
+                    GET STARTED
+                  </motion.span>
+                </Link>
+              </motion.div>
+            </div>
           </div>
-          </div>{/* end nav-shell */}
-        </div>{/* end container */}
+
+          {/* Mobile Menu Toggle */}
+          <motion.button
+            type="button"
+            className="menu-toggle"
+            onClick={() => setIsOpen((v) => !v)}
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isOpen}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.7, duration: 0.4 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <motion.span 
+              animate={{
+                rotate: isOpen ? 45 : 0,
+                y: isOpen ? 6 : 0,
+              }}
+              transition={{ duration: 0.3 }}
+            />
+            <motion.span 
+              animate={{
+                opacity: isOpen ? 0 : 1,
+                scaleX: isOpen ? 0 : 1,
+              }}
+              transition={{ duration: 0.2 }}
+            />
+            <motion.span 
+              animate={{
+                rotate: isOpen ? -45 : 0,
+                y: isOpen ? -6 : 0,
+              }}
+              transition={{ duration: 0.3 }}
+            />
+          </motion.button>
+
+          </div>
+        </div>
       </motion.header>
 
       {/* Mobile Drawer */}
@@ -632,23 +618,27 @@ export default function Navbar() {
                       className={`mobile-nav-link ${location.pathname === item.path ? 'is-active' : ''}`}
                       onClick={() => setIsOpen(false)}
                       style={{
-                        color: item.highlight ? '#e4f141' : (theme === 'light' ? '#1a1a1a' : '#fff'),
+                        color: item.highlight ? '#ffd700' : (theme === 'light' ? '#1a1a1a' : '#fff'),
+                        textShadow: item.highlight ? '0 0 10px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3)' : undefined,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
                       }}
                     >
-                      {item.label}
+                      <span>
+                        {item.label}
+                      </span>
                       {location.pathname === item.path && (
                         <motion.span
-                          layoutId="mobileActive"
-                          style={{
-                            position: 'absolute',
-                            right: '0',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            width: '8px',
-                            height: '8px',
-                            borderRadius: '50%',
-                            background: '#E4F141',
-                          }}
+                           layoutId="mobileActive"
+                           style={{
+                             width: '8px',
+                             height: '8px',
+                             borderRadius: '50%',
+                             background: item.highlight ? '#ffd700' : '#d2f53c',
+                             boxShadow: item.highlight ? '0 0 8px #ffd700' : '0 0 8px #d2f53c',
+                             display: 'block',
+                           }}
                         />
                       )}
                     </Link>

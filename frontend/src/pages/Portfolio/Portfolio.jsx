@@ -146,18 +146,6 @@ export default function Portfolio() {
           initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}
           style={{ paddingTop: '4rem', paddingBottom: '3rem' }}
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, duration: 0.5 }}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(228,241,65,0.08)', border: '1px solid rgba(228,241,65,0.2)', borderRadius: '50px', padding: '0.35rem 1rem', marginBottom: '1.5rem' }}
-          >
-            <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }}
-              style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#e4f141', display: 'inline-block' }}
-            />
-            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#e4f141', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-              Our Work · {projects.length} Projects
-            </span>
-          </motion.div>
-
           <h1 style={{ fontSize: 'clamp(2.5rem, 7vw, 5rem)', fontWeight: 900, color: '#fff', lineHeight: 1.0, letterSpacing: '-0.04em', margin: '0 0 1rem' }}>
             Work That<br />
             <span style={{ color: '#e4f141' }}>Speaks Loud.</span>
