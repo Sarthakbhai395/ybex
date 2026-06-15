@@ -18,9 +18,7 @@ function resolveImg(url) {
 function getIgHandle(url) {
   if (!url) return '';
   try {
-    // Remove query parameters
     let clean = url.split('?')[0];
-    // Remove trailing slash
     clean = clean.replace(/\/$/, '');
     const parts = clean.split('/');
     const handle = parts[parts.length - 1];
@@ -95,23 +93,29 @@ export default function Creators() {
         .creators-container {
           max-width: 1200px;
           margin: 0 auto;
-          padding: 140px 24px 60px;
+          padding: 15px 24px 60px;
           position: relative;
           z-index: 2;
         }
 
         .creators-header {
           text-align: center;
-          margin-bottom: 60px;
+          margin-bottom: 30px;
         }
 
         .creators-eyebrow {
-          font-size: 0.9rem;
-          font-weight: 700;
+          font-size: clamp(3.2rem, 8vw, 5.5rem);
+          font-weight: 950;
           text-transform: uppercase;
-          letter-spacing: 0.25em;
-          color: ${ACCENT};
-          margin-bottom: 16px;
+          letter-spacing: 0.18em;
+          margin-bottom: 8px;
+          background: linear-gradient(90deg, #E4F141 0%, #ffffff 25%, #E4F141 50%, #ffffff 75%, #E4F141 100%);
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: shine 2.5s linear infinite;
+          filter: drop-shadow(0 0 15px rgba(228, 241, 65, 0.75));
+          display: inline-block;
         }
 
         /* Heading Shine / Glow Effects */
@@ -381,34 +385,34 @@ export default function Creators() {
         }
 
         .stat-num {
-          font-size: 1.25rem;
-          font-weight: 900;
+          font-size: 1.1rem;
+          font-weight: 800;
           color: #fff;
           line-height: 1.1;
         }
 
         .stat-txt {
-          font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.45);
-          font-weight: 700;
+          font-size: 0.6rem;
+          color: rgba(255, 255, 255, 0.4);
+          font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          margin-top: 2px;
+          margin-top: 1px;
         }
 
         /* Clear Separation Divider */
         .stat-col-divider {
           width: 1px;
-          background: rgba(228, 241, 65, 0.25); /* Clearer separation */
+          background: rgba(255, 255, 255, 0.08);
           align-self: stretch;
           margin: 0 4px;
         }
 
-        /* Hover Overlay - Card remains visible, no blur, transparent overlay */
+        /* Hover Overlay */
         .creator-hover-overlay {
           position: absolute;
           inset: 0;
-          background: rgba(0, 0, 0, 0.45); /* Transparent overlay, no blur */
+          background: rgba(0, 0, 0, 0.45);
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -425,30 +429,30 @@ export default function Creators() {
         }
 
         .creator-social-btn {
-          padding: 12px 24px;
+          padding: 10px 20px;
           border-radius: 30px;
           background: ${ACCENT};
           color: #000;
           text-decoration: none;
-          font-size: 0.9rem;
+          font-size: 0.8rem;
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.06em;
           display: flex;
           align-items: center;
-          gap: 8px;
-          box-shadow: 0 8px 25px rgba(228, 241, 65, 0.4);
+          gap: 6px;
+          box-shadow: 0 6px 20px rgba(228, 241, 65, 0.3);
           transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .creator-social-btn:hover {
           transform: scale(1.05);
-          box-shadow: 0 12px 30px rgba(228, 241, 65, 0.6);
+          box-shadow: 0 10px 25px rgba(228, 241, 65, 0.5);
         }
 
         .shimmer-card {
-          height: 500px;
-          border-radius: 32px;
+          height: 380px;
+          border-radius: 20px;
           background: rgba(255, 255, 255, 0.02);
           border: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -466,7 +470,7 @@ export default function Creators() {
             transition={{ duration: 0.6 }}
             className="creators-eyebrow"
           >
-            EXCLUSIVE TALENTS
+            MEET
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -526,7 +530,7 @@ export default function Creators() {
                     <div className="creator-ig-badge">
                       <span className="creator-ig-icon">
                         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
                         </svg>
                       </span>
                       <span>{getIgHandle(c.socialLink) || '@yebx'}</span>
@@ -555,7 +559,7 @@ export default function Creators() {
                       <div className="creator-stat-col">
                         <div className="stat-badge-icon">
                           <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
                           </svg>
                         </div>
                         <div className="stat-details">
@@ -569,7 +573,7 @@ export default function Creators() {
                       <div className="creator-stat-col">
                         <div className="stat-badge-icon">
                           <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z" />
+                            <path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/>
                           </svg>
                         </div>
                         <div className="stat-details">
@@ -579,12 +583,12 @@ export default function Creators() {
                       </div>
                     </div>
 
-                    {/* Hover Link Hint - Transparent background, card remains visible */}
+                    {/* Hover Link Hint */}
                     <div className="creator-hover-overlay">
                       <div className="creator-social-btn">
                         <span>View Profile</span>
                         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
+                          <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
                         </svg>
                       </div>
                     </div>

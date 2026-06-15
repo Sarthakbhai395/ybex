@@ -324,8 +324,8 @@ export default function Navbar() {
             width: 40px;
             height: 40px;
             border-radius: 10px;
-            border: 2px solid rgba(210, 245, 60, 0.6) !important;
-            background: rgba(210, 245, 60, 0.18) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
             backdrop-filter: blur(10px);
             cursor: pointer;
             padding: 8px;
@@ -333,29 +333,13 @@ export default function Navbar() {
             transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 12px rgba(210, 245, 60, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-          }
-          .menu-toggle::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -150%;
-            width: 80%;
-            height: 100%;
-            background: linear-gradient(
-              to right,
-              rgba(255, 255, 255, 0) 0%,
-              rgba(255, 255, 255, 0.6) 50%,
-              rgba(255, 255, 255, 0) 100%
-            );
-            transform: skewX(-25deg);
-            animation: shine-sweep 3s infinite ease-in-out;
+            box-shadow: 0 0 12px rgba(255,255,255,0.08);
           }
           .menu-toggle:hover {
-            background: rgba(210, 245, 60, 0.3) !important;
-            border-color: rgba(210, 245, 60, 1) !important;
-            transform: scale(1.08);
-            box-shadow: 0 0 20px rgba(210, 245, 60, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.18) !important;
+            border-color: rgba(255, 255, 255, 0.7) !important;
+            transform: scale(1.06);
+            box-shadow: 0 0 18px rgba(255,255,255,0.2);
           }
           .menu-toggle span {
             display: block;
@@ -363,8 +347,7 @@ export default function Navbar() {
             height: 2px;
             border-radius: 3px;
             transition: all 0.3s ease;
-            background: #d2f53c !important;
-            box-shadow: 0 0 4px rgba(210, 245, 60, 0.8);
+            background: #ffffff !important;
           }
         }
         
@@ -444,10 +427,10 @@ export default function Navbar() {
         }
         .mobile-nav-link:hover {
           padding-left: 10px;
-          color: #d2f53c;
+          color: #ffffff;
         }
         .mobile-nav-link.is-active {
-          color: #d2f53c;
+          color: #ffffff;
           font-weight: 600;
         }
       `}</style>

@@ -1000,13 +1000,22 @@ const generateInvoicePDF = async (invoiceData, subtotal, discount, tax, grandTot
 
     const imgData = canvas.toDataURL('image/png');
     const margin = 0;
-    const pageW = 210; // Standard A4 width in mm
+    const pageW = 210; // A4 width mm
+    const pageH = 297; // A4 height mm
     const usableW = pageW - margin * 2;
     const imgH = (canvas.height / canvas.width) * usableW;
-    const pageH = imgH + margin * 2; // Dynamically size height to match content exactly
 
-    const doc = new jsPDF('p', 'mm', [pageW, pageH]);
-    doc.addImage(imgData, 'PNG', margin, margin, usableW, imgH);
+    // If content fits in A4, use A4. Otherwise use dynamic height.
+    const finalPageH = imgH <= pageH ? pageH : imgH + margin * 2;
+    const doc = new jsPDF('p', 'mm', [pageW, finalPageH]);
+
+    if (imgH <= pageH) {
+      // Content fits in A4 — center it vertically at top
+      doc.addImage(imgData, 'PNG', margin, margin, usableW, imgH);
+    } else {
+      // Content taller than A4 — fit exactly
+      doc.addImage(imgData, 'PNG', margin, margin, usableW, imgH);
+    }
 
     if (action === 'download') {
       doc.save(`${invoiceData.invoiceNumber || 'Invoice'}.pdf`);
@@ -1819,6 +1828,7 @@ export default function Invoice() {
   });
   const previewRef = useRef(null);
   const [invoiceData, setInvoiceData] = useState(getInitialData);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
 
   // Sync state to localStorage
   useEffect(() => {
@@ -2122,6 +2132,25 @@ export default function Invoice() {
             white-space: nowrap;
             min-width: 0;
           }
+
+          /* Prevent content bleeding under FAB */
+          .inv-nav { margin-bottom: 80px; }
+          /* Step header more compact */
+          .step-header-card { margin-bottom: 1rem !important; }
+          /* Form section padding tighter */
+          .form-section { padding: 1rem !important; }
+
+          /* Step indicator scrollable */
+          .inv-steps {
+            justify-content: flex-start;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+          }
+          .inv-steps::-webkit-scrollbar { display: none; }
+          .inv-step-connector { width: 12px; }
         }
         .inv-steps {
           display: flex;
@@ -2554,6 +2583,18 @@ export default function Invoice() {
         }
         .button-secondary:hover { background: rgba(255,255,255,0.12); }
         .success-note { margin-top: 0.9rem; font-size: 0.78rem; color: rgba(255,255,255,0.28); }
+
+        /* ── Mobile FAB ── */
+        @media (max-width: 960px) {
+          .inv-preview-fab { display: flex !important; }
+        }
+
+        /* ── Step label hide on very small screens ── */
+        @media (max-width: 480px) {
+          .inv-step-label { display: none; }
+          .inv-step-pill { padding: 5px 8px; }
+          .inv-step-num, .inv-step-check { width: 22px; height: 22px; font-size: 0.7rem; }
+        }
       `}</style>
 
       <div className="inv-page">
@@ -2615,10 +2656,10 @@ export default function Invoice() {
                           </div>
                         ) : (
                           <div className="inv-step-num">
-                            <Icon size={10} />
+                            {step.id}
                           </div>
                         )}
-                        {step.title}
+                        <span className="inv-step-label">{step.title}</span>
                       </div>
                     </React.Fragment>
                   );
@@ -2665,6 +2706,78 @@ export default function Invoice() {
 
           </div>
         </div>
+
+        {/* Mobile Preview Button */}
+        <button
+          onClick={() => setShowPreviewModal(true)}
+          style={{
+            display: 'none', // shown via CSS media query
+            position: 'fixed',
+            bottom: '24px',
+            right: '20px',
+            zIndex: 500,
+            background: '#FF3D10',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '50px',
+            padding: '14px 22px',
+            fontSize: '0.9rem',
+            fontWeight: 800,
+            cursor: 'pointer',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 8px 30px rgba(255,61,16,0.5)',
+            letterSpacing: '0.04em',
+          }}
+          className="inv-preview-fab"
+        >
+          <Eye size={18} /> Preview PDF
+        </button>
+
+        {/* Mobile Preview Modal */}
+        {showPreviewModal && (
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 9000,
+            background: 'rgba(0,0,0,0.9)',
+            display: 'flex', flexDirection: 'column',
+            overflow: 'hidden',
+          }}>
+            {/* Modal header */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '1rem 1.25rem',
+              background: '#111',
+              borderBottom: '1px solid rgba(255,255,255,0.1)',
+              flexShrink: 0,
+            }}>
+              <span style={{ color: '#fff', fontWeight: 700, fontSize: '1rem' }}>Invoice Preview</span>
+              <button
+                onClick={() => setShowPreviewModal(false)}
+                style={{
+                  background: 'rgba(255,255,255,0.1)', border: 'none',
+                  borderRadius: '8px', color: '#fff', width: '36px', height: '36px',
+                  cursor: 'pointer', fontSize: '1.1rem', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                }}
+              >✕</button>
+            </div>
+            {/* Scrollable preview */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', background: '#1a1a1a' }}>
+              <div style={{
+                background: '#fff', borderRadius: '8px', margin: '0 auto',
+                maxWidth: '600px', overflow: 'hidden',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+              }}>
+                <InvoicePreview
+                  invoiceData={invoiceData}
+                  subtotal={subtotal}
+                  tax={tax}
+                  grandTotal={grandTotal}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Hidden off-screen capture div — exact content size, no extra whitespace */}
         <div

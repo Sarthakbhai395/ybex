@@ -677,8 +677,8 @@ export default function AdminLayout({ children }) {
                   style={({ isActive }) => ({
                     display: 'flex', alignItems: 'center', gap: '9px',
                     padding: '0.65rem 0.9rem',
-                    background: isActive ? C.accentOrange : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${isActive ? C.accentOrange : 'rgba(255,255,255,0.06)'}`,
+                    background: isActive ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${isActive ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.06)'}`,
                     borderRadius: '9px', color: isActive ? C.text : C.textMuted,
                     fontSize: '0.8rem', fontWeight: isActive ? 700 : 500,
                     textDecoration: 'none', letterSpacing: '0.04em',
@@ -719,8 +719,8 @@ export default function AdminLayout({ children }) {
                     letterSpacing: '0.06em', textTransform: 'uppercase',
                     textDecoration: 'none', whiteSpace: 'nowrap',
                     color: isActive ? C.text : C.textMuted,
-                    background: isActive ? `${C.accentOrange}18` : 'transparent',
-                    borderBottom: isActive ? `2px solid ${C.accentOrange}` : '2px solid transparent',
+                    background: isActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+                    borderBottom: isActive ? '2px solid #fff' : '2px solid transparent',
                     borderTop: '2px solid transparent',
                     position: 'relative',
                     '--hover-color': tab.hoverColor,
@@ -736,7 +736,7 @@ export default function AdminLayout({ children }) {
                         layoutId="nav-indicator"
                         style={{
                           position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px',
-                          background: C.accentOrange,
+                          background: '#fff',
                         }}
                         transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                       />

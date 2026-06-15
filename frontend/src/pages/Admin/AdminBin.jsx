@@ -467,7 +467,7 @@ export default function AdminBin() {
                 scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent'
               }}
             >
-              {Object.entries(stats).filter(([key]) => key !== 'total' && countDocuments !== 0).map(([key, count]) => {
+              {Object.entries(stats).filter(([key, count]) => key !== 'total' && count !== 0).map(([key, count]) => {
                 if (count === 0) return null;
                 const config = ITEM_CONFIG[key] || { icon: '📦', color: '#64748b', label: key };
                 return (
