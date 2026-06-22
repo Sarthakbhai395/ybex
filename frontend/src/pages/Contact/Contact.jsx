@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { motion, AnimatePresence } from 'motion/react';
 import { submitContact } from '../../api/api';
@@ -49,18 +49,20 @@ function Field({ name, type = 'text', placeholder, value, focused, error, onChan
 
 /* ── Public Telephone SVG (vertical payphone) ── */
 function PhoneDrop({ onComplete }) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <motion.div
       initial={{ y: -500, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 55, damping: 14, mass: 1.6, delay: 0.15 }}
       onAnimationComplete={onComplete}
-      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', cursor: 'pointer' }}
     >
       {/* Straight cord from top */}
       <motion.div
         initial={{ height: 0, opacity: 0 }}
-        animate={{ height: 80, opacity: 1 }}
+        animate={{ height: 25, opacity: 1 }}
         transition={{ delay: 0.9, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         style={{ width: '3px', background: 'linear-gradient(to bottom, rgba(255,255,255,0.7), rgba(255,255,255,0.3))', borderRadius: '3px' }}
       />
@@ -70,56 +72,138 @@ function PhoneDrop({ onComplete }) {
         animate={{ opacity: 1, scaleY: 1 }}
         transition={{ delay: 1.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         style={{ transformOrigin: 'top', display: 'block' }}
-        width="28" height="90" viewBox="0 0 28 90"
+        width="28" height="40" viewBox="0 0 28 40"
       >
-        {[0,1,2,3,4,5,6,7,8].map((i) => (
+        {[0,1,2,3,4].map((i) => (
           <motion.ellipse
             key={i}
-            cx="14" cy={5 + i * 9} rx={8 + (i % 3)} ry="4"
+            cx="14" cy={5 + i * 8} rx={8 + (i % 3)} ry="4"
             fill="none" stroke="rgba(255,255,255,0.65)" strokeWidth="2"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ delay: 1.15 + i * 0.05, duration: 0.25 }}
           />
         ))}
       </motion.svg>
-      {/* Vertical public telephone body */}
-      <motion.div
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-        style={{ filter: 'drop-shadow(0 16px 48px rgba(228,241,65,0.4))' }}
+      
+      {/* Clickable phone wrapper */}
+      <a
+        href="tel:+919950832099"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{ textDecoration: 'none', color: 'inherit', display: 'block', position: 'relative' }}
       >
-        <svg width="110" height="160" viewBox="0 0 110 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Main body */}
-          <rect x="15" y="10" width="80" height="140" rx="14" fill="rgba(255,255,255,0.92)" />
-          {/* Screen / display area */}
-          <rect x="24" y="20" width="62" height="28" rx="6" fill="rgba(0,0,0,0.75)" />
-          {/* Screen glow */}
-          <rect x="26" y="22" width="58" height="24" rx="5" fill="rgba(228,241,65,0.15)" />
-          <text x="55" y="38" textAnchor="middle" fontSize="9" fill="rgba(228,241,65,0.9)" fontFamily="monospace" fontWeight="bold">YBEX</text>
-          {/* Coin slot */}
-          <rect x="42" y="56" width="26" height="5" rx="2.5" fill="rgba(0,0,0,0.4)" />
-          {/* Keypad dots 3x4 */}
-          {[0,1,2,3,4,5,6,7,8,9,10,11].map((k) => (
-            <circle key={k} cx={32 + (k % 3) * 18} cy={72 + Math.floor(k / 3) * 14} r="5" fill="rgba(0,0,0,0.25)" />
-          ))}
-          {/* Handset cradle */}
-          <rect x="22" y="128" width="66" height="16" rx="8" fill="rgba(0,0,0,0.18)" />
-          {/* Handset */}
-          <rect x="28" y="126" width="54" height="12" rx="6" fill="rgba(80,80,80,0.7)" />
-          {/* Speaker grille lines */}
-          {[0,1,2,3].map((l) => (
-            <line key={l} x1={34 + l * 4} y1="130" x2={34 + l * 4} y2="136" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round" />
-          ))}
-          {/* Side cord hole */}
-          <circle cx="15" cy="132" r="4" fill="rgba(0,0,0,0.3)" />
-        </svg>
-      </motion.div>
+        {/* Vertical public telephone body */}
+        <motion.div
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+          style={{ filter: 'drop-shadow(0 16px 48px rgba(228,241,65,0.4))', position: 'relative' }}
+        >
+          <svg width="110" height="160" viewBox="0 0 110 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Main body */}
+            <rect x="15" y="10" width="80" height="140" rx="14" fill="rgba(255,255,255,0.92)" />
+            {/* Screen / display area */}
+            <rect x="24" y="20" width="62" height="28" rx="6" fill="rgba(0,0,0,0.75)" />
+            {/* Screen glow */}
+            <rect x="26" y="22" width="58" height="24" rx="5" fill="rgba(228,241,65,0.15)" />
+            <text x="55" y="38" textAnchor="middle" fontSize="9" fill="rgba(228,241,65,0.9)" fontFamily="monospace" fontWeight="bold">YBEX</text>
+            {/* Coin slot */}
+            <rect x="42" y="56" width="26" height="5" rx="2.5" fill="rgba(0,0,0,0.4)" />
+            {/* Keypad dots 3x4 */}
+            {[0,1,2,3,4,5,6,7,8,9,10,11].map((k) => (
+              <circle key={k} cx={32 + (k % 3) * 18} cy={72 + Math.floor(k / 3) * 14} r="5" fill="rgba(0,0,0,0.25)" />
+            ))}
+            {/* Handset cradle */}
+            <rect x="22" y="128" width="66" height="16" rx="8" fill="rgba(0,0,0,0.18)" />
+            {/* Handset */}
+            <rect x="28" y="126" width="54" height="12" rx="6" fill="rgba(80,80,80,0.7)" />
+            {/* Speaker grille lines */}
+            {[0,1,2,3].map((l) => (
+              <line key={l} x1={34 + l * 4} y1="130" x2={34 + l * 4} y2="136" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round" />
+            ))}
+            {/* Side cord hole */}
+            <circle cx="15" cy="132" r="4" fill="rgba(0,0,0,0.3)" />
+          </svg>
+        </motion.div>
+
+        {/* Floating Lining Motion Call Icon Overlay */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          zIndex: 100,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '8px',
+          pointerEvents: 'none',
+          transition: 'opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          opacity: hovered ? 1 : 0,
+          transform: `translate(-50%, -50%) scale(${hovered ? 1 : 0.7})`
+        }}>
+          <div style={{ position: 'relative', width: '68px', height: '68px' }}>
+            <svg width="68" height="68" viewBox="0 0 68 68" style={{ transform: 'rotate(-90deg)', display: 'block' }}>
+              <circle cx="34" cy="34" r="28" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="3" fill="rgba(0,0,0,0.88)" />
+              <motion.circle
+                cx="34"
+                cy="34"
+                r="28"
+                stroke="#E4F141"
+                strokeWidth="3"
+                fill="none"
+                strokeDasharray="175.8"
+                animate={{
+                  strokeDashoffset: [175.8, 0, -175.8],
+                  rotate: [0, 360]
+                }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              />
+            </svg>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <motion.svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="#E4F141"
+                animate={hovered ? {
+                  rotate: [0, -15, 15, -15, 15, 0],
+                  scale: [1, 1.15, 0.9, 1.15, 1]
+                } : {}}
+                transition={{
+                  duration: 0.6,
+                  repeat: Infinity,
+                  repeatType: "reverse"
+                }}
+              >
+                <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.045 15.045 0 01-6.59-6.59l2.2-2.21a.96.96 0 00.25-1A11.36 11.36 0 018.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.58c0-.56-.45-1.04-1-1.04z" />
+              </motion.svg>
+            </div>
+          </div>
+          <div style={{
+            background: '#E4F141',
+            color: '#000',
+            padding: '3px 8px',
+            borderRadius: '20px',
+            fontSize: '0.62rem',
+            fontWeight: 900,
+            letterSpacing: '0.04em',
+            boxShadow: '0 4px 15px rgba(228, 241, 65, 0.45)',
+            whiteSpace: 'nowrap'
+          }}>
+            CALL NOW
+          </div>
+        </div>
+      </a>
+      
       {/* Glow pulse ring */}
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: [0.8, 1.8, 0.8], opacity: [0, 0.35, 0] }}
         transition={{ delay: 1.8, duration: 1.4, repeat: Infinity, repeatDelay: 1.8 }}
-        style={{ position: 'absolute', bottom: '-8px', width: '90px', height: '90px', borderRadius: '50%', border: '2px solid rgba(228,241,65,0.55)', pointerEvents: 'none' }}
+        style={{ position: 'absolute', bottom: '-8px', width: '90px', height: '90px', borderRadius: '50%', border: '2px solid rgba(228,241,65,0.55)', pointerEvents: 'none', zIndex: 1 }}
       />
     </motion.div>
   );
@@ -278,22 +362,22 @@ export default function Contact() {
 
       <div className="container" style={{ position: 'relative', zIndex: 1 }}>
 
-        {/* Eyebrow */}
-        <motion.p className="eyebrow"
-          initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-          style={{ justifyContent: 'center', marginBottom: 'clamp(1rem,2vw,1.5rem)' }}
-        >
-          <motion.span animate={{ scale: [1, 1.6, 1] }} transition={{ duration: 2, repeat: Infinity }}
-            style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#E4F141', marginRight: '8px', verticalAlign: 'middle', boxShadow: '0 0 10px rgba(228,241,65,0.8)' }} />
-          Contact
-        </motion.p>
-
         {/* ══ ROW 1: Phone animation | Contact form ══ */}
         <div className="contact-hero-grid">
 
           {/* ── LEFT: Phone + YBEX Speaking ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', justifyContent: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 'clamp(1.2rem, 3vw, 2.5rem)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', justifyContent: 'flex-start', paddingTop: 0 }}>
+            {/* Eyebrow */}
+            <motion.p className="eyebrow"
+              initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
+              style={{ justifyContent: 'flex-start', margin: 0, width: 'fit-content' }}
+            >
+              <motion.span animate={{ scale: [1, 1.6, 1] }} transition={{ duration: 2, repeat: Infinity }}
+                style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#E4F141', marginRight: '8px', verticalAlign: 'middle', boxShadow: '0 0 10px rgba(228,241,65,0.8)' }} />
+              Contact
+            </motion.p>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'clamp(1.2rem, 3vw, 2.5rem)' }}>
               <div style={{ flexShrink: 0 }}>
                 <PhoneDrop onComplete={() => setPhoneDropDone(true)} />
               </div>

@@ -52,7 +52,7 @@ export default function Creators() {
           background-color: #000;
           color: #fff;
           min-height: 100vh;
-          font-family: 'Inter', system-ui, -apple-system, sans-serif;
+          font-family: 'Montserrat', sans-serif;
           position: relative;
           overflow: hidden;
           padding-bottom: 120px;
@@ -93,9 +93,15 @@ export default function Creators() {
         .creators-container {
           max-width: 1200px;
           margin: 0 auto;
-          padding: 15px 24px 60px;
+          padding: 60px 24px 60px;
           position: relative;
           z-index: 2;
+        }
+
+        @media (max-width: 768px) {
+          .creators-container {
+            padding-top: 15px;
+          }
         }
 
         .creators-header {
@@ -103,49 +109,41 @@ export default function Creators() {
           margin-bottom: 30px;
         }
 
-        .creators-eyebrow {
-          font-size: clamp(3.2rem, 8vw, 5.5rem);
-          font-weight: 950;
+        .creators-heading-stack {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 24px;
+        }
+
+        .creators-word-meet,
+        .creators-word-our {
+          font-size: clamp(1.9rem, 4.8vw, 2.5rem);
+          font-weight: 700;
+          color: #ffffff !important;
           text-transform: uppercase;
-          letter-spacing: 0.18em;
-          margin-bottom: 8px;
-          background: linear-gradient(90deg, #E4F141 0%, #ffffff 25%, #E4F141 50%, #ffffff 75%, #E4F141 100%);
-          background-size: 200% auto;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          animation: shine 2.5s linear infinite;
-          filter: drop-shadow(0 0 15px rgba(228, 241, 65, 0.75));
-          display: inline-block;
-        }
-
-        /* Heading Shine / Glow Effects */
-        @keyframes shine {
-          0% {
-            background-position: -200% center;
-          }
-          100% {
-            background-position: 200% center;
-          }
-        }
-
-        .creators-title {
-          font-size: clamp(2.5rem, 6vw, 4.5rem);
-          font-weight: 900;
-          letter-spacing: -0.03em;
-          margin: 0 0 24px;
+          letter-spacing: 0.15em;
           line-height: 1.1;
-          text-transform: uppercase;
-          color: #fff;
-          text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+          text-shadow: none !important;
+          filter: none !important;
+          opacity: 0.9;
         }
 
-        .creators-title span {
+        .creators-word-creators {
+          font-size: clamp(3.2rem, 9vw, 5.8rem);
+          font-weight: 950;
+          color: #E4F141 !important;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          line-height: 1.0;
+          margin: 4px 0 0 0;
           background: linear-gradient(90deg, #E4F141 0%, #ffffff 50%, #E4F141 100%);
           background-size: 200% auto;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           animation: shine 3.5s linear infinite;
-          filter: drop-shadow(0 0 10px rgba(228, 241, 65, 0.6));
+          filter: drop-shadow(0 0 12px rgba(228, 241, 65, 0.45));
           display: inline-block;
         }
 
@@ -464,22 +462,15 @@ export default function Creators() {
       <div className="creators-container">
         {/* Header */}
         <header className="creators-header">
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="creators-eyebrow"
-          >
-            MEET
-          </motion.p>
-          <motion.h1
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="creators-title"
+            transition={{ duration: 0.8 }}
+            className="creators-heading-stack"
           >
-            OUR <span>CREATORS</span>
-          </motion.h1>
+            <span className="creators-word-meet">MEET OUR</span>
+            <h1 className="creators-word-creators">CREATORS</h1>
+          </motion.div>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

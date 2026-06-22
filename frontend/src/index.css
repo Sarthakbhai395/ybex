@@ -1,8 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Archivo:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&family=Syne:wght@500;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Archivo:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&family=Syne:wght@500;700;800&display=swap");
 
 :root {
   color-scheme: dark;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Montserrat", sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --bg: #060606;
@@ -869,9 +869,7 @@ button {
 
 body {
   font-family: 'Outfit', sans-serif;
-  background:
-    radial-gradient(circle at top, rgba(129, 86, 255, 0.14), transparent 28%),
-    linear-gradient(180deg, #050505 0%, #000000 100%);
+  background: linear-gradient(180deg, #050505 0%, #000000 100%);
 }
 
 body::before {
@@ -4331,11 +4329,12 @@ img, video, iframe {
 
 .about-story-title {
   margin: 0 0 1.5rem;
-  font-size: clamp(3.4rem, 10vw, 7rem);
+  font-size: clamp(3rem, 9vw, 6.2rem);
   font-family: 'Archivo', sans-serif;
   font-weight: 900;
   line-height: 0.92;
   letter-spacing: -0.06em;
+  word-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -4352,7 +4351,7 @@ img, video, iframe {
 
 .about-big-stat strong {
   display: block;
-  font-size: clamp(2.8rem, 8vw, 5.8rem);
+  font-size: clamp(2.5rem, 7.5vw, 5.2rem);
   color: #e4f141;
   line-height: 0.9;
 }
@@ -4380,7 +4379,7 @@ img, video, iframe {
 
 .about-mini-stats strong {
   display: block;
-  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  font-size: clamp(1.65rem, 4.6vw, 2.8rem);
   color: #ffffff;
 }
 
@@ -4492,8 +4491,9 @@ img, video, iframe {
 .team-grid {
   display: grid;
   gap: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  justify-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  justify-items: start;
+  justify-content: start;
 }
 
 .team-header-secondary {
@@ -4528,12 +4528,18 @@ img, video, iframe {
 .about-section-display {
   margin: 0;
   font-family: 'Archivo', sans-serif;
-  font-size: clamp(3rem, 10vw, 7rem);
-  line-height: 0.9;
-  letter-spacing: -0.08em;
+  font-size: clamp(2.4rem, 5.8vw, 4.2rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  word-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.18);
 }
+
+.team-header-secondary .about-section-display {
+  font-size: clamp(2rem, 4.8vw, 3.2rem);
+}
+
 
 .about-team-meta {
   display: flex;
@@ -4597,7 +4603,7 @@ img, video, iframe {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  margin: 0 auto;
+  margin: 0;
 }
 
 .team-photo:hover {
@@ -4768,11 +4774,13 @@ img, video, iframe {
   }
 
   .team-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    justify-items: start;
+    justify-content: start;
   }
 
   .team-grid-powerhouse {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 
   .about-growth-logos {

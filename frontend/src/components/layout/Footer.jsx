@@ -273,7 +273,7 @@ export default function Footer() {
           align-items: center;
           flex-shrink: 0;
           gap: 32px;
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           font-weight: 800;
           font-size: 0.88rem;
           letter-spacing: 0.12em;
@@ -340,7 +340,7 @@ export default function Footer() {
         }
 
         .footer-brand-desc {
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           font-size: 0.95rem;
           line-height: 1.6;
           color: rgba(255, 255, 255, 0.6);
@@ -373,7 +373,7 @@ export default function Footer() {
         }
 
         .footer-heading {
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           font-size: 0.8rem;
           font-weight: 700;
           letter-spacing: 0.15em;
@@ -388,7 +388,7 @@ export default function Footer() {
           gap: 14px;
         }
         .footer-link-item {
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           color: rgba(255, 255, 255, 0.7);
           text-decoration: none;
           font-size: 0.95rem;
@@ -447,7 +447,7 @@ export default function Footer() {
           flex-direction: column;
         }
         .contact-label {
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           font-size: 0.68rem;
           font-weight: 700;
           letter-spacing: 0.08em;
@@ -455,7 +455,7 @@ export default function Footer() {
           margin-bottom: 2px;
         }
         .contact-value {
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           font-size: 0.9rem;
           font-weight: 500;
           color: rgba(255, 255, 255, 0.85);
@@ -470,7 +470,7 @@ export default function Footer() {
           display: inline-flex;
           align-items: center;
           margin-top: 8px;
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           font-size: 0.72rem;
           font-weight: 700;
           letter-spacing: 0.1em;
@@ -491,7 +491,7 @@ export default function Footer() {
           padding-top: 32px;
         }
         .footer-copy-text {
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           font-size: 0.8rem;
           font-weight: 500;
           letter-spacing: 0.03em;
@@ -503,7 +503,7 @@ export default function Footer() {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           font-weight: 700;
           letter-spacing: 0.05em;
           font-size: 0.75rem;
@@ -538,7 +538,7 @@ export default function Footer() {
         }
 
         .footer-domain-link {
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           font-size: 0.8rem;
           font-weight: 700;
           letter-spacing: 0.05em;
@@ -556,7 +556,7 @@ export default function Footer() {
           padding: 8px 16px;
           background: #ff003c;
           color: #ffffff !important;
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           font-weight: 700;
           font-size: 0.72rem;
           letter-spacing: 0.05em;
@@ -575,7 +575,7 @@ export default function Footer() {
           position: absolute;
           inset: auto 0 -30px;
           text-align: center;
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: 'Montserrat', sans-serif;
           font-weight: 900;
           font-size: clamp(8rem, 26vw, 18rem);
           line-height: 0.8;

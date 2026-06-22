@@ -9,7 +9,7 @@ function MagneticLink({ children, to, className, isActive, onClick, highlight })
   const ref = useRef(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  
+
   const springConfig = { stiffness: 150, damping: 15, mass: 0.1 };
   const springX = useSpring(x, springConfig);
   const springY = useSpring(y, springConfig);
@@ -21,7 +21,7 @@ function MagneticLink({ children, to, className, isActive, onClick, highlight })
     const centerY = rect.top + rect.height / 2;
     const distanceX = e.clientX - centerX;
     const distanceY = e.clientY - centerY;
-    
+
     x.set(distanceX * 0.15);
     y.set(distanceY * 0.15);
   };
@@ -50,8 +50,8 @@ function MagneticLink({ children, to, className, isActive, onClick, highlight })
               left: '0',
               right: '0',
               height: '2px',
-              background: highlight 
-                ? 'linear-gradient(90deg, #ffd700, #ffa500)' 
+              background: highlight
+                ? 'linear-gradient(90deg, #ffd700, #ffa500)'
                 : 'linear-gradient(90deg, #d2f53c, #bbf32c)',
               borderRadius: '2px',
               boxShadow: highlight ? '0 0 8px rgba(255, 215, 0, 0.6)' : '0 0 8px rgba(210, 245, 60, 0.6)',
@@ -192,14 +192,15 @@ export default function Navbar() {
         .nav-links-shell {
           display: flex;
           align-items: center;
-          gap: 28px;
+          justify-content: space-between; /* Updated */
           flex: 1;
+          margin-left: 28px; /* Updated */
           min-width: 0;
         }
         .nav-actions {
           display: flex;
           align-items: center;
-          flex: 0 0 auto;
+          margin-left: auto; /* Updated */
         }
         .desktop-nav {
           display: flex;
@@ -412,7 +413,7 @@ export default function Navbar() {
         }
       `}</style>
 
-      <motion.header 
+      <motion.header
         className={`site-header ${scrolled ? 'is-scrolled' : ''}`}
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -421,144 +422,144 @@ export default function Navbar() {
         <div className="container">
           <div className="nav-shell">
 
-          {/* Brand Logo */}
-          <Link to="/" className="brand-mark" aria-label="YBEX home">
-            <motion.div 
-              className="brand-glow"
-              animate={{ 
-                opacity: [0.4, 0.75, 0.4],
-                scale: [0.95, 1.05, 0.95]
-              }}
-              transition={{ 
-                duration: 2.5, 
-                repeat: Infinity, 
-                ease: 'easeInOut' 
-              }}
-            />
-            <motion.img
-              src="/fgdfg%201.png"
-              alt="YBEX logo"
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            />
-          </Link>
-
-          {/* Navigation group */}
-          <div className="nav-links-shell">
-            <nav className="desktop-nav" aria-label="Primary navigation">
-              {navItems.map((item, i) => (
-                <motion.div
-                  key={item.path}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ 
-                    delay: 0.3 + i * 0.08, 
-                    duration: 0.4,
-                    ease: [0.22, 1, 0.36, 1]
-                  }}
-                  onMouseEnter={() => setHoveredItem(item.path)}
-                  onMouseLeave={() => setHoveredItem(null)}
-                  style={{ position: 'relative' }}
-                >
-                  <MagneticLink
-                    to={item.path}
-                    className={location.pathname === item.path ? 'is-active' : ''}
-                    isActive={location.pathname === item.path}
-                    highlight={item.highlight}
-                  >
-                    <span style={{ 
-                      position: 'relative',
-                      zIndex: 2,
-                      color: item.highlight
-                        ? '#ffd700'
-                        : hoveredItem === item.path ? '#d2f53c' : 'inherit',
-                      textShadow: item.highlight
-                        ? (hoveredItem === item.path 
-                            ? '0 0 15px rgba(255, 215, 0, 1), 0 0 25px rgba(255, 215, 0, 0.8)' 
-                            : '0 0 8px rgba(255, 215, 0, 0.6), 0 0 15px rgba(255, 215, 0, 0.3)')
-                        : undefined,
-                      transition: 'all 0.3s ease',
-                      fontWeight: item.highlight ? 600 : undefined,
-                    }}>
-                      {item.label}
-                    </span>
-                    <AnimatePresence>
-                      {hoveredItem === item.path && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.8 }}
-                          transition={{ duration: 0.2 }}
-                          style={{
-                            position: 'absolute',
-                            inset: '-5px -10px',
-                            background: item.highlight ? 'rgba(255, 215, 0, 0.08)' : 'rgba(210, 245, 60, 0.08)',
-                            border: item.highlight ? '1px solid rgba(255, 215, 0, 0.25)' : '1px solid rgba(210, 245, 60, 0.2)',
-                            borderRadius: '8px',
-                            zIndex: -1,
-                          }}
-                        />
-                      )}
-                    </AnimatePresence>
-                  </MagneticLink>
-                </motion.div>
-              ))}
-            </nav>
-
-            <div className="nav-actions">
+            {/* Brand Logo */}
+            <Link to="/" className="brand-mark" aria-label="YBEX home">
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6, duration: 0.4 }}
-              >
-                <Link to="/contact" className="button button-primary nav-cta">
-                  <motion.span
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    style={{ display: 'inline-block' }}
-                  >
-                    GET STARTED
-                  </motion.span>
-                </Link>
-              </motion.div>
-            </div>
-          </div>
+                className="brand-glow"
+                animate={{
+                  opacity: [0.4, 0.75, 0.4],
+                  scale: [0.95, 1.05, 0.95]
+                }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut'
+                }}
+              />
+              <motion.img
+                src="/fgdfg%201.png"
+                alt="YBEX logo"
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              />
+            </Link>
 
-          {/* Mobile Menu Toggle */}
-          <motion.button
-            type="button"
-            className="menu-toggle"
-            onClick={() => setIsOpen((v) => !v)}
-            aria-label={isOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={isOpen}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.7, duration: 0.4 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <motion.span 
-              animate={{
-                rotate: isOpen ? 45 : 0,
-                y: isOpen ? 6 : 0,
-              }}
-              transition={{ duration: 0.3 }}
-            />
-            <motion.span 
-              animate={{
-                opacity: isOpen ? 0 : 1,
-                scaleX: isOpen ? 0 : 1,
-              }}
-              transition={{ duration: 0.2 }}
-            />
-            <motion.span 
-              animate={{
-                rotate: isOpen ? -45 : 0,
-                y: isOpen ? -6 : 0,
-              }}
-              transition={{ duration: 0.3 }}
-            />
-          </motion.button>
+            {/* Navigation group */}
+            <div className="nav-links-shell">
+              <nav className="desktop-nav" aria-label="Primary navigation">
+                {navItems.map((item, i) => (
+                  <motion.div
+                    key={item.path}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.3 + i * 0.08,
+                      duration: 0.4,
+                      ease: [0.22, 1, 0.36, 1]
+                    }}
+                    onMouseEnter={() => setHoveredItem(item.path)}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    style={{ position: 'relative' }}
+                  >
+                    <MagneticLink
+                      to={item.path}
+                      className={location.pathname === item.path ? 'is-active' : ''}
+                      isActive={location.pathname === item.path}
+                      highlight={item.highlight}
+                    >
+                      <span style={{
+                        position: 'relative',
+                        zIndex: 2,
+                        color: item.highlight
+                          ? '#ffd700'
+                          : hoveredItem === item.path ? '#d2f53c' : 'inherit',
+                        textShadow: item.highlight
+                          ? (hoveredItem === item.path
+                            ? '0 0 15px rgba(255, 215, 0, 1), 0 0 25px rgba(255, 215, 0, 0.8)'
+                            : '0 0 8px rgba(255, 215, 0, 0.6), 0 0 15px rgba(255, 215, 0, 0.3)')
+                          : undefined,
+                        transition: 'all 0.3s ease',
+                        fontWeight: item.highlight ? 600 : undefined,
+                      }}>
+                        {item.label}
+                      </span>
+                      <AnimatePresence>
+                        {hoveredItem === item.path && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{ duration: 0.2 }}
+                            style={{
+                              position: 'absolute',
+                              inset: '-5px -10px',
+                              background: item.highlight ? 'rgba(255, 215, 0, 0.08)' : 'rgba(210, 245, 60, 0.08)',
+                              border: item.highlight ? '1px solid rgba(255, 215, 0, 0.25)' : '1px solid rgba(210, 245, 60, 0.2)',
+                              borderRadius: '8px',
+                              zIndex: -1,
+                            }}
+                          />
+                        )}
+                      </AnimatePresence>
+                    </MagneticLink>
+                  </motion.div>
+                ))}
+              </nav>
+
+              <div className="nav-actions">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.6, duration: 0.4 }}
+                >
+                  <Link to="/contact" className="button button-primary nav-cta">
+                    <motion.span
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{ display: 'inline-block' }}
+                    >
+                      GET STARTED
+                    </motion.span>
+                  </Link>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <motion.button
+              type="button"
+              className="menu-toggle"
+              onClick={() => setIsOpen((v) => !v)}
+              aria-label={isOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isOpen}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.7, duration: 0.4 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <motion.span
+                animate={{
+                  rotate: isOpen ? 45 : 0,
+                  y: isOpen ? 6 : 0,
+                }}
+                transition={{ duration: 0.3 }}
+              />
+              <motion.span
+                animate={{
+                  opacity: isOpen ? 0 : 1,
+                  scaleX: isOpen ? 0 : 1,
+                }}
+                transition={{ duration: 0.2 }}
+              />
+              <motion.span
+                animate={{
+                  rotate: isOpen ? -45 : 0,
+                  y: isOpen ? -6 : 0,
+                }}
+                transition={{ duration: 0.3 }}
+              />
+            </motion.button>
 
           </div>
         </div>
@@ -577,7 +578,7 @@ export default function Navbar() {
               transition={{ duration: 0.3 }}
               onClick={() => setIsOpen(false)}
             />
-            
+
             {/* Drawer */}
             <motion.div
               className="mobile-drawer"
@@ -616,21 +617,21 @@ export default function Navbar() {
                       </span>
                       {location.pathname === item.path && (
                         <motion.span
-                           layoutId="mobileActive"
-                           style={{
-                             width: '8px',
-                             height: '8px',
-                             borderRadius: '50%',
-                             background: item.highlight ? '#ffd700' : '#d2f53c',
-                             boxShadow: item.highlight ? '0 0 8px #ffd700' : '0 0 8px #d2f53c',
-                             display: 'block',
-                           }}
+                          layoutId="mobileActive"
+                          style={{
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '50%',
+                            background: item.highlight ? '#ffd700' : '#d2f53c',
+                            boxShadow: item.highlight ? '0 0 8px #ffd700' : '0 0 8px #d2f53c',
+                            display: 'block',
+                          }}
                         />
                       )}
                     </Link>
                   </motion.div>
                 ))}
-                
+
 
               </div>
             </motion.div>

@@ -161,7 +161,7 @@ export default function Portfolio() {
             <span style={{ color: '#e4f141' }}>Speaks Loud.</span>
           </h1>
           <p style={{ fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', color: 'rgba(255,255,255,0.45)', maxWidth: '520px', lineHeight: 1.7, margin: 0 }}>
-            7+ years. 50+ brands. Zero filler. हर काम में जान लगाई है।
+            7+ years. 50+ brands. Zero filler.
           </p>
 
           {/* Stats */}

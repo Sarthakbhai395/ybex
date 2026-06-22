@@ -326,7 +326,7 @@ export const creatorEconomyCards = [
 ];
 
 export const aboutStats = [
-  { value: '44,234,521', label: 'total views generated till now' },
+  { value: '44,234,521', label: 'total views generated till now for brands' },
   { value: '7+', label: 'years of experience' },
   { value: '48+', label: 'brands grown from zero' },
   { value: '24/7', label: 'online dominance' },
@@ -408,7 +408,7 @@ export const aboutJoinStrip = [
   'UGC Content',
   'Talent Marketing',
   'In-House Teams',
-  
+
 ];
 
 export const footerSocialLinks = [
