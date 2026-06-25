@@ -247,7 +247,7 @@ export default function Navbar() {
           0% {
             left: -150%;
           }
-          50% {
+          33.33% {
             left: 150%;
           }
           100% {
@@ -268,7 +268,7 @@ export default function Navbar() {
             rgba(255, 255, 255, 0) 100%
           );
           transform: skewX(-25deg);
-          animation: shine-sweep 2.5s infinite ease-in-out;
+          animation: shine-sweep 3s infinite ease-in-out;
         }
         .nav-cta:hover {
           transform: translateY(-2px);
@@ -288,11 +288,22 @@ export default function Navbar() {
         
         @media (max-width: 960px) {
           .desktop-nav { display: none !important; }
-          .nav-cta { display: none !important; }
+          .nav-cta {
+            display: flex !important;
+            padding: 8px 16px !important;
+            font-size: 0.72rem !important;
+            min-height: 36px !important;
+            border-radius: 20px !important;
+            margin-right: 12px;
+            white-space: nowrap;
+            letter-spacing: 0.05em !important;
+          }
           .nav-actions {
             flex: 1;
             justify-content: flex-end;
             margin-left: 0;
+            display: flex;
+            align-items: center;
           }
           .menu-toggle {
             display: flex !important;
@@ -631,6 +642,38 @@ export default function Navbar() {
                     </Link>
                   </motion.div>
                 ))}
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  style={{ marginTop: '2.5rem' }}
+                >
+                  <Link
+                    to="/contact"
+                    className="button button-primary"
+                    onClick={() => setIsOpen(false)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '100%',
+                      minHeight: '48px',
+                      borderRadius: '14px',
+                      background: 'linear-gradient(135deg, #d2f53c, #bbf32c)',
+                      color: '#000',
+                      fontWeight: 800,
+                      fontSize: '0.88rem',
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      textDecoration: 'none',
+                      boxShadow: '0 8px 24px rgba(210, 245, 60, 0.35)',
+                      border: '1px solid rgba(0, 0, 0, 0.1)'
+                    }}
+                  >
+                    GET STARTED
+                  </Link>
+                </motion.div>
 
 
               </div>

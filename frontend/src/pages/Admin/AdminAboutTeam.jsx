@@ -31,12 +31,15 @@ const EMPTY = { name: '', role: '', coreTeam: 'Founder', socialLink: '' };
 function resolveImg(url) {
   if (!url) return null;
   if (url.startsWith('/uploads/')) {
-    // On localhost: Vite proxies /uploads → backend:5000, so use path directly
-    // On IP access (mobile/LAN): point directly to backend port 5000
-    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      return `http://${window.location.hostname}:5000${url}`;
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      const isIP = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(hostname);
+      if (isIP && hostname !== '127.0.0.1') {
+        return `http://${hostname}:5000${url}`;
+      }
     }
-    return url; // Vite proxy handles it on localhost
+    const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
+    return `${API_BASE}${url}`;
   }
   return url;
 }

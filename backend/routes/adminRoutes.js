@@ -10,7 +10,7 @@ const {
   getAdminSuggestions, updateAdminSuggestion, deleteAdminSuggestion,
   getTeamMembers, addTeamMember, deleteTeamMember,
 } = require('../controllers/adminController');
-const Influencer = require('../models/Influencer');
+const Influencer = require('../models/Creator');
 const Brand = require('../models/Brand');
 const Project = require('../models/Project');
 const HiringApplication = require('../models/HiringApplication');
@@ -72,7 +72,12 @@ router.delete('/team-members/:id', deleteTeamMember);
 // ── Influencers ───────────────────────────────────────────────────
 router.get('/influencers', async (req, res, next) => {
   try {
-    const influencers = await Influencer.find({ deletedAt: null }).sort({ createdAt: -1 });
+    const creators = await Creator.find({ deletedAt: null }).sort({ createdAt: -1 });
+    const influencers = creators.map(c => {
+      const obj = c.toObject ? c.toObject() : { ...c };
+      obj.profileLink = obj.socialLink || obj.profileLink || '';
+      return obj;
+    });
     res.json({ success: true, influencers });
   } catch (e) { next(e); }
 });
@@ -81,18 +86,22 @@ router.post('/influencers', async (req, res, next) => {
   try {
     const { name, profileLink, imageUrl } = req.body;
     if (!name?.trim()) return res.status(400).json({ message: 'Name is required' });
-    const influencer = await Influencer.create({
+    const creator = await Creator.create({
       name: name.trim(),
       profileLink: profileLink || '',
+      socialLink: profileLink || '',
       imageUrl: imageUrl?.trim() || null,
+      backgroundText: 'YBEX'
     });
-    res.status(201).json({ success: true, influencer });
+    const obj = creator.toObject ? creator.toObject() : { ...creator };
+    obj.profileLink = obj.socialLink || obj.profileLink || '';
+    res.status(201).json({ success: true, influencer: obj });
   } catch (e) { next(e); }
 });
 
 router.delete('/influencers/:id', async (req, res, next) => {
   try {
-    const inf = await Influencer.findByIdAndUpdate(
+    const inf = await Creator.findByIdAndUpdate(
       req.params.id,
       { deletedAt: new Date(), deletedBy: req.user._id },
       { new: true }
@@ -266,6 +275,7 @@ router.post('/creators', upload.single('image'), async (req, res, next) => {
       instagramFollowers: instagramFollowers?.trim() || '',
       averageReach: averageReach?.trim() || '',
       socialLink: socialLink?.trim() || '',
+      profileLink: socialLink?.trim() || '',
       backgroundText: backgroundText?.trim() || 'YBEX',
     });
     res.status(201).json({ success: true, creator });
@@ -282,6 +292,7 @@ router.patch('/creators/:id', upload.single('image'), async (req, res, next) => 
       instagramFollowers: instagramFollowers?.trim() ?? existing.instagramFollowers,
       averageReach: averageReach?.trim() ?? existing.averageReach,
       socialLink: socialLink?.trim() ?? existing.socialLink,
+      profileLink: socialLink?.trim() ?? existing.socialLink,
       backgroundText: backgroundText?.trim() ?? existing.backgroundText,
     };
     if (req.file) {

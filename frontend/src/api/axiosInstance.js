@@ -5,9 +5,12 @@ import axios from 'axios';
 // - On mobile/other device (IP access): use same host IP with backend port 5000
 function getBaseURL() {
   const envUrl = import.meta.env.VITE_API_URL;
-  // If accessed via IP address (not localhost), point directly to backend on same IP
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return `http://${window.location.hostname}:5000/api`;
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const isIP = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(hostname);
+    if (isIP && hostname !== '127.0.0.1') {
+      return `http://${hostname}:5000/api`;
+    }
   }
   return envUrl || '/api';
 }

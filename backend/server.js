@@ -65,10 +65,15 @@ app.get('/api/projects', async (req, res) => {
 });
 
 // Public influencers endpoint (no auth required)
-const Influencer = require('./models/Influencer');
+const Creator = require('./models/Creator');
 app.get('/api/influencers', async (req, res) => {
   try {
-    const influencers = await Influencer.find({ deletedAt: null }).sort({ createdAt: -1 });
+    const creators = await Creator.find({ deletedAt: null }).sort({ createdAt: -1 });
+    const influencers = creators.map(c => {
+      const obj = c.toObject ? c.toObject() : { ...c };
+      obj.profileLink = obj.socialLink || obj.profileLink || '';
+      return obj;
+    });
     res.json({ success: true, influencers });
   } catch (e) { res.status(500).json({ message: 'Server error' }); }
 });
@@ -83,7 +88,6 @@ app.get('/api/team-members', async (req, res) => {
 });
 
 // Public creators endpoint (no auth required)
-const Creator = require('./models/Creator');
 app.get('/api/creators', async (req, res) => {
   try {
     const creators = await Creator.find({ deletedAt: null }).sort({ createdAt: -1 });

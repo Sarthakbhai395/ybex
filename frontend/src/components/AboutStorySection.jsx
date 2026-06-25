@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import {
   aboutJoinStrip,
@@ -8,16 +8,20 @@ import {
   aboutTimeline,
 } from '../content/siteData';
 
-// Resolve image URL — handles local /uploads/ paths and external URLs
 function resolveImg(url) {
   if (!url) return null;
+  if (url.startsWith('data:')) return url;
+  if (url.startsWith('http')) return url;
   if (url.startsWith('/uploads/')) {
-    // On localhost: Vite proxies /uploads → backend:5000, so use path directly
-    // On IP access (mobile/LAN): point directly to backend port 5000
-    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      return `http://${window.location.hostname}:5000${url}`;
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      const isIP = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(hostname);
+      if (isIP && hostname !== '127.0.0.1') {
+        return `http://${hostname}:5000${url}`;
+      }
     }
-    return url; // Vite proxy handles it on localhost
+    const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
+    return `${API_BASE}${url}`;
   }
   return url;
 }
@@ -248,17 +252,695 @@ function HiringModal({ onClose }) {
   );
 }
 
+// Default assets in case team members API is empty or down
+const defaultFounders = [
+  {
+    _id: 'default-founder-radhakrishn',
+    name: 'radhakrishn',
+    role: 'CEO',
+    coreTeam: 'Founder',
+    imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80',
+    socialLink: 'https://linkedin.com'
+  },
+  {
+    _id: 'default-founder-sharadh',
+    name: 'Sharadh',
+    role: 'Founder & Director',
+    coreTeam: 'Founder',
+    imageUrl: 'https://wtoixhtepdmnchdrbycr.supabase.co/storage/v1/object/public/ybex-images/img_1772304689425.png',
+    socialLink: 'https://linkedin.com'
+  },
+  {
+    _id: 'default-founder-ravi',
+    name: 'Ravi',
+    role: 'Founder & Director',
+    coreTeam: 'Founder',
+    imageUrl: 'https://wtoixhtepdmnchdrbycr.supabase.co/storage/v1/object/public/ybex-images/img_1773244595138_rh0x98htjph.png',
+    socialLink: 'https://linkedin.com'
+  }
+];
+
+const defaultPowerhouse = [
+  {
+    _id: 'default-powerhouse-sarthak',
+    name: 'sarthak',
+    role: 'full stack dev',
+    coreTeam: 'Powerhouse',
+    imageUrl: 'https://wtoixhtepdmnchdrbycr.supabase.co/storage/v1/object/public/ybex-images/img_1776930737020_c0buf2i84vp.jpeg',
+    socialLink: 'https://github.com'
+  },
+  {
+    _id: 'default-powerhouse-himanshu',
+    name: 'Himanshu',
+    role: 'CTO',
+    coreTeam: 'Powerhouse',
+    imageUrl: 'https://wtoixhtepdmnchdrbycr.supabase.co/storage/v1/object/public/ybex-images/img_1776930484123_p82p9zlpfts.jpeg',
+    socialLink: 'https://github.com'
+  },
+  {
+    _id: 'default-powerhouse-vikas',
+    name: 'Vikas Malik',
+    role: 'CFO',
+    coreTeam: 'Powerhouse',
+    imageUrl: 'https://wtoixhtepdmnchdrbycr.supabase.co/storage/v1/object/public/ybex-images/img_1776930817477_d2yw6nrxxyv.jpeg',
+    socialLink: 'https://linkedin.com'
+  }
+];
+
+// Movie Reel / Creative Powerhouse section removed
+
+// 3D Flip Card Carousel rewritten subcomponent using a Center-Stacked 3D Deck layout with Multi-Card Reveal
+function CoverflowCarousel({ members }) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [revealedIndices, setRevealedIndices] = useState([0]);
+  const [isSectionHovered, setIsSectionHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 960);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Synchronize revealedIndices with activeIdx initially
+  useEffect(() => {
+    if (!isSectionHovered) {
+      setRevealedIndices([activeIdx]);
+    }
+  }, [activeIdx, isSectionHovered]);
+
+  useEffect(() => {
+    if (isSectionHovered) return;
+    const timer = setInterval(() => {
+      setActiveIdx((prev) => (prev + 1) % members.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [isSectionHovered, members.length]);
+
+  const memberStories = {
+    'radhakrishn': "Pioneered YBEX's vision, aligning creator networks with digital strategies to scale brand presence from zero to millions of organic views.",
+    'sharadh': "Spearheads production quality and campaign planning, ensuring every content piece is optimized for engagement and cultural relevance.",
+    'ravi': "Drives business growth and brand partnerships, building the commercial foundation that powers our creators' creative freedom.",
+    'sarthak': "Architects the web platforms and creator tools at YBEX, delivering seamless, high-performance web experiences.",
+    'himanshu': "Maintains overall technology strategy, cloud architectures, and development operations to support high-traffic campaigns.",
+    'vikas malik': "Manages financial strategies and invoice operations, optimizing resource allocation for scale and sustainability."
+  };
+
+  const getStory = (name) => {
+    const key = name.toLowerCase().trim();
+    return memberStories[key] || "Dedicated YBEX creative powerhouse, driving innovation and creator excellence behind the scenes.";
+  };
+
+  const getCardPositionStyle = (index) => {
+    const offset = (index - activeIdx + members.length) % members.length;
+    const isRevealed = revealedIndices.includes(index);
+    const revIndex = revealedIndices.indexOf(index);
+
+    if (isMobile) {
+      if (!isSectionHovered) {
+        // Stacked in the center
+        const zIndex = members.length - offset;
+        const scale = 1 - offset * 0.06;
+        const translateY = offset * 10;
+        const translateZ = -offset * 30;
+        return {
+          left: '50%',
+          x: '-50%',
+          y: `${translateY}px`,
+          scale: scale,
+          zIndex: zIndex,
+          transform: `perspective(1000px) translateZ(${translateZ}px)`,
+          opacity: 1,
+          pointerEvents: offset === 0 ? 'auto' : 'none',
+        };
+      } else {
+        // Vertically split: revealed cards stacked vertically, deck at bottom
+        if (isRevealed) {
+          return {
+            left: '50%',
+            x: '-50%',
+            y: `${revIndex * 400}px`,
+            scale: 1,
+            zIndex: 10 + revIndex,
+            transform: 'perspective(1000px) translateZ(0px)',
+            opacity: 1,
+            pointerEvents: 'auto',
+          };
+        } else {
+          // Cards remaining in the deck
+          const deckOffset = members.filter((_, idx) => !revealedIndices.includes(idx)).indexOf(index);
+          const zIndex = members.length - deckOffset;
+          const scale = 0.8 - deckOffset * 0.06;
+          const translateY = (revealedIndices.length * 400) + deckOffset * 12;
+          const translateZ = -deckOffset * 30;
+          return {
+            left: '50%',
+            x: '-50%',
+            y: `${translateY}px`,
+            scale: scale,
+            zIndex: zIndex,
+            transform: `perspective(1000px) translateZ(${translateZ}px)`,
+            opacity: 0.85,
+            pointerEvents: 'auto',
+          };
+        }
+      }
+    } else {
+      // Desktop positioning
+      if (!isSectionHovered) {
+        // Initially stacked in the center
+        const zIndex = members.length - offset;
+        const scale = 1 - offset * 0.05;
+        const translateY = offset * 8;
+        const translateZ = -offset * 30;
+        const rotate = offset * 2;
+        return {
+          left: '50%',
+          x: '-50%',
+          y: `${translateY}px`,
+          scale: scale,
+          zIndex: zIndex,
+          transform: `perspective(1000px) rotateY(0deg) rotateZ(${rotate}deg) translateZ(${translateZ}px)`,
+          opacity: 1,
+          pointerEvents: offset === 0 ? 'auto' : 'none',
+        };
+      } else {
+        // Split layout: revealed cards slide to left side (spacing side-by-side)
+        if (isRevealed) {
+          return {
+            left: `${5 + revIndex * 31}%`,
+            x: '0%',
+            y: '0px',
+            scale: 0.95,
+            zIndex: 10 + revIndex,
+            transform: 'perspective(1000px) rotateY(0deg) translateZ(0px)',
+            opacity: 1,
+            pointerEvents: 'auto',
+          };
+        } else {
+          // Stacked center deck (sitting on the right side)
+          const deckOffset = members.filter((_, idx) => !revealedIndices.includes(idx)).indexOf(index);
+          const zIndex = members.length - deckOffset;
+          const scale = 0.82 - deckOffset * 0.05;
+          const translateY = deckOffset * 12;
+          const translateZ = -deckOffset * 35;
+          const rotate = (deckOffset + 1) * 3;
+          return {
+            left: '94%',
+            x: '-100%',
+            y: `${translateY}px`,
+            scale: scale,
+            zIndex: zIndex,
+            transform: `perspective(1000px) rotateY(-8deg) rotateZ(${rotate}deg) translateZ(${translateZ}px)`,
+            opacity: 0.8,
+            pointerEvents: 'auto',
+          };
+        }
+      }
+    }
+  };
+
+  const handleContainerLeave = () => {
+    setIsSectionHovered(false);
+    setRevealedIndices([activeIdx]);
+  };
+
+  return (
+    <div
+      className="split-carousel-container"
+      onMouseEnter={() => setIsSectionHovered(true)}
+      onMouseLeave={handleContainerLeave}
+      style={{
+        width: '100%',
+        maxWidth: '1300px',
+        margin: '0 auto',
+        padding: '0 20px 80px',
+        position: 'relative',
+        height: isMobile
+          ? (isSectionHovered ? `${revealedIndices.length * 400 + 380}px` : '520px')
+          : '560px',
+        transition: 'height 0.5s ease',
+      }}
+    >
+      <style>{`
+        .flip-card {
+          position: absolute;
+          perspective: 1000px;
+          width: 320px;
+          height: 440px;
+          transition: left 0.7s cubic-bezier(0.25, 1, 0.5, 1), 
+                      transform 0.7s cubic-bezier(0.25, 1, 0.5, 1), 
+                      opacity 0.7s ease,
+                      scale 0.7s cubic-bezier(0.25, 1, 0.5, 1),
+                      y 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        .flip-card-inner {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          text-align: center;
+          transition: transform 0.8s cubic-bezier(0.2, 0.85, 0.32, 1.2);
+          transform-style: preserve-3d;
+        }
+        
+        .flip-card.can-flip:hover .flip-card-inner {
+          transform: rotateY(180deg);
+        }
+        
+        .flip-card-front, .flip-card-back {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+          border-radius: 28px;
+          overflow: hidden;
+          box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        }
+        
+        .flip-card-front {
+          background: #111111;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .flip-card-front img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        
+        .flip-card-front-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, transparent 45%, rgba(0, 0, 0, 0.9) 100%);
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          align-items: flex-start;
+          padding: 24px;
+          text-align: left;
+        }
+        
+        .flip-card-back {
+          background: rgba(10, 10, 10, 0.95);
+          border: 1px solid rgba(125, 76, 246, 0.35);
+          transform: rotateY(180deg);
+          padding: 35px 25px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          backdrop-filter: blur(25px);
+          -webkit-backdrop-filter: blur(25px);
+          text-align: center;
+        }
+        
+        .flip-card-back-spotlight {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at center, rgba(125, 76, 246, 0.15) 0%, transparent 70%);
+          pointer-events: none;
+        }
+        
+        .story-text-anim {
+          animation: fadeSlideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+          opacity: 0;
+        }
+        
+        @keyframes fadeSlideUp {
+          from {
+            opacity: 0;
+            transform: translateY(15px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @media (max-width: 960px) {
+          .flip-card {
+            width: 280px;
+            height: 360px;
+          }
+        }
+      `}</style>
+
+      {/* Floating Instructions */}
+      <div style={{
+        position: 'absolute',
+        top: '-45px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        fontSize: '0.8rem',
+        letterSpacing: '0.15em',
+        textTransform: 'uppercase',
+        color: isSectionHovered ? '#7d4cf6' : 'rgba(255,255,255,0.4)',
+        fontWeight: 800,
+        transition: 'all 0.3s ease',
+        textAlign: 'center',
+        width: '100%',
+        pointerEvents: 'none',
+        zIndex: 15,
+      }}>
+
+      </div>
+
+      {/* Cards list */}
+      <div style={{ position: 'relative', width: '100%', height: '100%', transformStyle: 'preserve-3d' }}>
+        {members.map((member, i) => {
+          const isRevealed = revealedIndices.includes(i);
+          const posStyle = getCardPositionStyle(i);
+          const canFlip = isRevealed && isSectionHovered;
+
+          return (
+            <div
+              key={member._id || i}
+              className={`flip-card ${canFlip ? 'can-flip' : ''}`}
+              onMouseEnter={() => {
+                if (isSectionHovered && !isRevealed) {
+                  setRevealedIndices(prev => [...prev, i]);
+                  setActiveIdx(i);
+                }
+              }}
+              style={{
+                position: 'absolute',
+                left: posStyle.left,
+                top: '0px',
+                zIndex: posStyle.zIndex,
+                scale: posStyle.scale,
+                opacity: posStyle.opacity,
+                pointerEvents: posStyle.pointerEvents,
+                transform: `${posStyle.x ? `translateX(${posStyle.x})` : ''} ${posStyle.y ? `translateY(${posStyle.y})` : ''} ${posStyle.transform || ''}`,
+                transformStyle: 'preserve-3d',
+              }}
+            >
+              <div className="flip-card-inner">
+                {/* Front Side */}
+                <div className="flip-card-front">
+                  <img
+                    src={resolveImg(member.imageUrl)}
+                    alt={member.name}
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80';
+                    }}
+                  />
+                  <div className="flip-card-front-overlay">
+                    <span style={{ fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#7d4cf6', fontWeight: 800, marginBottom: '6px' }}>
+                      {member.role || member.coreTeam}
+                    </span>
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#fff', margin: 0, textTransform: 'uppercase', letterSpacing: '-0.01em' }}>
+                      {member.name}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Back Side (Contribution story - active card only) */}
+                <div className="flip-card-back">
+                  <div className="flip-card-back-spotlight" />
+                  <div style={{ position: 'relative', zIndex: 2 }}>
+                    <span style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#7d4cf6', fontWeight: 800, display: 'block', marginBottom: '15px' }}>
+                      CONTRIBUTION STORY
+                    </span>
+                    <h4 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#fff', margin: '0 0 15px', textTransform: 'uppercase' }}>
+                      {member.name}
+                    </h4>
+                    <p
+                      key={i}
+                      className="story-text-anim"
+                      style={{ fontSize: '0.85rem', color: '#b5b0a3', lineHeight: '1.6', margin: 0, fontWeight: 500 }}
+                    >
+                      {getStory(member.name)}
+                    </p>
+                    {member.socialLink && (
+                      <a
+                        href={member.socialLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          marginTop: '20px',
+                          fontSize: '0.75rem',
+                          color: '#7d4cf6',
+                          fontWeight: 700,
+                          textDecoration: 'none',
+                          borderBottom: '1px solid rgba(125,76,246,0.3)',
+                          paddingBottom: '2px',
+                        }}
+                      >
+                        LINKEDIN PROFILE ↗
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Trust Banner — cycles between "THEY TRUST US" label and brand logo marquee ──
+// Phase 0 (3s): yellow label visible, logos hidden
+// Transition: label slides out to left, logos slide in from right
+// Phase 1 (10s): logos scrolling, label hidden
+// Transition: logos slide out to left, label slides in from right
+// Repeat
+function TrustBanner({ brands }) {
+  const [showLabel, setShowLabel] = useState(true);
+
+  useEffect(() => {
+    let timeout;
+    if (showLabel) {
+      // Show label for 3s then switch to logos
+      timeout = setTimeout(() => setShowLabel(false), 3000);
+    } else {
+      // Show logos for 10s then switch back to label
+      timeout = setTimeout(() => setShowLabel(true), 10000);
+    }
+    return () => clearTimeout(timeout);
+  }, [showLabel]);
+
+  return (
+    <div className="trust-marquee-container">
+      <AnimatePresence mode="wait" initial={false}>
+        {showLabel ? (
+          /* ── Yellow "THEY TRUST US" label ── */
+          <motion.div
+            key="label"
+            className="trust-static-label"
+            initial={{ x: '100%', opacity: 0 }}
+            animate={{ x: '0%', opacity: 1 }}
+            exit={{ x: '-100%', opacity: 0 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          >
+            THEY TRUST US
+          </motion.div>
+        ) : (
+          /* ── Scrolling brand logos ── */
+          <motion.div
+            key="logos"
+            className="trust-marquee-track-container"
+            initial={{ x: '100%', opacity: 0 }}
+            animate={{ x: '0%', opacity: 1 }}
+            exit={{ x: '-100%', opacity: 0 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="trust-marquee-track">
+              {brands.map((brand, idx) => (
+                <MarqueeBrandItem key={idx} brand={brand} itemClass="trust-marquee-item" />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function MarqueeBrandItem({ brand, itemClass }) {
+  const [failed, setFailed] = useState(false);
+  const resolvedSrc = resolveImg(brand.logoUrl);
+
+  return (
+    <span className={itemClass}>
+      {brand.logoUrl && !failed ? (
+        <img
+          src={resolvedSrc}
+          alt={brand.name}
+          onError={() => {
+            console.error("AboutStorySection: Logo failed to load:", brand.name, resolvedSrc ? resolvedSrc.slice(0, 100) + '...' : 'null');
+            setFailed(true);
+          }}
+        />
+      ) : (
+        <span className="fallback-logo-text">{brand.name}</span>
+      )}
+    </span>
+  );
+}
+
 export default function AboutStorySection() {
   const [viewCount, setViewCount] = useState(47804210);
   const [showHiringModal, setShowHiringModal] = useState(false);
   const [teamMembers, setTeamMembers] = useState([]);
   const [teamLoading, setTeamLoading] = useState(true);
-  const [activeNode, setActiveNode] = useState(null);
+  const [brands, setBrands] = useState([]);
+  const [brandsLoading, setBrandsLoading] = useState(true);
+  const [sliderIndex, setSliderIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const sliderIndexRef = useRef(0);
+  const transitionTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    sliderIndexRef.current = sliderIndex;
+  }, [sliderIndex]);
+
+  const changeSlide = (newIndex) => {
+    if (transitionTimeoutRef.current) clearTimeout(transitionTimeoutRef.current);
+    setIsTransitioning(true);
+    setSliderIndex(newIndex);
+    transitionTimeoutRef.current = setTimeout(() => {
+      setIsTransitioning(false);
+    }, 600);
+  };
+
+  const heroSectionRef = useRef(null);
+  const [hoveredHero, setHoveredHero] = useState(false);
+  const lastScrollTime = useRef(0);
+
+  // 1. Auto-scroll hero slider every 5 seconds (paused on hover)
+  useEffect(() => {
+    if (hoveredHero) return;
+    const interval = setInterval(() => {
+      changeSlide((sliderIndexRef.current + 1) % 3);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [hoveredHero]);
+
+  // 2. Scroll-jacking logic
+  useEffect(() => {
+    const sectionEl = heroSectionRef.current;
+    if (!sectionEl) return;
+
+    const handleWheel = (e) => {
+      const rect = sectionEl.getBoundingClientRect();
+      const isHeroActive = rect.top >= -80 && rect.top <= 80;
+      if (!isHeroActive) return;
+
+      const now = Date.now();
+      const isScrollingDown = e.deltaY > 0;
+      const currentIndex = sliderIndexRef.current;
+
+      if (now - lastScrollTime.current < 900) {
+        if (isScrollingDown && currentIndex < 2) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        } else if (!isScrollingDown && currentIndex > 0) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+        return;
+      }
+
+      if (isScrollingDown) {
+        if (currentIndex < 2) {
+          e.preventDefault();
+          changeSlide(currentIndex + 1);
+          lastScrollTime.current = now;
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+      } else {
+        if (currentIndex > 0) {
+          e.preventDefault();
+          changeSlide(currentIndex - 1);
+          lastScrollTime.current = now;
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+      }
+    };
+
+    let touchStartY = 0;
+    const handleTouchStart = (e) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e) => {
+      const rect = sectionEl.getBoundingClientRect();
+      const isHeroActive = rect.top >= -80 && rect.top <= 80;
+      if (!isHeroActive) return;
+
+      const touchEndY = e.touches[0].clientY;
+      const diffY = touchStartY - touchEndY;
+      const now = Date.now();
+      const currentIndex = sliderIndexRef.current;
+
+      if (Math.abs(diffY) > 30) {
+        const isSwipingDown = diffY > 0;
+
+        if (now - lastScrollTime.current < 900) {
+          if (isSwipingDown && currentIndex < 2) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'instant' });
+          } else if (!isSwipingDown && currentIndex > 0) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'instant' });
+          }
+          return;
+        }
+
+        if (isSwipingDown) {
+          if (currentIndex < 2) {
+            e.preventDefault();
+            changeSlide(currentIndex + 1);
+            lastScrollTime.current = now;
+            window.scrollTo({ top: 0, behavior: 'instant' });
+          }
+        } else {
+          if (currentIndex > 0) {
+            e.preventDefault();
+            changeSlide(currentIndex - 1);
+            lastScrollTime.current = now;
+            window.scrollTo({ top: 0, behavior: 'instant' });
+          }
+        }
+      }
+    };
+
+    sectionEl.addEventListener('wheel', handleWheel, { passive: false });
+    sectionEl.addEventListener('touchstart', handleTouchStart, { passive: true });
+    sectionEl.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    return () => {
+      sectionEl.removeEventListener('wheel', handleWheel);
+      sectionEl.removeEventListener('touchstart', handleTouchStart);
+      sectionEl.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, []);
+
+  // 2b. Strict scroll guard to lock scrollY to 0
+  useEffect(() => {
+    const handleScrollLock = () => {
+      if (sliderIndexRef.current < 2 && window.scrollY > 0 && window.scrollY < window.innerHeight * 0.4) {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    };
+    window.addEventListener('scroll', handleScrollLock, { passive: true });
+    return () => window.removeEventListener('scroll', handleScrollLock);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setViewCount(prev => prev + 1);
-    }, 3000);
+      setViewCount(prev => prev + Math.floor(Math.random() * 3) + 1);
+    }, 2500);
     return () => clearInterval(interval);
   }, []);
 
@@ -269,711 +951,1261 @@ export default function AboutStorySection() {
       .finally(() => setTeamLoading(false));
   }, []);
 
+  useEffect(() => {
+    console.log("AboutStorySection: Fetching brands...");
+    axiosInstance.get('/brands')
+      .then((res) => {
+        console.log("AboutStorySection: Fetch brands success response:", res.data);
+        const fetchedBrands = res.data.data || res.data.brands || [];
+        console.log("AboutStorySection: Setting brands array of length:", fetchedBrands.length);
+        setBrands(fetchedBrands);
+      })
+      .catch((err) => {
+        console.error("AboutStorySection: Failed to fetch brands", err);
+        setBrands([]);
+      })
+      .finally(() => setBrandsLoading(false));
+  }, []);
+
   const formatNumber = (num) => num.toLocaleString();
 
-  // Split by category
+  // Split by category and merge default/database lists
   const founders = teamMembers.filter((m) => m.coreTeam === 'Founder');
   const powerhouse = teamMembers.filter((m) => m.coreTeam !== 'Founder');
+
+  const displayFounders = founders.length > 0
+    ? [
+      ...founders.filter(f => !['radhakrishn', 'sharadh', 'ravi'].includes(f.name.toLowerCase())),
+      ...defaultFounders.map(df => {
+        const match = founders.find(f => f.name.toLowerCase() === df.name.toLowerCase());
+        return match ? { ...df, ...match } : df;
+      })
+    ]
+    : defaultFounders;
+
+  const displayPowerhouse = powerhouse.length > 0
+    ? [
+      ...powerhouse.filter(p => !['sarthak', 'himanshu', 'vikas malik'].includes(p.name.toLowerCase())),
+      ...defaultPowerhouse.map(dp => {
+        const match = powerhouse.find(p => p.name.toLowerCase() === dp.name.toLowerCase());
+        return match ? { ...dp, ...match } : dp;
+      })
+    ]
+    : defaultPowerhouse;
+
+  // 3D tilt handlers for Growth cards
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -6; // safe subtle rotation
+    const rotateY = ((x - centerX) / centerX) * 6;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+  };
+
+  const handleMouseLeave = (e) => {
+    const card = e.currentTarget;
+    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    card.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+  };
+
+  const handleMouseEnter = (e) => {
+    const card = e.currentTarget;
+    card.style.transition = 'none';
+  };
+
+  const nextSlider = () => {
+    changeSlide((sliderIndexRef.current + 1) % 3);
+  };
+
+  const prevSlider = () => {
+    changeSlide((sliderIndexRef.current - 1 + 3) % 3);
+  };
+
+  // Build card offset parameters dynamically
+  const getCardStyles = (index) => {
+    const diff = (index - sliderIndex + 3) % 3;
+    if (diff === 0) {
+      return {
+        x: '0%',
+        scale: 1,
+        zIndex: 3,
+        rotateY: 0,
+        filter: 'blur(0px)',
+        opacity: 1,
+        pointerEvents: 'auto',
+      };
+    } else if (diff === 1) {
+      return {
+        x: '15%',
+        scale: 0.76,
+        zIndex: 2,
+        rotateY: -8,
+        filter: 'blur(2px)',
+        opacity: 0.75,
+        pointerEvents: 'none',
+      };
+    } else if (diff === 2) {
+      return {
+        x: '30%',
+        scale: 0.58,
+        zIndex: 1,
+        rotateY: -16,
+        filter: 'blur(4px)',
+        opacity: 0.5,
+        pointerEvents: 'none',
+      };
+    }
+    return {
+      x: '100%',
+      scale: 0.4,
+      zIndex: 0,
+      rotateY: -30,
+      filter: 'blur(12px)',
+      opacity: 0,
+      pointerEvents: 'none',
+    };
+  };
+
+  // Re-generate list for marquee scrolling using fetched brands and high-quality fallbacks
+  const fallbackBrands = [
+    { name: 'Bingo', logoUrl: '' },
+    { name: 'Stage', logoUrl: '' },
+    { name: 'Colors Rishtey', logoUrl: '' },
+    { name: 'Ryze', logoUrl: '' },
+    { name: 'Mi', logoUrl: '' },
+    { name: 'Colgate', logoUrl: '' },
+    { name: 'Oppo', logoUrl: '' },
+    { name: 'Amazon MX', logoUrl: '' },
+    { name: 'Wild Stone', logoUrl: '' },
+    { name: 'TVS', logoUrl: '' },
+    { name: 'Traya', logoUrl: '' }
+  ];
+
+  const displayBrandsList = brands && brands.length > 0 ? brands : fallbackBrands;
+
+  const marqueeBrands = [];
+  for (let i = 0; i < 6; i++) {
+    marqueeBrands.push(...displayBrandsList);
+  }
 
   return (
     <>
       <style>{`
-        /* Montserrat override for about page */
-        .about-page-premium,
-        .about-page-premium *,
-        .about-story-journey,
-        .about-story-journey *,
-        .about-new-chapter-section,
-        .about-new-chapter-section *,
-        .about-team-premium,
-        .about-team-premium * {
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
+
+        .about-page-premium {
+          background-color: #000000 !important;
+          color: #ffffff;
+          font-family: 'Montserrat', sans-serif !important;
+          overflow-x: hidden;
+          min-height: 100vh;
+          position: relative;
+        }
+
+        .about-page-premium * {
+          box-sizing: border-box;
           font-family: 'Montserrat', sans-serif !important;
         }
 
-        .about-story-hero {
-          position: relative !important;
-          overflow: hidden !important;
-        }
-
-        .about-story-hero,
-        .about-story-hero * {
-          font-family: 'Inter', sans-serif !important;
-        }
-
-        .about-hero-shell {
-          position: relative !important;
-          z-index: 2 !important;
-        }
-
-        .about-story-title {
-          letter-spacing: 0.02em !important;
-          word-spacing: 0.12em !important;
-        }
-
-        .about-hero-spotlight {
-          position: absolute !important;
-          top: 50% !important;
-          left: 50% !important;
-          transform: translate(-50%, -50%) !important;
-          width: 600px !important;
-          height: 600px !important;
-          background: radial-gradient(circle, rgba(228, 241, 65, 0.15) 0%, rgba(228, 241, 65, 0.03) 55%, transparent 75%) !important;
-          pointer-events: none !important;
-          z-index: 1 !important;
-          filter: blur(50px) !important;
-          animation: about-spotlight-pulse 6s infinite ease-in-out !important;
-        }
-
-        @keyframes about-spotlight-pulse {
-          0%, 100% {
-            opacity: 0.25;
-            transform: translate(-50%, -50%) scale(0.9) !important;
-          }
-          50% {
-            opacity: 0.55;
-            transform: translate(-50%, -50%) scale(1.1) !important;
-          }
-        }
-
-        .views-counter-container {
-          display: flex !important;
-          flex-direction: row !important;
-          flex-wrap: nowrap !important;
-          align-items: center;
-          justify-content: center;
-          gap: 0.22em;
-          line-height: 0.95;
-          width: 100% !important;
-        }
-
-        .views-counter-char {
-          display: inline-block !important;
-          white-space: nowrap !important;
-        }
-
-        .about-big-stat p {
-          max-width: none !important;
-          display: flex !important;
-          flex-direction: column;
-          align-items: center;
-          gap: 8px;
-          margin-top: 1.2rem;
-        }
-
-        .big-stat-main-label {
-          color: #e4f141 !important;
-          opacity: 0.72;
-          font-size: 0.72rem !important;
-          font-weight: 800 !important;
-          text-transform: uppercase;
-          letter-spacing: 0.22em !important;
-          word-spacing: 0.15em !important;
-          margin: 0;
-          display: block;
-        }
-
-        .big-stat-sub-label {
-          color: rgba(255, 255, 255, 0.35) !important;
-          font-size: 0.95rem !important;
-          font-weight: 900 !important;
-          font-style: italic !important;
-          text-transform: uppercase;
-          letter-spacing: 0.38em !important;
-          word-spacing: 0.2em !important;
-          margin: 0;
-          display: block;
-        }
-        
-        .about-page-premium p,
-        .about-page-premium span,
-        .about-page-premium div,
-        .about-page-premium li,
-        .about-page-premium label,
-        .about-page-premium input,
-        .about-page-premium select,
-        .about-page-premium textarea,
-        .about-page-premium a {
-          font-weight: 700 !important;
-        }
-
-        .about-page-premium h1,
-        .about-page-premium h2,
-        .about-page-premium h3,
-        .about-page-premium strong {
-          font-weight: 900 !important;
-        }
-
-        /* How it Started - Simultaneous Hover Effect */
-        .about-pill-image:hover {
-          transform: none !important;
-          filter: grayscale(1) brightness(0.78) !important;
-        }
-        .about-timeline-media:hover .about-pill-image {
-          transform: translateY(-8px) scale(1.02) !important;
-          filter: grayscale(0.15) brightness(0.96) !important;
-        }
-
-        /* A New Chapter Circle Track layout styling */
-        .about-new-chapter-section {
-          padding: 5rem 0 6rem;
-          background-color: #000;
-          position: relative;
-          overflow: hidden;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .new-chapter-wrapper {
-          display: grid;
-          grid-template-columns: 1fr 1.5fr;
-          gap: clamp(2rem, 5vw, 5rem);
-          align-items: center;
-          max-width: 1160px;
-          margin: 0 auto;
-        }
-        
-        .new-chapter-visuals {
-          position: relative;
-          width: 440px;
-          height: 440px;
-          margin: 0 0 0 auto;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        
-        .main-office-circle {
-          width: 320px;
-          height: 320px;
-          border-radius: 50%;
-          overflow: hidden;
-          border: 4px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 0 35px rgba(228, 241, 65, 0.15);
-          position: relative;
-          z-index: 2;
-          transition: transform 0.5s ease, border-color 0.5s ease;
-        }
-        
-        .main-office-circle img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        
-        .main-office-circle:hover {
-          transform: scale(1.02);
-          border-color: rgba(228, 241, 65, 0.45);
-        }
-        
-        /* Full circular track ring */
-        .track-arc-line {
+        /* Ambient Glowing 3D Backdrop Orbs */
+        .bg-glow-orb {
           position: absolute;
-          width: 380px;
-          height: 380px;
           border-radius: 50%;
-          border: 2.5px solid rgba(228, 241, 65, 0.45);
+          filter: blur(140px);
           pointer-events: none;
           z-index: 1;
-          opacity: 0.85;
-          filter: drop-shadow(0 0 8px rgba(228, 241, 65, 0.4));
-          transition: border-color 0.3s ease;
+          opacity: 0.45;
         }
-        
-        /* Wrappers for orbit nodes + labels */
-        .track-node-wrapper {
-          position: absolute;
-          width: 90px;
-          height: 90px;
-          z-index: 3;
+
+        .orb-1 {
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(228, 241, 65, 0.1) 0%, transparent 70%);
+          top: 5%;
+          left: -150px;
+          animation: orb-drift 18s infinite ease-in-out alternate;
         }
-        
-        .track-node {
+
+        .orb-2 {
+          width: 700px;
+          height: 700px;
+          background: radial-gradient(circle, rgba(228, 241, 65, 0.07) 0%, transparent 70%);
+          top: 35%;
+          right: -200px;
+          animation: orb-drift-reverse 24s infinite ease-in-out alternate;
+        }
+
+        .orb-3 {
+          width: 650px;
+          height: 650px;
+          background: radial-gradient(circle, rgba(228, 241, 65, 0.09) 0%, transparent 70%);
+          bottom: 25%;
+          left: 5%;
+          animation: orb-drift 20s infinite ease-in-out alternate;
+        }
+
+        .orb-4 {
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(228, 241, 65, 0.06) 0%, transparent 70%);
+          bottom: 2%;
+          right: 10%;
+          animation: orb-drift-reverse 22s infinite ease-in-out alternate;
+        }
+
+        @keyframes orb-drift {
+          0% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(80px, 50px) scale(1.15); }
+          100% { transform: translate(-50px, -60px) scale(0.9); }
+        }
+
+        @keyframes orb-drift-reverse {
+          0% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-80px, -50px) scale(0.9); }
+          100% { transform: translate(50px, 60px) scale(1.15); }
+        }
+
+        /* Hero styles */
+        .about-hero-slider-section {
+          padding: 100px 0 120px;
+          background-color: #000000;
+          overflow: visible;
+          position: relative;
+          z-index: 2;
+        }
+
+        .about-hero-header {
+          text-align: center;
+          margin-bottom: 60px;
+          padding: 0 20px;
+        }
+
+        .about-hero-eyebrow {
+          font-size: 0.85rem;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: #E4F141;
+          font-weight: 800;
+          margin-bottom: 16px;
+        }
+
+        .about-hero-title {
+          font-size: 4.8rem;
+          font-weight: 900 !important;
+          line-height: 1.05;
+          text-transform: uppercase;
+          letter-spacing: -0.03em;
+          color: #ffffff;
+          margin: 0 auto 24px;
+          max-width: 950px;
+        }
+
+        .about-hero-sub {
+          font-size: 1.15rem;
+          color: #b5b0a3;
+          max-width: 650px;
+          margin: 0 auto;
+          line-height: 1.6;
+          font-weight: 500 !important;
+        }
+
+        .slider-container {
+          display: grid;
+          grid-template-columns: 1.15fr 0.85fr;
+          gap: 70px;
+          align-items: center;
+          min-height: 520px;
+          position: relative;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+
+        .slider-left {
+          position: relative;
+          height: 500px;
+          width: 100%;
+        }
+
+        .slider-deck {
+          position: relative;
           width: 100%;
           height: 100%;
-          border-radius: 50%;
-          overflow: hidden;
-          border: 3.5px solid rgba(255, 255, 255, 0.85);
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-          cursor: pointer;
-          transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.35s ease, box-shadow 0.35s ease;
+          transform-style: preserve-3d;
+          perspective: 1200px;
         }
-        
-        .track-node img {
+
+        .slider-card {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 76%;
+          height: 100%;
+          border-radius: 28px;
+          overflow: hidden;
+          box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+          border: 1px solid rgba(255,255,255,0.06);
+          transform-origin: center right;
+          transition: filter 0.5s ease, opacity 0.5s ease;
+        }
+
+        .slider-card-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
-        
-        .track-node-wrapper:hover .track-node,
-        .track-node-wrapper.wrapper-active .track-node {
-          transform: scale(1.18);
-          border-color: #e4f141 !important;
-          box-shadow: 0 0 25px rgba(228, 241, 65, 0.8), 0 8px 30px rgba(0,0,0,0.6) !important;
-        }
-        
-        .node-top-wrapper {
-          top: 25px;
-          left: 20px;
-        }
-        
-        .node-middle-wrapper {
-          top: 175px;
-          left: -30px;
-        }
-        
-        .node-bottom-wrapper {
-          bottom: 25px;
-          left: 20px;
-        }
-        
-        /* Floating premium label card next to the node */
-        .orbit-text-label {
+
+        .slider-card-overlay {
           position: absolute;
-          right: 115%;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 200px;
-          text-align: right;
-          pointer-events: none;
-          opacity: 0.85;
-          transition: opacity 0.3s ease, transform 0.3s ease;
-          background: rgba(8, 8, 8, 0.75);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          padding: 8px 12px;
-          border-radius: 12px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-        
-        .orbit-text-label h3 {
-          font-family: 'Montserrat', sans-serif;
-          font-size: 0.92rem;
-          font-weight: 800;
-          color: #ffffff;
-          margin: 0 0 3px 0;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-          transition: color 0.3s ease;
-        }
-        
-        .orbit-text-label p {
-          font-family: 'Montserrat', sans-serif;
-          font-size: 0.75rem;
-          color: rgba(255, 255, 255, 0.5);
-          margin: 0;
-          line-height: 1.35;
-          font-weight: 500 !important;
-        }
-        
-        .track-node-wrapper:hover .orbit-text-label h3,
-        .track-node-wrapper.wrapper-active .orbit-text-label h3 {
-          color: #e4f141;
-        }
-        
-        .track-node-wrapper:hover .orbit-text-label,
-        .track-node-wrapper.wrapper-active .orbit-text-label {
-          opacity: 1;
-          transform: translateY(-50%) translateX(-4px);
-        }
-        
-        /* Details side */
-        .new-chapter-details {
+          inset: 0;
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%);
+          padding: 40px;
           display: flex;
           flex-direction: column;
+          justify-content: flex-end;
+        }
+
+        .card-arrow-btn {
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.15);
+          border: 1px solid rgba(255,255,255,0.25);
+          backdrop-filter: blur(8px);
+          display: flex;
+          align-items: center;
           justify-content: center;
+          color: #ffffff;
+          font-size: 1.5rem;
+          margin-bottom: 24px;
+          cursor: pointer;
+          transition: all 0.3s ease;
         }
-        
-        .new-chapter-header-copy {
-          margin-bottom: 0;
-        }
-        
-        .new-chapter-header-copy h2 {
-          font-size: clamp(2rem, 5vw, 3.8rem);
+
+        .card-phase {
+          font-size: 0.8rem;
+          letter-spacing: 0.15em;
           text-transform: uppercase;
-          margin: 0.5rem 0 1rem;
-          line-height: 0.94;
-          letter-spacing: -0.04em;
+          color: #E4F141;
+          font-weight: 800;
+          margin-bottom: 8px;
         }
-        
-        .new-chapter-header-copy .main-desc {
-          color: rgba(255, 255, 255, 0.6);
+
+        .card-title {
+          font-size: 2.8rem;
+          font-weight: 900 !important;
+          text-transform: uppercase;
+          color: #ffffff;
+          margin: 0;
+          line-height: 1.1;
+          letter-spacing: -0.01em;
+        }
+
+        .slider-controls {
+          position: absolute;
+          left: -40px;
+          right: -40px;
+          top: 50%;
+          transform: translateY(-50%);
+          display: flex;
+          justify-content: space-between;
+          z-index: 100;
+          pointer-events: none;
+        }
+
+        .slider-arrow-btn {
+          pointer-events: auto;
+          width: 52px;
+          height: 52px;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.75);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(12px);
+          color: #ffffff;
+          font-size: 1.2rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
+
+        .slider-arrow-btn:hover {
+          background: #ffffff;
+          color: #000000;
+          border-color: #ffffff;
+          transform: scale(1.05);
+        }
+
+        .slider-footer-bar {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-top: 80px;
+          border-top: 1px solid rgba(255,255,255,0.08);
+          padding-top: 40px;
+          max-width: 1200px;
+          margin-left: auto;
+          margin-right: auto;
+          padding-left: 20px;
+          padding-right: 20px;
+        }
+
+        .slider-footer-left {
+          max-width: 380px;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+        }
+
+        .sparkle-icon {
+          width: 38px;
+          height: 38px;
+          fill: #E4F141;
+          animation: sparkle-pulse 4s infinite ease-in-out;
+        }
+
+        @keyframes sparkle-pulse {
+          0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+          50% { transform: scale(1.2) rotate(45deg); opacity: 1; }
+        }
+
+        .slider-footer-desc {
+          font-size: 0.95rem;
+          color: #b5b0a3;
+          line-height: 1.65;
+          font-weight: 500 !important;
+        }
+
+        .slider-footer-pills {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          max-width: 650px;
+          justify-content: flex-end;
+        }
+
+        .pill-btn {
+          padding: 14px 28px;
+          border-radius: 30px;
+          border: 1px solid rgba(255,255,255,0.15);
+          background: transparent;
+          color: #ffffff;
+          font-size: 0.9rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .pill-btn:hover {
+          border-color: #ffffff;
+          transform: translateY(-2px);
+        }
+
+        .pill-btn.active {
+          background: #ffffff;
+          color: #000000;
+          border-color: #ffffff;
+        }
+
+        /* Growth Section styles */
+        .about-growth-section {
+          padding: 120px 0;
+          background-color: #000000;
+          border-top: 1px solid rgba(255,255,255,0.05);
+          position: relative;
+          z-index: 2;
+        }
+
+        .growth-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+
+        .growth-header {
+          display: grid;
+          grid-template-columns: 1.4fr 1fr;
+          gap: 40px;
+          align-items: flex-end;
+          margin-bottom: 60px;
+        }
+
+        .growth-title-group {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .growth-title-outline {
+          font-size: 5rem;
+          font-weight: 900 !important;
+          text-transform: uppercase;
+          color: transparent;
+          -webkit-text-stroke: 1px rgba(255,255,255,0.6);
+          letter-spacing: -0.02em;
+          line-height: 0.95;
+        }
+
+        .growth-title-solid {
+          font-size: 5rem;
+          font-weight: 900 !important;
+          text-transform: uppercase;
+          color: #ffffff;
+          letter-spacing: -0.02em;
+          line-height: 0.95;
+        }
+
+        .growth-header-desc {
           font-size: 1.05rem;
-          line-height: 1.6;
-          max-width: 480px;
-          font-style: italic;
+          color: #b5b0a3;
+          line-height: 1.65;
+          font-weight: 500 !important;
         }
-        
+
+        .growth-grid {
+          display: grid;
+          grid-template-columns: 1fr 1.25fr;
+          gap: 32px;
+        }
+
+        .tilt-card {
+          border-radius: 28px;
+          overflow: hidden;
+          transition: box-shadow 0.4s ease, border-color 0.4s ease;
+          transform-style: preserve-3d;
+          box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tilt-card:hover {
+          box-shadow: 0 30px 60px rgba(125, 76, 246, 0.18), 0 0 30px rgba(125, 76, 246, 0.06);
+          border-color: rgba(125, 76, 246, 0.3) !important;
+        }
+
+        .left-growth-card {
+          height: 520px;
+          background: linear-gradient(135deg, #181512 0%, #0f0d0b 100%);
+          border: 1px solid rgba(255,255,255,0.06);
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          padding: 40px;
+        }
+
+        .left-growth-card-img {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0.45;
+          mix-blend-mode: luminosity;
+          transition: opacity 0.4s ease;
+        }
+
+        .left-growth-card:hover .left-growth-card-img {
+          opacity: 0.65;
+        }
+
+        .left-growth-card-content {
+          position: relative;
+          z-index: 2;
+          transform: translateZ(30px);
+        }
+
+        .growth-badge {
+          display: inline-block;
+          padding: 6px 14px;
+          border-radius: 20px;
+          background: rgba(255,255,255,0.08);
+          border: 1px solid rgba(255,255,255,0.15);
+          color: #ffffff;
+          font-size: 0.72rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          margin-bottom: 16px;
+        }
+
+        .left-growth-card-title {
+          font-size: 2.3rem;
+          font-weight: 900 !important;
+          color: #ffffff;
+          margin: 0;
+          text-transform: uppercase;
+          line-height: 1.1;
+        }
+
+        .right-growth-stack {
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+        }
+
+        .right-growth-top-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 32px;
+        }
+
+        .stat-card {
+          height: 240px;
+          background: rgba(255, 255, 255, 0.03);
+          color: #ffffff;
+          padding: 36px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+
+        .stat-card-badge {
+          font-size: 0.72rem;
+          font-weight: 800;
+          color: rgba(255, 255, 255, 0.4);
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+        }
+
+        .stat-card-number {
+          font-size: 3.8rem;
+          font-weight: 900 !important;
+          line-height: 1;
+          color: #ffffff;
+          margin: 12px 0;
+          letter-spacing: -0.02em;
+        }
+
+        .stat-card-desc {
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.6);
+          font-weight: 700;
+          line-height: 1.4;
+          margin: 0;
+        }
+
+        .marquee-card {
+          height: 248px;
+          background: rgba(255, 255, 255, 0.03);
+          color: #ffffff;
+          padding: 30px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          position: relative;
+          overflow: hidden;
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+
+        .marquee-card-header {
+          font-size: 0.72rem;
+          font-weight: 800;
+          color: rgba(255, 255, 255, 0.4);
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          margin-bottom: 20px;
+          position: relative;
+          z-index: 5;
+        }
+
+        .marquee-container {
+          width: 100%;
+          overflow: hidden;
+          position: relative;
+          white-space: nowrap;
+          padding: 10px 0;
+          z-index: 2;
+        }
+
+        .marquee-track {
+          display: inline-flex;
+          gap: 50px;
+          animation: marquee-scroll 35s linear infinite;
+        }
+
+        .marquee-item {
+          font-size: 1.6rem;
+          font-weight: 900 !important;
+          color: #ffffff;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .marquee-item img {
+          height: 35px;
+          width: auto;
+          max-width: 120px;
+          object-fit: contain;
+          opacity: 0.95;
+          border-radius: 4px;
+        }
+
+        .marquee-track {
+          display: inline-flex;
+          gap: 50px;
+          animation: marquee-scroll 80s linear infinite; /* slowed down marquee */
+        }
+
+        @keyframes marquee-scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+
+        /* THEY TRUST US — fade-cycle banner */
+        .trust-marquee-container {
+          position: relative;
+          height: 80px;
+          background: #000000;
+          border-top: 1px solid rgba(255,255,255,0.08);
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          overflow: hidden;
+          z-index: 10;
+          width: 100%;
+        }
+
+        /* The yellow "THEY TRUST US" label — full width, centered */
+        .trust-static-label {
+          position: absolute;
+          inset: 0;
+          background: #E4F141;
+          color: #000000;
+          font-weight: 900;
+          font-size: 1.15rem;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          white-space: nowrap;
+          z-index: 20;
+          pointer-events: none;
+        }
+
+        /* The logos strip — full width, sits behind label when hidden */
+        .trust-marquee-track-container {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          z-index: 10;
+          background: #000;
+        }
+
+        .trust-marquee-track {
+          display: inline-flex;
+          align-items: center;
+          gap: 60px;
+          white-space: nowrap;
+          animation: trust-marquee-scroll 40s linear infinite;
+          padding-left: 60px;
+        }
+
+        .trust-marquee-item {
+          display: inline-flex;
+          align-items: center;
+          flex-shrink: 0;
+        }
+
+        .trust-marquee-item img {
+          height: 40px;
+          width: auto;
+          max-width: 130px;
+          object-fit: contain;
+          opacity: 0.92;
+          border-radius: 4px;
+          filter: brightness(0.9) contrast(1.05);
+        }
+
+        .fallback-logo-text {
+          font-size: 1rem;
+          font-weight: 800;
+          color: rgba(255,255,255,0.7);
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
+          padding: 5px 12px;
+          border-radius: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        @keyframes trust-marquee-scroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+
+        /* Team coverflow styles */
+        .about-team-section {
+          padding: 120px 0;
+          background-color: #000000;
+          border-top: 1px solid rgba(255,255,255,0.05);
+          position: relative;
+          z-index: 2;
+        }
+
+        .team-heading-container {
+          text-align: center;
+          margin-bottom: 60px;
+          padding: 0 20px;
+        }
+
+        .team-section-title {
+          font-size: 4rem;
+          font-weight: 900 !important;
+          text-transform: uppercase;
+          letter-spacing: -0.02em;
+          color: #ffffff;
+          margin: 0 0 12px 0;
+        }
+
+        .team-section-subtitle {
+          font-size: 1.1rem;
+          color: #E4F141;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          font-weight: 800;
+          margin: 0;
+        }
+
+        .coverflow-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+          width: 100%;
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 40px 0;
+          overflow: visible;
+        }
+
+        .coverflow-track {
+          position: relative;
+          height: 440px;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          perspective: 1200px;
+          transform-style: preserve-3d;
+          margin-bottom: 24px;
+        }
+
+        .coverflow-overlay {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.4) 70%, transparent 100%);
+          padding: 30px 24px 24px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          border-top: 1px solid rgba(255,255,255,0.05);
+          height: 140px;
+        }
+
+        .coverflow-name {
+          font-size: 1.6rem;
+          font-weight: 900 !important;
+          color: #ffffff;
+          margin: 0 0 4px 0;
+          text-transform: uppercase;
+          letter-spacing: -0.01em;
+        }
+
+        .coverflow-role {
+          font-size: 0.85rem;
+          color: #E4F141;
+          margin: 0;
+          font-style: italic;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .coverflow-social {
+          position: absolute;
+          right: 24px;
+          bottom: 24px;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          transition: all 0.2s ease;
+        }
+
+        .coverflow-social:hover {
+          background: #ffffff;
+          color: #000000;
+          transform: scale(1.1);
+        }
+
+        .coverflow-nav {
+          display: flex;
+          gap: 16px;
+          justify-content: center;
+          margin-top: 10px;
+        }
+
+        .coverflow-nav-btn {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: transparent;
+          border: 1px solid rgba(255,255,255,0.15);
+          color: #ffffff;
+          font-size: 1.2rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
+
+        .coverflow-nav-btn:hover {
+          background: #ffffff;
+          border-color: #ffffff;
+          color: #000000;
+          transform: scale(1.05);
+        }
+
+        /* Responsiveness */
         @media (max-width: 960px) {
-          .new-chapter-wrapper {
+          .about-hero-title {
+            font-size: 3.2rem;
+          }
+          .slider-container {
             grid-template-columns: 1fr;
-            gap: 3.5rem;
+            min-height: auto;
+            gap: 40px;
           }
-          .new-chapter-visuals {
-            order: 1;
-            width: 320px;
-            height: 320px;
+          .slider-left {
+            height: 420px;
           }
-          .new-chapter-details {
-            order: 2;
+          .slider-card {
+            width: 90%;
           }
-          
-          .main-office-circle {
-            width: 230px;
-            height: 230px;
+          .slider-controls {
+            left: 10px;
+            right: 10px;
+            top: 40%;
           }
-          
-          .track-arc-line {
-            width: 270px;
-            height: 270px;
-          }
-          
-          .track-node-wrapper {
-            width: 70px;
-            height: 70px;
-          }
-          
-          .node-top-wrapper {
-            top: 20px;
-            right: 12px;
-            left: auto;
-          }
-          
-          .node-middle-wrapper {
-            top: 125px;
-            right: -20px;
-            left: auto;
-          }
-          
-          .node-bottom-wrapper {
-            bottom: 20px;
-            right: 12px;
-            left: auto;
-          }
-          
-          .new-chapter-header-copy {
+          .slider-footer-bar {
+            flex-direction: column;
+            gap: 30px;
+            align-items: center;
             text-align: center;
           }
-          
-          .new-chapter-header-copy .main-desc {
-            margin: 0 auto;
+          .slider-footer-pills {
+            justify-content: center;
           }
-
-          .orbit-text-label {
-            right: 105%;
-            left: auto;
-            text-align: right;
-            width: 160px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+          .growth-header {
+            grid-template-columns: 1fr;
+            gap: 20px;
           }
-
-          .track-node-wrapper:hover .orbit-text-label,
-          .track-node-wrapper.wrapper-active .orbit-text-label {
-            transform: translateY(-50%) translateX(-4px);
+          .growth-title-solid, .growth-title-outline {
+            font-size: 3.5rem;
+          }
+          .growth-grid {
+            grid-template-columns: 1fr;
+            gap: 32px;
+          }
+          .left-growth-card {
+            height: 400px;
+          }
+          .right-growth-top-row {
+            grid-template-columns: 1fr;
+          }
+          .coverflow-track {
+            height: 380px;
+          }
+          .coverflow-card {
+            width: 260px !important;
+            height: 360px !important;
+          }
+          .coverflow-name {
+            font-size: 1.3rem;
           }
         }
       `}</style>
 
-      {showHiringModal && <HiringModal onClose={() => setShowHiringModal(false)} />}
-      <section className="section-block about-story-hero">
-        <div className="about-hero-spotlight" />
-        <div className="container">
-          <motion.div
-            className="about-hero-shell"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="about-story-title">
-              The <span>YBEX</span> Story
-            </h1>
+      <div className="about-page-premium">
+        {/* Ambient Glowing Backdrop Orbs */}
+        <div className="bg-glow-orb orb-1" />
+        <div className="bg-glow-orb orb-2" />
+        <div className="bg-glow-orb orb-3" />
+        <div className="bg-glow-orb orb-4" />
 
-            <div className="about-big-stat">
-              <strong className="views-counter-container">
-                {formatNumber(viewCount).split('').map((char, index) => (
-                  <span key={index} className="views-counter-char">
-                    {char}
-                  </span>
-                ))}
-              </strong>
-              <p>
-                <span className="big-stat-main-label">
-                  {aboutStats[0].label.toLowerCase().endsWith('for brands')
-                    ? aboutStats[0].label.substring(0, aboutStats[0].label.toLowerCase().lastIndexOf('for brands')).trim()
-                    : aboutStats[0].label}
-                </span>
-                {aboutStats[0].label.toLowerCase().endsWith('for brands') && (
-                  <span className="big-stat-sub-label">FOR BRANDS</span>
-                )}
-              </p>
-            </div>
+        <section className="about-hero-slider-section" ref={heroSectionRef}>
+          <div className="about-hero-header">
 
-            <div className="about-mini-stats">
-              {aboutStats.slice(1).map((stat) => (
-                <div key={stat.label}>
-                  <strong>{stat.value}</strong>
-                  <span>{stat.label}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
+            <h1 className="about-hero-title">THE YBEX STORY</h1>
+            <p className="about-hero-sub">
+              A full-scale creative agency scaling brands from zero to millions of views.
+              <br />
 
-      <section className="section-block about-story-journey">
-        <div className="container about-timeline-shell">
-          {aboutTimeline.slice(0, 2).map((item, index) => (
-            <motion.article
-              key={item.title}
-              className={`about-timeline-row ${index % 2 ? 'is-reverse' : ''}`}
-              initial={{ opacity: 0, y: 36 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.7 }}
-            >
-              <div className="about-timeline-copy">
-                <span className="about-phase">{item.phase}</span>
-                <h2>{item.title}</h2>
-                <p>{item.description}</p>
-                <div className="about-timeline-rule">
-                  <span>{item.icon}</span>
-                </div>
-              </div>
-
-              {index === 1 ? (
-                <div className="about-growth-logos">
-                  {item.images.map((image, imageIndex) => (
-                    <div key={image} className={`about-logo-card about-logo-card-${imageIndex + 1}`}>
-                      <img src={image} alt={`${item.title} ${imageIndex + 1}`} loading="lazy" />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="about-timeline-media">
-                  {item.images.map((image, imageIndex) => (
-                    <div key={image} className={`about-pill-image about-pill-image-${imageIndex + 1}`}>
-                      <img src={image} alt={`${item.title} ${imageIndex + 1}`} loading="lazy" />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </motion.article>
-          ))}
-        </div>
-      </section>
-
-      {/* A New Chapter Circle Track Section */}
-      <section className="section-block about-new-chapter-section">
-        <div className="container">
-          <div className="new-chapter-wrapper">
-
-            {/* Left side: synchronized description block */}
-            <div className="new-chapter-details">
-              <div className="new-chapter-header-copy">
-                <span className="about-phase">{aboutTimeline[2].phase}</span>
-                <h2>{aboutTimeline[2].title}</h2>
-                <p className="main-desc" style={{ maxWidth: '440px' }}>{aboutTimeline[2].description}</p>
-              </div>
-            </div>
-
-            {/* Right side: Circular track visuals with point text inside orbit */}
-            <div className="new-chapter-visuals">
-              {/* Main Center Image */}
-              <div className="main-office-circle">
-                <img src={resolveImg(aboutTimeline[2].images[0])} alt="Main Office Exterior" loading="lazy" />
-              </div>
-
-              {/* Glowing circular arc track */}
-              <div className="track-arc-line" />
-
-              {/* Floating Small Images with Labels in Orbit */}
-              <div
-                className={`track-node-wrapper node-top-wrapper ${activeNode === 'top' ? 'wrapper-active' : ''}`}
-                onMouseEnter={() => setActiveNode('top')}
-                onMouseLeave={() => setActiveNode(null)}
-              >
-                <div className="orbit-text-label">
-                  <h3>NEW OFFICE</h3>
-                  <p>Our first official physical space</p>
-                </div>
-                <motion.div
-                  className="track-node"
-                  whileHover={{ scale: 1.18 }}
-                >
-                  <img src={resolveImg(aboutTimeline[2].images[1])} alt="Office interior top" loading="lazy" />
-                </motion.div>
-              </div>
-
-              <div
-                className={`track-node-wrapper node-middle-wrapper ${activeNode === 'middle' ? 'wrapper-active' : ''}`}
-                onMouseEnter={() => setActiveNode('middle')}
-                onMouseLeave={() => setActiveNode(null)}
-              >
-                <div className="orbit-text-label">
-                  <h3>CREATIVE HUB</h3>
-                  <p>Designed for creators, built for ideas</p>
-                </div>
-                <motion.div
-                  className="track-node"
-                  whileHover={{ scale: 1.18 }}
-                >
-                  <img src={resolveImg(aboutTimeline[2].images[2])} alt="Office interior middle" loading="lazy" />
-                </motion.div>
-              </div>
-
-              <div
-                className={`track-node-wrapper node-bottom-wrapper ${activeNode === 'bottom' ? 'wrapper-active' : ''}`}
-                onMouseEnter={() => setActiveNode('bottom')}
-                onMouseLeave={() => setActiveNode(null)}
-              >
-                <div className="orbit-text-label">
-                  <h3>NEXT LEVEL</h3>
-                  <p>Scaling projects & impact globally</p>
-                </div>
-                <motion.div
-                  className="track-node"
-                  whileHover={{ scale: 1.18 }}
-                >
-                  {/* Reusing image 1 for bottom circle */}
-                  <img src={resolveImg(aboutTimeline[2].images[1])} alt="Office interior bottom" loading="lazy" />
-                </motion.div>
-              </div>
-            </div>
-
+            </p>
           </div>
-        </div>
-      </section>
 
-      <section className="section-block about-team-premium">
-        <div className="container">
-          <motion.div
-            className="about-team-heading"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          <div
+            className="slider-container"
+            onMouseEnter={() => setHoveredHero(true)}
+            onMouseLeave={() => setHoveredHero(false)}
           >
-            <h2 className="about-section-display">The Visionaries</h2>
-            <div className="team-team-meta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', paddingTop: '1.1rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
-              <p className="section-subtitle" style={{ margin: 0, color: 'rgba(255, 255, 255, 0.48)', textTransform: 'uppercase', letterSpacing: '0.16em', fontSize: '0.95rem' }}>The Founders of YBEX</p>
-            </div>
-          </motion.div>
-
-          {teamLoading ? (
-            <div className="team-grid founders-grid">
-              {[...Array(2)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  animate={{ opacity: [0.15, 0.35, 0.15] }}
-                  transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.2 }}
-                  style={{ height: '320px', borderRadius: '16px', background: 'rgba(255,255,255,0.04)' }}
-                />
-              ))}
-            </div>
-          ) : founders.length > 0 ? (
-            <div className="team-grid founders-grid">
-              {founders.map((member, index) => (
-                <motion.article
-                  key={member._id}
-                  className="team-member"
-                  initial={{ opacity: 0, y: 28 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.6, delay: index * 0.08 }}
-                >
-                  <div className="team-photo">
-                    {resolveImg(member.imageUrl) ? (
-                      <img src={resolveImg(member.imageUrl)} alt={member.name} loading="lazy" />
-                    ) : (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', background: 'rgba(255,255,255,0.04)' }}>👤</div>
-                    )}
-                  </div>
-                  <h3>{member.name}</h3>
-                  <p>{member.role || member.coreTeam}</p>
-                  {member.socialLink && (
-                    <a
-                      href={member.socialLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="team-social-link"
-                      aria-label={`${member.name} social profile`}
+            <div className="slider-left">
+              <motion.div
+                className="slider-deck"
+                animate={{ scale: isTransitioning ? 0.82 : 1 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                style={{ transformStyle: 'preserve-3d', height: '100%', width: '100%', position: 'relative' }}
+              >
+                {aboutTimeline.slice(0, 3).map((item, i) => {
+                  const cardStyles = getCardStyles(i);
+                  const displayImage = i === 1 ? item.images[1] : item.images[0];
+                  return (
+                    <motion.div
+                      key={item.title}
+                      className="slider-card"
+                      animate={cardStyles}
+                      transition={{ type: 'spring', stiffness: 180, damping: 22 }}
+                      style={{ transformStyle: 'preserve-3d' }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                        <polyline points="15 3 21 3 21 9" />
-                        <line x1="10" y1="14" x2="21" y2="3" />
-                      </svg>
-                    </a>
-                  )}
-                </motion.article>
-              ))}
+                      <img src={resolveImg(displayImage)} alt={item.title} className="slider-card-img" />
+                      <div className="slider-card-overlay">
+                        <span className="card-phase">{item.phase}</span>
+                        <h3 className="card-title">{item.title}</h3>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
             </div>
-          ) : null}
 
-          <motion.div
-            className="about-team-heading team-header-secondary"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="about-section-display">Our Powerhouse</h2>
-            <div className="about-team-meta">
-              <p className="section-subtitle">Meet the creatives behind the scenes</p>
-            </div>
-          </motion.div>
-
-          {teamLoading ? (
-            <div className="team-grid team-grid-powerhouse">
-              {[...Array(3)].map((_, i) => (
+            {/* Right details of active slide */}
+            <div className="slider-right" style={{ paddingLeft: '40px', zIndex: 5 }}>
+              <AnimatePresence mode="wait">
                 <motion.div
-                  key={i}
-                  animate={{ opacity: [0.15, 0.35, 0.15] }}
-                  transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.2 }}
-                  style={{ height: '280px', borderRadius: '16px', background: 'rgba(255,255,255,0.04)' }}
-                />
-              ))}
-            </div>
-          ) : powerhouse.length > 0 ? (
-            <div className="team-grid team-grid-powerhouse">
-              {powerhouse.map((member, index) => (
-                <motion.article
-                  key={member._id}
-                  className="team-member"
-                  initial={{ opacity: 0, y: 28 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.6, delay: index * 0.08 }}
+                  key={sliderIndex}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.4 }}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
                 >
-                  <div className="team-photo">
-                    {resolveImg(member.imageUrl) ? (
-                      <img src={resolveImg(member.imageUrl)} alt={member.name} loading="lazy" />
-                    ) : (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', background: 'rgba(255,255,255,0.04)' }}>👤</div>
-                    )}
-                  </div>
-                  <h3>{member.name}</h3>
-                  <p>{member.role || member.coreTeam}</p>
-                  {member.socialLink && (
-                    <a
-                      href={member.socialLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="team-social-link"
-                      aria-label={`${member.name} social profile`}
+                  <span style={{ fontSize: '0.85rem', color: '#E4F141', fontWeight: '900', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                    {aboutTimeline[sliderIndex].phase}
+                  </span>
+                  <h2 style={{ fontSize: '2.5rem', fontWeight: '900', margin: 0, textTransform: 'uppercase', letterSpacing: '-0.02em', color: '#ffffff' }}>
+                    {aboutTimeline[sliderIndex].title}
+                  </h2>
+                  <p style={{ fontSize: '1.05rem', color: '#b5b0a3', lineHeight: '1.7', margin: 0, fontWeight: '500' }}>
+                    {aboutTimeline[sliderIndex].description}
+                  </p>
+                  <div style={{ marginTop: '10px' }}>
+                    <button
+                      className="pill-btn active"
+                      style={{ padding: '12px 24px', fontSize: '0.85rem' }}
+                      onClick={() => setShowHiringModal(true)}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                        <polyline points="15 3 21 3 21 9" />
-                        <line x1="10" y1="14" x2="21" y2="3" />
-                      </svg>
-                    </a>
-                  )}
-                </motion.article>
-              ))}
+                      APPLY TO TEAM YBEX
+                    </button>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </div>
-          ) : null}
-        </div>
-      </section>
 
+            {/* Slider Arrows Overlapping Entire Container at edges */}
+            <div className="slider-controls">
+              <button className="slider-arrow-btn" onClick={prevSlider}>
+                ←
+              </button>
+              <button className="slider-arrow-btn" onClick={nextSlider}>
+                →
+              </button>
+            </div>
+          </div>
+
+          {sliderIndex === 2 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: [0, -10, 0] }}
+              transition={{
+                opacity: { duration: 0.4 },
+                y: { repeat: Infinity, duration: 1.5, ease: "easeInOut" }
+              }}
+              onClick={() => {
+                window.scrollTo({
+                  top: window.innerHeight * 0.85,
+                  behavior: 'smooth'
+                });
+              }}
+              style={{
+                position: 'absolute',
+                bottom: '20px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '8px',
+                cursor: 'pointer',
+                zIndex: 100,
+              }}
+            >
+              <span style={{
+                fontSize: '0.72rem',
+                letterSpacing: '0.2em',
+                fontWeight: 800,
+                color: '#E4F141',
+                textTransform: 'uppercase'
+              }}>
+                EXPLORE ECOSYSTEM
+              </span>
+              <span style={{ fontSize: '1.2rem', color: '#fff' }}>↓</span>
+            </motion.div>
+          )}
+        </section>
+
+        {/* They Trust Us — fade cycle: label → logos → label → ... */}
+        <TrustBanner brands={marqueeBrands} />
+
+        {/* SECTION 2: THE GROWTH */}
+        <section className="about-growth-section">
+          <div className="growth-container">
+            <div className="growth-header">
+              <div className="growth-title-group">
+                <span className="growth-title-outline">THE GROWTH</span>
+                <span className="growth-title-solid">SCALING BRANDS FROM ZERO</span>
+              </div>
+              <div className="growth-header-desc">
+                We transitioned into a full-scale creative agency, helping dozens of brands grow their presence from scratch to millions of views. Our focus shifted to strategic growth, community building, and long-form storytelling that sticks.
+              </div>
+            </div>
+
+            <div className="growth-grid">
+              {/* Left visual card with mouse-tilt */}
+              <div
+                className="tilt-card left-growth-card"
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                onMouseEnter={handleMouseEnter}
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80"
+                  alt="Growth shoot setup"
+                  className="left-growth-card-img"
+                />
+                <div className="left-growth-card-content">
+                  <div className="growth-badge">Case Studies</div>
+                  <h3 className="left-growth-card-title">Strategic Content Creation</h3>
+                </div>
+              </div>
+
+              {/* Right Stack */}
+              <div className="right-growth-stack">
+                <div className="right-growth-top-row">
+                  {/* Views Stat Card */}
+                  <div
+                    className="tilt-card stat-card"
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseEnter={handleMouseEnter}
+                  >
+                    <span className="stat-card-badge">Organic Reach</span>
+                    <div className="stat-card-number" style={{ fontSize: '2.4rem', whiteSpace: 'nowrap' }}>
+                      {formatNumber(viewCount)}
+                    </div>
+                    <p className="stat-card-desc">Organic views generated for our brand partners globally.</p>
+                  </div>
+
+                  {/* Campaigns Stat Card */}
+                  <div
+                    className="tilt-card stat-card"
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseEnter={handleMouseEnter}
+                  >
+                    <span className="stat-card-badge">Live Campaigns</span>
+                    <div className="stat-card-number" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      38+
+                      <span
+                        style={{
+                          width: '12px',
+                          height: '12px',
+                          borderRadius: '50%',
+                          backgroundColor: '#22c55e',
+                          display: 'inline-block',
+                          boxShadow: '0 0 10px #22c55e',
+                          animation: 'pulse 1.8s infinite',
+                        }}
+                      />
+                    </div>
+                    <p className="stat-card-desc">Active influencer campaigns running live right now.</p>
+                  </div>
+                </div>
+
+                {/* Wide Logo Marquee Card */}
+                <div
+                  className="tilt-card marquee-card"
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave}
+                  onMouseEnter={handleMouseEnter}
+                >
+                  <span className="marquee-card-header">Our Brand Partners</span>
+                  <div className="marquee-container">
+                    <div className="marquee-track">
+                      {marqueeBrands.map((brand, index) => (
+                        <MarqueeBrandItem key={index} brand={brand} itemClass="marquee-item" />
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ height: '10px' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 3: THE VISIONARIES (FOUNDERS) */}
+        <section className="about-team-section" id="team-founders-section">
+          <div className="team-heading-container">
+            <h2 className="team-section-title">The Visionaries</h2>
+            <p className="team-section-subtitle">The Founders of YBEX</p>
+          </div>
+
+          <CoverflowCarousel members={displayFounders} />
+        </section>
+
+        {/* SECTION 4: OUR POWERHOUSE */}
+        <section className="about-team-section" style={{ borderTop: 'none', paddingTop: 0 }}>
+          <div className="team-heading-container">
+            <h2 className="team-section-title">Our Powerhouse</h2>
+            <p className="team-section-subtitle">Meet the creatives behind the scenes</p>
+          </div>
+
+          <CoverflowCarousel members={displayPowerhouse} />
+        </section>
+      </div>
     </>
   );
 }
+
+

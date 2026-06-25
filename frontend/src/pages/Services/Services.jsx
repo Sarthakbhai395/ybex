@@ -194,119 +194,57 @@ function GalaxyBackground() {
 
 function CinematicLoader({ onComplete }) {
   const containerRef = useRef(null);
-  const text1Ref = useRef(null);
-  const text2Ref = useRef(null);
-  const cycleRef = useRef(null);
-  const flashRef = useRef(null);
-
-  const servicesList = [
-    'Paid PR',
-    'Social Media Management',
-    'Brand Architecture',
-    'Creative Production',
-    'Talent Management',
-    'Performance Marketing',
-    'In-House Team Setups',
-    'Website & Tech',
-    'Content Ecosystem'
-  ];
-
-  const [activeWord, setActiveWord] = useState('');
 
   useEffect(() => {
-    if (text1Ref.current) {
-      const text = text1Ref.current.innerText;
-      text1Ref.current.innerHTML = text
-        .split('')
-        .map((char) => `<span class="char inline-block" style="opacity:0; transform:translateY(25px)">${char === ' ' ? '&nbsp;' : char}</span>`)
-        .join('');
-    }
-
-    if (text2Ref.current) {
-      const text = text2Ref.current.innerText;
-      text2Ref.current.innerHTML = text
-        .split('')
-        .map((char) => `<span class="char2 inline-block" style="opacity:0; transform:translateY(25px)">${char === ' ' ? '&nbsp;' : char}</span>`)
-        .join('');
-    }
-
     const tl = gsap.timeline({
       onComplete: onComplete
     });
 
     tl.set(containerRef.current, { opacity: 1 });
 
-    tl.to('.char', {
-      opacity: 1,
-      y: 0,
-      stagger: 0.03,
-      duration: 0.4,
-      ease: 'power3.out',
-    }, 0);
+    // Animate "we are providing" with a high-end fade, scale and blur
+    tl.fromTo('.loader-static-1',
+      { filter: 'blur(10px)', scale: 0.85, opacity: 0, y: 15 },
+      { filter: 'blur(0px)', scale: 1, opacity: 0.6, y: 0, duration: 0.7, ease: 'power3.out' }
+    );
 
-    tl.to('.char', { opacity: 0, y: -15, stagger: 0.015, duration: 0.25 }, '+=0.5');
+    // Animate "many services" shortly after with the same sleek effect
+    tl.fromTo('.loader-static-2',
+      { filter: 'blur(12px)', scale: 0.85, opacity: 0, y: 20 },
+      { filter: 'blur(0px)', scale: 1, opacity: 1, y: 0, duration: 0.8, ease: 'power4.out' },
+      '-=0.45'
+    );
 
-    tl.to('.char2', {
-      opacity: 1,
-      y: 0,
-      stagger: 0.03,
-      duration: 0.4,
-      ease: 'power3.out',
-    });
+    // Give a nice text glow pulse to "many services"
+    tl.to('.loader-static-2', {
+      textShadow: '0 0 25px rgba(255, 255, 255, 0.45)',
+      duration: 0.35,
+      yoyo: true,
+      repeat: 1,
+      ease: 'power2.inOut'
+    }, '-=0.2');
 
-    tl.to('.char2', { opacity: 0, scale: 0.9, duration: 0.25 }, '+=0.35');
+    // Hold the complete title for a brief cinematic moment
+    tl.to({}, { duration: 1.1 });
 
-    tl.add(() => {
-      let count = 0;
-      const interval = setInterval(() => {
-        if (count < servicesList.length) {
-          setActiveWord(servicesList[count]);
-          if (cycleRef.current) {
-            gsap.fromTo(cycleRef.current,
-              { filter: 'blur(8px)', scale: 0.85, opacity: 0.5, rotate: (Math.random() - 0.5) * 6 },
-              { filter: 'blur(0px)', scale: 1.1, opacity: 1, rotate: 0, duration: 0.08, ease: 'power2.out' }
-            );
-          }
-          count++;
-        } else {
-          clearInterval(interval);
-        }
-      }, 120);
-    });
-
-    tl.to({}, { duration: 1.2 });
-
-    tl.to(cycleRef.current, { opacity: 0, scale: 2, filter: 'blur(12px)', duration: 0.3 });
-
-    tl.to(flashRef.current, { opacity: 0.8, duration: 0.15, ease: 'power2.in' });
-    tl.to(flashRef.current, { opacity: 0, duration: 0.4 });
+    // Fade out and scale up the loader container smoothly
     tl.to(containerRef.current, {
-      scale: 8,
       opacity: 0,
-      filter: 'blur(20px)',
-      duration: 0.8,
-      ease: 'power3.in'
-    }, '-=0.35');
+      scale: 1.05,
+      duration: 0.65,
+      ease: 'power3.inOut'
+    });
 
     return () => {
       tl.kill();
     };
-  }, []);
+  }, [onComplete]);
 
   return (
     <div ref={containerRef} className="cinematic-loader-container" style={{ opacity: 0 }}>
-      <div ref={flashRef} className="loader-flash" />
-
-      <h2 ref={text1Ref} className="loader-text-1">
-        We Are Providing
-      </h2>
-
-      <h2 ref={text2Ref} className="loader-text-2">
-        Many Services
-      </h2>
-
-      <div ref={cycleRef} className="loader-cycle-text">
-        {activeWord}
+      <div className="loader-cycle-text">
+        <span className="loader-static-1">we are providing</span>
+        <span className="loader-static-2">many services</span>
       </div>
     </div>
   );
@@ -320,20 +258,67 @@ function InHouseTeamSection() {
   const sectionRef = useRef(null);
   const orbRefs = useRef([]);
   const canvasRef = useRef(null);
+  const tweensRef = useRef([]);
+  const [hoveredIdx, setHoveredIdx] = useState(null);
 
   const categories = [
-    { title: 'Studio Setup', desc: 'Complete acoustic treatments, lighting rigs, and professional camera architecture in your empty room.', icon: '◆' },
-    { title: 'Creator Hiring', desc: "Scouting, vetting, and interviewing digital talent matching your brand's voice.", icon: '◈' },
-    { title: 'Training', desc: 'Hook psychology bootcamps, platform algorithms, retention editing handovers.', icon: '◇' },
-    { title: 'Content Systems', desc: 'Notion workspaces, content calendars, script-writing checklists.', icon: '⬡' },
-    { title: 'Creative Operations', desc: 'Review workflows, fast approval loops, output pacing SOPs.', icon: '▽' }
+    { 
+      title: 'Studio Setup', 
+      desc: 'Complete acoustic treatments, lighting rigs, and professional camera architecture in your empty room.', 
+      icon: '◆',
+      highlights: [
+        'Acoustic treatment design & execution',
+        'Professional lighting & camera calibration',
+        'Fully integrated creator workstation'
+      ]
+    },
+    { 
+      title: 'Creator Hiring', 
+      desc: "Scouting, vetting, and interviewing digital talent matching your brand's voice.", 
+      icon: '◈',
+      highlights: [
+        'Talent sourcing & audition cycles',
+        'Brand voice alignment auditing',
+        'Contracts, rates & vetting protocols'
+      ]
+    },
+    { 
+      title: 'Training', 
+      desc: 'Hook psychology bootcamps, platform algorithms, retention editing handovers.', 
+      icon: '◇',
+      highlights: [
+        'Gen-Z attention grabbing hooks',
+        'High-retention video editing style',
+        'Algorithm optimization playbook'
+      ]
+    },
+    { 
+      title: 'Content Systems', 
+      desc: 'Notion workspaces, content calendars, script-writing checklists.', 
+      icon: '⬡',
+      highlights: [
+        'Custom Notion Workspace build',
+        'Content scheduling pipelines',
+        'Script templates and guidelines'
+      ]
+    },
+    { 
+      title: 'Creative Operations', 
+      desc: 'Review workflows, fast approval loops, output pacing SOPs.', 
+      icon: '▽',
+      highlights: [
+        'Real-time production tracking',
+        'Accelerated feedback/approval loop',
+        'Scaled output velocity plans'
+      ]
+    }
   ];
 
   useEffect(() => {
-    // GSAP floating animation for each orb
+    // GSAP floating animation for each orb wrapper
     orbRefs.current.forEach((el, i) => {
       if (!el) return;
-      gsap.to(el, {
+      const t = gsap.to(el, {
         y: -12 + Math.random() * 8,
         x: (Math.random() - 0.5) * 6,
         rotation: (Math.random() - 0.5) * 2,
@@ -343,6 +328,7 @@ function InHouseTeamSection() {
         ease: 'sine.inOut',
         delay: i * 0.3,
       });
+      tweensRef.current[i] = t;
     });
 
     // Background particle canvas
@@ -395,8 +381,28 @@ function InHouseTeamSection() {
     return () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animId);
+      tweensRef.current.forEach(t => {
+        if (t) t.kill();
+      });
     };
   }, []);
+
+  // Pause and reset float-wrapper transforms when hovering
+  useEffect(() => {
+    if (hoveredIdx !== null) {
+      tweensRef.current.forEach((t, i) => {
+        if (t) t.pause();
+        const el = orbRefs.current[i];
+        if (el) {
+          gsap.to(el, { x: 0, y: 0, rotation: 0, duration: 0.4, overwrite: 'auto' });
+        }
+      });
+    } else {
+      tweensRef.current.forEach(t => {
+        if (t) t.play();
+      });
+    }
+  }, [hoveredIdx]);
 
   return (
     <section ref={sectionRef} className="universe-section inhouse-section-wrap">
@@ -411,28 +417,77 @@ function InHouseTeamSection() {
           </p>
         </div>
 
-        <div className="ih-orb-grid">
-          {categories.map((card, i) => (
-            <motion.div
-              key={i}
-              ref={el => orbRefs.current[i] = el}
-              initial={{ opacity: 0, scale: 0.7, y: 40 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="ih-orb"
-            >
-              <div className="ih-orb-glow" />
-              <div className="ih-orb-inner">
-                <span className="ih-orb-num">0{i + 1}</span>
-                <span className="ih-orb-icon">{card.icon}</span>
-                <h3 className="ih-orb-title">{card.title}</h3>
-                <p className="ih-orb-desc">{card.desc}</p>
-              </div>
-              <div className="ih-orb-shine" />
-            </motion.div>
-          ))}
-        </div>
+        <motion.div 
+          layout
+          className={`ih-interactive-container ${hoveredIdx !== null ? 'has-active-hover' : ''}`}
+          onMouseLeave={() => setHoveredIdx(null)}
+          transition={{ type: 'spring', stiffness: 220, damping: 26 }}
+        >
+          <motion.div layout className="ih-orb-grid">
+            {categories.map((card, i) => (
+              <motion.div
+                key={i}
+                layout
+                initial={{ opacity: 0, scale: 0.7, y: 40 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true }}
+                animate={{
+                  scale: hoveredIdx === null ? 1 : (hoveredIdx === i ? 0.85 : 0.55),
+                  opacity: hoveredIdx === null ? 1 : (hoveredIdx === i ? 1 : 0.35),
+                }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 220,
+                  damping: 26
+                }}
+                className={`ih-orb ${hoveredIdx === i ? 'is-hovered' : ''}`}
+                onMouseEnter={() => setHoveredIdx(i)}
+              >
+                <div ref={el => orbRefs.current[i] = el} className="ih-orb-float-wrapper">
+                  <div className="ih-orb-glow" />
+                  <div className="ih-orb-inner">
+                    <span className="ih-orb-num">0{i + 1}</span>
+                    <span className="ih-orb-icon">{card.icon}</span>
+                    <h3 className="ih-orb-title">{card.title}</h3>
+                    <p className="ih-orb-desc">{card.desc}</p>
+                  </div>
+                  <div className="ih-orb-shine" />
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <AnimatePresence>
+            {hoveredIdx !== null && (
+              <motion.div
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 40 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                className="ih-hover-details"
+              >
+                <span className="ih-details-eyebrow">capability overview</span>
+                <span className="ih-details-num">0{hoveredIdx + 1}</span>
+                <h3 className="ih-details-title">{categories[hoveredIdx].title}</h3>
+                <p className="ih-details-desc">{categories[hoveredIdx].desc}</p>
+                
+                <div className="ih-details-divider" />
+                
+                <div className="ih-details-highlights">
+                  <span className="ih-highlights-label">Key Highlights</span>
+                  <ul className="ih-highlights-list">
+                    {categories[hoveredIdx].highlights.map((highlight, idx) => (
+                      <li key={idx}>
+                        <span className="ih-details-check">✓</span> 
+                        <span>{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
 
       </div>
     </section>
@@ -594,30 +649,70 @@ function ServicesShowcase() {
                 key={svc.id}
                 className={`svc-item ${activeIdx === idx ? 'svc-item--active' : ''}`}
                 onMouseEnter={() => setActiveIdx(idx)}
+                onClick={() => setActiveIdx(idx)}
               >
-                {/* Diamond shape indicator */}
-                <div
-                  className="svc-item__shape"
-                  ref={el => shapeRefs.current[idx] = el}
-                >
-                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <rect
-                      x="14" y="1" width="18.38" height="18.38"
-                      transform="rotate(45 14 1)"
-                      stroke={activeIdx === idx ? '#E4F141' : 'rgba(255,255,255,0.15)'}
-                      strokeWidth="1.5"
-                      fill={activeIdx === idx ? 'rgba(228,241,65,0.12)' : 'transparent'}
-                      style={{ transition: 'all 0.35s ease' }}
-                    />
-                  </svg>
+                <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '16px' }}>
+                  {/* Diamond shape indicator */}
+                  <div
+                    className="svc-item__shape"
+                    ref={el => shapeRefs.current[idx] = el}
+                  >
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                      <rect
+                        x="14" y="1" width="18.38" height="18.38"
+                        transform="rotate(45 14 1)"
+                        stroke={activeIdx === idx ? '#E4F141' : 'rgba(255,255,255,0.15)'}
+                        strokeWidth="1.5"
+                        fill={activeIdx === idx ? 'rgba(228,241,65,0.12)' : 'transparent'}
+                        style={{ transition: 'all 0.35s ease' }}
+                      />
+                    </svg>
+                  </div>
+
+                  <div className="svc-item__text" style={{ display: 'flex', flex: 1, alignItems: 'baseline', gap: '10px' }}>
+                    <span className="svc-item__num">0{idx + 1}</span>
+                    <span className="svc-item__title">{svc.title}</span>
+                  </div>
+
+                  <span className="svc-item__stat">{svc.stats}</span>
                 </div>
 
-                <div className="svc-item__text">
-                  <span className="svc-item__num">0{idx + 1}</span>
-                  <span className="svc-item__title">{svc.title}</span>
-                </div>
+                {/* Mobile-only inline detail panel */}
+                {activeIdx === idx && (
+                  <div className="svc-item__mobile-detail">
+                    <div className="svc-detail__eyebrow">{svc.eyebrow}</div>
+                    <h3 className="svc-detail__title">{svc.title}</h3>
+                    <p className="svc-detail__desc">{svc.description}</p>
 
-                <span className="svc-item__stat">{svc.stats}</span>
+                    <div className="svc-detail__caps">
+                      <span className="svc-detail__caps-label">Capabilities</span>
+                      <div className="svc-detail__tags">
+                        {svc.features.map((f, i) => (
+                          <span key={i} className="svc-detail__tag">{f}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="svc-detail__benefits">
+                      <span className="svc-detail__caps-label">Benefits</span>
+                      {svc.benefits.map((b, i) => (
+                        <div key={i} className="svc-detail__benefit">
+                          <span className="svc-detail__check">✓</span>
+                          <span>{b}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="svc-detail__stat-box">
+                      <span className="svc-detail__stat-label">YBEX IMPACT</span>
+                      <strong className="svc-detail__stat-val">{svc.stats}</strong>
+                    </div>
+
+                    <Link to="/contact" className="svc-detail__cta" onClick={(e) => e.stopPropagation()}>
+                      Get Started <span className="svc-detail__cta-arrow">→</span>
+                    </Link>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -693,6 +788,27 @@ function ServicesShowcase() {
 // 7. EXPORT MAIN COMPONENT
 // ═════════════════════════════════════════════════════════════════════════════
 
+const heroPillars = [
+  {
+    title: 'PR & Authority',
+    icon: '✦',
+    desc: 'Build trust with top-tier media placements and clear brand architecture.',
+    tags: ['Paid PR', 'Brand Architecture', 'Talent Sourcing']
+  },
+  {
+    title: 'Content & Production',
+    icon: '⚡',
+    desc: 'Gen-Z driven creative production and trend-aware social media engines.',
+    tags: ['Creative Production', 'SMM', 'Content Ecosystem']
+  },
+  {
+    title: 'Tech & Performance',
+    icon: '⚙️',
+    desc: 'Data-driven performance campaigns, custom websites, and in-house setups.',
+    tags: ['Meta & Google Ads', 'Web & Landing Pages', 'Embedded Teams']
+  }
+];
+
 export default function Services() {
   const [loading, setLoading] = useState(true);
 
@@ -715,6 +831,176 @@ export default function Services() {
           min-height: 100vh;
           position: relative;
           overflow-x: hidden;
+          margin-top: -64px;
+        }
+
+        .svc-item__mobile-detail {
+          display: none;
+          width: 100%;
+          padding: 20px 0 0;
+          margin-top: 15px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          animation: slideDown 0.3s ease-out forwards;
+          text-align: left;
+        }
+
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .svc-item__mobile-detail .svc-detail__eyebrow {
+          color: rgba(228, 241, 65, 0.6);
+          font-size: 0.65rem;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.2em;
+          margin-bottom: 8px;
+        }
+
+        .svc-item__mobile-detail .svc-detail__title {
+          font-family: 'Montserrat', sans-serif;
+          font-size: clamp(1.3rem, 4vw, 1.8rem);
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: -0.02em;
+          margin: 0 0 16px 0;
+          line-height: 1.15;
+          color: #ffffff;
+        }
+
+        .svc-item__mobile-detail .svc-detail__desc {
+          font-size: 0.92rem;
+          line-height: 1.6;
+          color: rgba(255, 255, 255, 0.65);
+          margin: 0 0 24px 0;
+          font-weight: 500 !important;
+        }
+
+        .svc-item__mobile-detail .svc-detail__caps {
+          margin-bottom: 20px;
+        }
+
+        .svc-item__mobile-detail .svc-detail__caps-label {
+          display: block;
+          font-size: 0.65rem;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: rgba(255, 255, 255, 0.35);
+          margin-bottom: 12px;
+        }
+
+        .svc-item__mobile-detail .svc-detail__tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .svc-item__mobile-detail .svc-detail__tag {
+          font-size: 0.72rem;
+          font-weight: 800;
+          padding: 6px 14px;
+          border-radius: 6px;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          color: rgba(255, 255, 255, 0.85);
+          letter-spacing: 0.02em;
+        }
+
+        .svc-item__mobile-detail .svc-detail__benefits {
+          margin-bottom: 24px;
+        }
+
+        .svc-item__mobile-detail .svc-detail__benefit {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.8);
+          margin-bottom: 8px;
+        }
+
+        .svc-item__mobile-detail .svc-detail__check {
+          color: #E4F141;
+          font-weight: 900;
+        }
+
+        .svc-item__mobile-detail .svc-detail__stat-box {
+          padding: 16px 20px;
+          border-radius: 12px;
+          background: rgba(228, 241, 65, 0.05);
+          border: 1px solid rgba(228, 241, 65, 0.15);
+          margin-bottom: 24px;
+        }
+
+        .svc-item__mobile-detail .svc-detail__stat-label {
+          display: block;
+          font-size: 0.6rem;
+          font-weight: 900;
+          color: rgba(228, 241, 65, 0.6);
+          letter-spacing: 0.1em;
+          margin-bottom: 4px;
+        }
+
+        .svc-item__mobile-detail .svc-detail__stat-val {
+          font-size: 1.4rem;
+          font-weight: 900;
+          color: #E4F141;
+        }
+
+        .svc-item__mobile-detail .svc-detail__cta {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.82rem;
+          font-weight: 900;
+          color: #E4F141;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          transition: transform 0.2s;
+        }
+
+        .svc-item__mobile-detail .svc-detail__cta:hover {
+          transform: translateX(4px);
+        }
+
+        @media (max-width: 900px) {
+          .svc-split {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+            min-height: auto !important;
+          }
+          
+          .svc-item {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+            padding: 20px !important;
+            border-left: 2px solid rgba(255, 255, 255, 0.08) !important;
+          }
+
+          .svc-item--active {
+            border-left-color: #E4F141 !important;
+          }
+
+          .svc-item--active .svc-item__mobile-detail {
+            display: block !important;
+          }
+
+          .svc-split__detail {
+            display: none !important;
+          }
+
+          .svc-split__divider {
+            display: none !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .services-page-wrapper {
+            margin-top: -84px;
+          }
         }
 
         /* ── CINEMATIC LOADER ── */
@@ -733,50 +1019,42 @@ export default function Services() {
           align-items: center;
           justify-content: center;
           user-select: none;
-          will-change: transform, opacity;
-        }
-        .loader-flash {
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(circle at center, #E4F141, #000000 70%);
-          opacity: 0;
-          pointer-events: none;
-          mix-blend-mode: screen;
-        }
-        .loader-text-1 {
-          color: #ffffff;
-          font-size: clamp(1.8rem, 5vw, 3.2rem);
-          font-weight: 900;
-          text-transform: uppercase;
-          letter-spacing: 0.2rem;
-          text-align: center;
-          max-width: 90%;
-          margin: 0;
-          line-height: 1.1;
-        }
-        .loader-text-2 {
-          position: absolute;
-          color: #E4F141;
-          font-size: clamp(1.8rem, 5vw, 3.2rem);
-          font-weight: 900;
-          text-transform: uppercase;
-          letter-spacing: 0.2rem;
-          text-align: center;
-          max-width: 90%;
-          pointer-events: none;
-          margin: 0;
-          line-height: 1.1;
+          will-change: opacity;
         }
         .loader-cycle-text {
-          position: absolute;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
           text-align: center;
-          max-width: 95%;
-          font-size: clamp(1.4rem, 4vw, 2.4rem);
-          font-weight: 800;
+          gap: 16px;
+          max-width: 90%;
+        }
+        .loader-static-1 {
+          color: rgba(255, 255, 255, 0.6);
+          font-size: clamp(0.95rem, 2.5vw, 1.35rem);
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.35em;
+          line-height: 1.2;
+        }
+        .loader-static-2 {
+          color: #ffffff;
+          font-size: clamp(1.4rem, 4vw, 2.6rem);
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.18em;
+          line-height: 1.1;
+          margin-bottom: 8px;
+        }
+        .loader-dynamic {
+          font-size: clamp(1.8rem, 5vw, 3.6rem);
+          font-weight: 900;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          color: #ffffff;
-          text-shadow: 0 0 15px rgba(228, 241, 65, 0.6);
+          color: #E4F141;
+          text-shadow: 0 0 25px rgba(228, 241, 65, 0.85);
+          display: inline-block;
         }
 
         /* ── BACKGROUND CANVAS ── */
@@ -791,42 +1069,104 @@ export default function Services() {
         /* ── HERO ── */
         .hero-universe {
           position: relative;
-          height: 100vh;
+          min-height: 100vh;
           width: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
           z-index: 10;
+          padding: 160px 24px 120px;
+          box-sizing: border-box;
+          background-color: #000000;
+          background-image: 
+            linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+          background-size: 50px 50px;
+          background-position: center top;
         }
-        .hero-video {
+        .hero-universe::before {
+          content: '';
           position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          z-index: 0;
+          top: 35%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(228, 241, 65, 0.055) 0%, transparent 70%);
+          pointer-events: none;
+          z-index: 1;
         }
-        .hero-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            180deg, 
-            rgba(0, 0, 0, 0.35) 0%, 
-            rgba(0, 0, 0, 0.25) 40%, 
-            rgba(0, 0, 0, 0.5) 80%, 
-            rgba(0, 0, 0, 0.85) 100%
-          );
-          z-index: 10;
+        .hero-pillars-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+          max-width: 1100px;
+          margin: 60px auto;
+        }
+        @media (max-width: 900px) {
+          .hero-pillars-grid {
+            grid-template-columns: 1fr;
+            margin: 40px auto;
+          }
+        }
+        .hero-pillar-card {
+          padding: 32px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 20px;
+          text-align: left;
+          transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .hero-pillar-card:hover {
+          background: rgba(228, 241, 65, 0.05);
+          border-color: rgba(228, 241, 65, 0.3);
+          transform: translateY(-8px);
+        }
+        .hero-pillar-icon {
+          font-size: 1.5rem;
+          margin-bottom: 16px;
+          display: block;
+        }
+        .hero-pillar-title {
+          font-size: 1.1rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          margin: 0 0 12px 0;
+          color: #ffffff;
+        }
+        .hero-pillar-desc {
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.6);
+          line-height: 1.5;
+          margin: 0 0 20px 0;
+        }
+        .hero-pillar-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .hero-pillar-tag {
+          font-size: 0.65rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          padding: 4px 10px;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 6px;
+          color: rgba(255, 255, 255, 0.5);
         }
         .hero-content {
           position: relative;
           z-index: 20;
           max-width: 1100px;
-          padding: 88px 24px 0;
+          width: 100%;
           text-align: center;
-          margin-top: 0;
           box-sizing: border-box;
+        }
+        @media (max-width: 768px) {
+          .hero-content {
+            padding: 110px 20px 0;
+          }
         }
         .hero-eyebrow {
           color: #E4F141;
@@ -839,11 +1179,11 @@ export default function Services() {
         }
         .hero-heading {
           color: #ffffff;
-          font-size: clamp(2.5rem, 6.2vw, 4.8rem);
-          font-weight: 900;
+          font-size: clamp(1.6rem, 3.8vw, 2.5rem);
+          font-weight: 800;
           text-transform: uppercase;
-          letter-spacing: -0.04em;
-          line-height: 1.05;
+          letter-spacing: -0.02em;
+          line-height: 1.1;
           margin-bottom: 24px;
           margin-top: 0;
           text-shadow: 0 2px 40px rgba(0,0,0,0.5);
@@ -1282,6 +1622,7 @@ export default function Services() {
            IN-HOUSE — Glass Hexagonal Orbs (no card shapes)
            ══════════════════════════════════════════════════════════════ */
         .inhouse-section-wrap {
+          position: relative;
           overflow: hidden;
         }
         .inhouse-bg-canvas {
@@ -1292,29 +1633,88 @@ export default function Services() {
           opacity: 0.5;
         }
 
+        .ih-interactive-container {
+          position: relative;
+          width: 100%;
+        }
+        .ih-interactive-container.has-active-hover {
+          display: grid;
+          grid-template-columns: 240px 1fr;
+          gap: 40px;
+          align-items: center;
+        }
+        @media (max-width: 900px) {
+          .ih-interactive-container.has-active-hover {
+            grid-template-columns: 1fr;
+            gap: 32px;
+            align-items: center;
+          }
+        }
+
         .ih-orb-grid {
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
           gap: 32px;
         }
-        @media (max-width: 768px) {
-          .ih-orb-grid {
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
+        .ih-interactive-container.has-active-hover .ih-orb-grid {
+          flex-direction: column;
+          flex-wrap: nowrap;
+          justify-content: center;
+          align-items: center;
+          gap: 0;
+          width: 240px;
+        }
+        @media (max-width: 900px) {
+          .ih-interactive-container.has-active-hover .ih-orb-grid {
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: 100%;
+            gap: 16px;
           }
         }
 
         .ih-orb {
           position: relative;
           width: 290px;
+          min-width: 290px;
+          height: 300px;
           min-height: 300px;
           display: flex;
           align-items: center;
           justify-content: center;
-          cursor: default;
-          will-change: transform;
+          cursor: pointer;
+        }
+
+        /* Default state of non-hovered orbs when hover is active: scale down to 0.55, keep perfect hex shape */
+        .ih-interactive-container.has-active-hover .ih-orb:not(.is-hovered) {
+          margin: -70px 0; /* vertical overlap to make it look like a honeycomb list */
+        }
+        @media (max-width: 900px) {
+          .ih-interactive-container.has-active-hover .ih-orb:not(.is-hovered) {
+            margin: 0 -40px;
+          }
+        }
+
+        /* Highlighted/Hovered orb: scales to 0.85, full opacity, correct margins */
+        .ih-interactive-container.has-active-hover .ih-orb.is-hovered {
+          z-index: 10;
+          margin: 10px 0;
+        }
+        @media (max-width: 900px) {
+          .ih-interactive-container.has-active-hover .ih-orb.is-hovered {
+            transform: scale(0.8);
+            margin: 0 10px;
+          }
+        }
+
+        .ih-orb-float-wrapper {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         /* Glass morphism hexagonal shape via clip-path */
@@ -1410,6 +1810,100 @@ export default function Services() {
           font-weight: 500;
           line-height: 1.5;
           margin: 0;
+        }
+
+        /* ── INTERACTIVE HOVER DETAILS PANEL ── */
+        .ih-hover-details {
+          padding: 40px;
+          background: rgba(255, 255, 255, 0.02);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(228, 241, 65, 0.15);
+          border-radius: 24px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: left;
+          pointer-events: auto;
+          margin-left: 40px;
+        }
+
+        @media (max-width: 992px) {
+          .ih-hover-details {
+            padding: 24px;
+            margin-top: 16px;
+          }
+        }
+        .ih-details-eyebrow {
+          color: #E4F141;
+          font-size: 0.65rem;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.25em;
+          margin-bottom: 8px;
+        }
+        .ih-details-num {
+          color: rgba(255, 255, 255, 0.15);
+          font-size: 3.5rem;
+          font-weight: 900;
+          line-height: 1;
+          margin-bottom: 12px;
+          font-family: 'Outfit', sans-serif;
+        }
+        .ih-details-title {
+          color: #ffffff;
+          font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+          margin: 0 0 16px 0;
+        }
+        .ih-details-desc {
+          color: rgba(255, 255, 255, 0.75);
+          font-size: 0.95rem;
+          line-height: 1.65;
+          margin: 0 0 24px 0;
+          font-weight: 400;
+        }
+        .ih-details-divider {
+          width: 100%;
+          height: 1px;
+          background: linear-gradient(90deg, rgba(228, 241, 65, 0.3) 0%, transparent 100%);
+          margin-bottom: 24px;
+        }
+        .ih-details-highlights {
+          width: 100%;
+        }
+        .ih-highlights-label {
+          color: rgba(255, 255, 255, 0.45);
+          font-size: 0.7rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          margin-bottom: 12px;
+          display: block;
+        }
+        .ih-highlights-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .ih-highlights-list li {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: rgba(255, 255, 255, 0.85);
+          font-size: 0.85rem;
+          font-weight: 500;
+        }
+        .ih-details-check {
+          color: #E4F141;
+          font-weight: 900;
+          font-size: 0.9rem;
+          filter: drop-shadow(0 0 4px rgba(228, 241, 65, 0.5));
         }
 
         /* ── SWIRLING PORTAL CTA ── */
@@ -1508,29 +2002,61 @@ export default function Services() {
       </AnimatePresence>
 
       <div className="services-page-wrapper">
-        {/* Particle stars and nebula */}
-        <GalaxyBackground />
-
-        {/* ── HERO SECTION WITH VIDEO BACKGROUND ── */}
+        {/* ── HERO SECTION WITH GRID ACCENTS ── */}
         <section className="hero-universe">
-          <video autoPlay muted loop playsInline className="hero-video">
-            <source src="/videobg.mp4" type="video/mp4" />
-          </video>
-          {/* Overlay — lighter gradient for video visibility */}
-          <div className="hero-overlay" />
-
           {/* Core Content */}
           <div className="hero-content">
             <span className="hero-eyebrow">YBEX MEDIA SYSTEM</span>
             <h1 className="hero-heading">
-              We Build Growth Systems<br />
-              <span className="hero-heading-gradient">
-                Not Marketing Campaigns.
-              </span>
+              We Design the Future of <span className="hero-heading-gradient">Creative & Influence</span>
             </h1>
             <p className="hero-subheading">
-              From Branding to Media, Content, Influencers, Performance Marketing, and Technology — We Build Everything Under One Roof.
+              YBEX builds performance-driven content pipelines, digital systems, and authority frameworks that scale businesses and define modern internet culture.
             </p>
+
+            {/* Interactive Pillars Grid */}
+            <motion.div 
+              className="hero-pillars-grid"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.15
+                  }
+                }
+              }}
+            >
+              {heroPillars.map((pillar) => (
+                <motion.div 
+                  key={pillar.title} 
+                  className="hero-pillar-card"
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      transition: {
+                        type: "spring",
+                        stiffness: 80,
+                        damping: 12
+                      }
+                    }
+                  }}
+                >
+                  <span className="hero-pillar-icon">{pillar.icon}</span>
+                  <h3 className="hero-pillar-title">{pillar.title}</h3>
+                  <p className="hero-pillar-desc">{pillar.desc}</p>
+                  <div className="hero-pillar-tags">
+                    {pillar.tags.map((tag) => (
+                      <span key={tag} className="hero-pillar-tag">{tag}</span>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
 
             {/* CTAs */}
             <div className="hero-cta-group">
@@ -1538,7 +2064,7 @@ export default function Services() {
                 Explore Services
               </a>
               <Link to="/contact" className="btn-secondary">
-                Pitch Your Idea
+                Pitch Your Ideas
               </Link>
             </div>
           </div>
