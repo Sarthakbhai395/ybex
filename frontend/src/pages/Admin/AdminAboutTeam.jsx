@@ -31,6 +31,11 @@ const EMPTY = { name: '', role: '', coreTeam: 'Founder', socialLink: '' };
 function resolveImg(url) {
   if (!url) return null;
   if (url.startsWith('/uploads/')) {
+    const envUrl = import.meta.env.VITE_API_URL;
+    if (envUrl && envUrl !== '/api') {
+      const API_BASE = envUrl.replace('/api', '');
+      return `${API_BASE}${url}`;
+    }
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname;
       const isIP = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(hostname);

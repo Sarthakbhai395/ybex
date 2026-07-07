@@ -129,6 +129,10 @@ const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
 const resolveImg = (url) => {
   if (!url) return null;
   if (url.startsWith('/uploads/')) {
+    const envUrl = import.meta.env.VITE_API_URL;
+    if (envUrl && envUrl !== '/api') {
+      return `${API_BASE}${url}`;
+    }
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname;
       const isIP = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(hostname);
