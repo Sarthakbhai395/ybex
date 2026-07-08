@@ -1342,10 +1342,25 @@ function FinalCTASection() {
 }
 
 export default function Home() {
-  const [brands, setBrands] = useState([]);
-  const [brandsLoading, setBrandsLoading] = useState(true);
-  const [creators, setCreators] = useState([]);
-  const [creatorsLoading, setCreatorsLoading] = useState(true);
+  const [brands, setBrands] = useState(() => {
+    try {
+      const cached = localStorage.getItem('ybex_brands');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [brandsLoading, setBrandsLoading] = useState(brands.length === 0);
+
+  const [creators, setCreators] = useState(() => {
+    try {
+      const cached = localStorage.getItem('ybex_creators');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [creatorsLoading, setCreatorsLoading] = useState(creators.length === 0);
 
   const hoverOn = () => {};
   const hoverOff = () => {};
@@ -1353,7 +1368,11 @@ export default function Home() {
   // Fetch brands from database
   useEffect(() => {
     axiosInstance.get('/brands')
-      .then((res) => setBrands(res.data.brands || []))
+      .then((res) => {
+        const fetchedBrands = res.data.brands || [];
+        setBrands(fetchedBrands);
+        localStorage.setItem('ybex_brands', JSON.stringify(fetchedBrands));
+      })
       .catch(() => setBrands([]))
       .finally(() => setBrandsLoading(false));
   }, []);
@@ -1361,12 +1380,16 @@ export default function Home() {
   // Fetch creators from database
   useEffect(() => {
     axiosInstance.get('/creators')
-      .then((res) => setCreators(res.data.creators || []))
+      .then((res) => {
+        const fetchedCreators = res.data.creators || [];
+        setCreators(fetchedCreators);
+        localStorage.setItem('ybex_creators', JSON.stringify(fetchedCreators));
+      })
       .catch(() => setCreators([]))
       .finally(() => setCreatorsLoading(false));
   }, []);
 
-  // Map gallery creators from database or fallback to talentProfiles
+  // Map gallery creators from database
   const galleryCreators = creators.length > 0
     ? creators.map((c) => ({
       _id: c._id,
@@ -1376,16 +1399,9 @@ export default function Home() {
       reach: c.reach || '3M+',
       engagementRate: c.engagementRate || '7.2%'
     }))
-    : talentProfiles.map((item, idx) => ({
-      _id: `mock-creator-${idx}`,
-      name: item.name,
-      imageUrl: item.image,
-      followersCount: idx === 0 ? '2.4M' : idx === 1 ? '1.8M' : idx === 2 ? '950K' : idx === 3 ? '1.2M' : idx === 4 ? '3.1M' : idx === 5 ? '880K' : '2.1M',
-      reach: idx === 0 ? '12M+' : idx === 1 ? '9.5M+' : idx === 2 ? '5.2M+' : idx === 3 ? '6.8M+' : idx === 4 ? '15M+' : idx === 5 ? '4.8M+' : '10M+',
-      engagementRate: idx === 0 ? '8.4%' : idx === 1 ? '7.2%' : idx === 2 ? '9.1%' : idx === 3 ? '7.8%' : idx === 4 ? '8.9%' : idx === 5 ? '6.7%' : '7.5%'
-    }));
+    : [];
 
-  // Map display brands from fetched or fallback mock list
+  // Map display brands from fetched database list
   const displayBrands = brands.length > 0
     ? brands.map((b) => ({
       name: b.name,
@@ -1394,7 +1410,7 @@ export default function Home() {
       isDb: true,
       link: b.websiteLink
     }))
-    : MOCK_HERO_BRANDS;
+    : [];
 
   // GSAP Entrance timelines and reveals
   useEffect(() => {
@@ -1515,7 +1531,18 @@ export default function Home() {
           </div>
 
           {/* Centered 3D curved gallery with scanning left/right split */}
-          <ThreeDCurvedGallery creators={galleryCreators} brands={displayBrands} />
+          {creatorsLoading || brandsLoading ? (
+            <div className="three-d-gallery-wrapper mt-16 flex flex-col items-center justify-center h-[350px] w-full max-w-4xl border border-white/5 bg-white/[0.01] rounded-[32px] backdrop-blur-md">
+              <div className="flex gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-2 h-2 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-2 h-2 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+              <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase mt-4">Connecting to secure database...</span>
+            </div>
+          ) : galleryCreators.length > 0 && displayBrands.length > 0 ? (
+            <ThreeDCurvedGallery creators={galleryCreators} brands={displayBrands} />
+          ) : null}
 
         </div>
       </section>

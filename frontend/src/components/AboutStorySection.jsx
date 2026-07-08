@@ -765,10 +765,24 @@ function MarqueeBrandItem({ brand, itemClass }) {
 export default function AboutStorySection() {
   const [viewCount, setViewCount] = useState(47804210);
   const [showHiringModal, setShowHiringModal] = useState(false);
-  const [teamMembers, setTeamMembers] = useState([]);
-  const [teamLoading, setTeamLoading] = useState(true);
-  const [brands, setBrands] = useState([]);
-  const [brandsLoading, setBrandsLoading] = useState(true);
+  const [teamMembers, setTeamMembers] = useState(() => {
+    try {
+      const cached = localStorage.getItem('ybex_team_members');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [teamLoading, setTeamLoading] = useState(teamMembers.length === 0);
+  const [brands, setBrands] = useState(() => {
+    try {
+      const cached = localStorage.getItem('ybex_brands');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [brandsLoading, setBrandsLoading] = useState(brands.length === 0);
   const [sliderIndex, setSliderIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const sliderIndexRef = useRef(0);
@@ -819,7 +833,11 @@ export default function AboutStorySection() {
 
   useEffect(() => {
     axiosInstance.get('/team-members')
-      .then((res) => setTeamMembers(res.data.members || []))
+      .then((res) => {
+        const fetchedMembers = res.data.members || [];
+        setTeamMembers(fetchedMembers);
+        localStorage.setItem('ybex_team_members', JSON.stringify(fetchedMembers));
+      })
       .catch(console.error)
       .finally(() => setTeamLoading(false));
   }, []);
@@ -832,6 +850,7 @@ export default function AboutStorySection() {
         const fetchedBrands = res.data.data || res.data.brands || [];
         console.log("AboutStorySection: Setting brands array of length:", fetchedBrands.length);
         setBrands(fetchedBrands);
+        localStorage.setItem('ybex_brands', JSON.stringify(fetchedBrands));
       })
       .catch((err) => {
         console.error("AboutStorySection: Failed to fetch brands", err);
@@ -926,26 +945,14 @@ export default function AboutStorySection() {
     };
   };
 
-  // Re-generate list for marquee scrolling using fetched brands and high-quality fallbacks
-  const fallbackBrands = [
-    { name: 'Bingo', logoUrl: '' },
-    { name: 'Stage', logoUrl: '' },
-    { name: 'Colors Rishtey', logoUrl: '' },
-    { name: 'Ryze', logoUrl: '' },
-    { name: 'Mi', logoUrl: '' },
-    { name: 'Colgate', logoUrl: '' },
-    { name: 'Oppo', logoUrl: '' },
-    { name: 'Amazon MX', logoUrl: '' },
-    { name: 'Wild Stone', logoUrl: '' },
-    { name: 'TVS', logoUrl: '' },
-    { name: 'Traya', logoUrl: '' }
-  ];
-
-  const displayBrandsList = brands && brands.length > 0 ? brands : fallbackBrands;
+  // Re-generate list for marquee scrolling using fetched brands
+  const displayBrandsList = brands && brands.length > 0 ? brands : [];
 
   const marqueeBrands = [];
-  for (let i = 0; i < 6; i++) {
-    marqueeBrands.push(...displayBrandsList);
+  if (displayBrandsList.length > 0) {
+    for (let i = 0; i < 6; i++) {
+      marqueeBrands.push(...displayBrandsList);
+    }
   }
 
   return (
@@ -2083,13 +2090,21 @@ export default function AboutStorySection() {
                   onMouseEnter={handleMouseEnter}
                 >
                   <span className="marquee-card-header">Our Brand Partners</span>
-                  <div className="marquee-container">
-                    <div className="marquee-track">
-                      {marqueeBrands.map((brand, index) => (
-                        <MarqueeBrandItem key={index} brand={brand} itemClass="marquee-item" />
-                      ))}
+                  {brandsLoading ? (
+                    <div className="flex items-center justify-center h-20">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#E4F141] animate-ping" />
                     </div>
-                  </div>
+                  ) : marqueeBrands.length > 0 ? (
+                    <div className="marquee-container">
+                      <div className="marquee-track">
+                        {marqueeBrands.map((brand, index) => (
+                          <MarqueeBrandItem key={index} brand={brand} itemClass="marquee-item" />
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-20 text-xs text-white/30">No brands partner yet</div>
+                  )}
                   <div style={{ height: '10px' }} />
                 </div>
               </div>
@@ -2098,7 +2113,19 @@ export default function AboutStorySection() {
         </section>
 
         {/* SECTION 3: THE VISIONARIES (FOUNDERS) */}
-        {displayFounders.length > 0 && (
+        {teamLoading ? (
+          <section className="about-team-section" id="team-founders-section">
+            <div className="team-heading-container">
+              <h2 className="team-section-title">The Visionaries</h2>
+              <p className="team-section-subtitle">Loading Founders...</p>
+            </div>
+            <div className="flex items-center justify-center h-40">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '300ms' }} />
+            </div>
+          </section>
+        ) : displayFounders.length > 0 ? (
           <section className="about-team-section" id="team-founders-section">
             <div className="team-heading-container">
               <h2 className="team-section-title">The Visionaries</h2>
@@ -2107,10 +2134,10 @@ export default function AboutStorySection() {
 
             <CoverflowCarousel members={displayFounders} />
           </section>
-        )}
+        ) : null}
 
         {/* SECTION 4: OUR POWERHOUSE */}
-        {displayPowerhouse.length > 0 && (
+        {!teamLoading && displayPowerhouse.length > 0 && (
           <section className="about-team-section" style={{ borderTop: 'none', paddingTop: 0 }}>
             <div className="team-heading-container">
               <h2 className="team-section-title">Our Powerhouse</h2>

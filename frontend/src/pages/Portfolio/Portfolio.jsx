@@ -119,13 +119,24 @@ function ProjectCard({ project, index }) {
 }
 
 export default function Portfolio() {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState(() => {
+    try {
+      const cached = localStorage.getItem('ybex_projects');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [loading, setLoading] = useState(projects.length === 0);
   const [activeFilter, setActiveFilter] = useState('all');
 
   useEffect(() => {
     axiosInstance.get('/projects')
-      .then(({ data }) => setProjects(data.projects || []))
+      .then(({ data }) => {
+        const fetchedProjects = data.projects || [];
+        setProjects(fetchedProjects);
+        localStorage.setItem('ybex_projects', JSON.stringify(fetchedProjects));
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

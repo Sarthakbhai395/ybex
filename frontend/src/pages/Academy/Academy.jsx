@@ -608,8 +608,23 @@ function StoryQuote({ lines }) {
 /* ─── COMPONENT ─────────────────────────────────────────────────────── */
 export default function Academy() {
   const [openFaq, setOpenFaq] = useState(0);
-  const [brands, setBrands] = useState([]);
-  const [successStories, setSuccessStories] = useState([]);
+  const [brands, setBrands] = useState(() => {
+    try {
+      const cached = localStorage.getItem('ybex_brands');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [successStories, setSuccessStories] = useState(() => {
+    try {
+      const cached = localStorage.getItem('ybex_success_stories');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [dataLoading, setDataLoading] = useState(brands.length === 0 || successStories.length === 0);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('enrollment');
   const [formData, setFormData] = useState({
@@ -644,12 +659,18 @@ export default function Academy() {
           axiosInstance.get('/brands'),
           axiosInstance.get('/success-stories')
         ]);
-        setBrands(brandsRes.data.data || brandsRes.data.brands || []);
-        setSuccessStories(storiesRes.data.data || []);
+        const fetchedBrands = brandsRes.data.data || brandsRes.data.brands || [];
+        const fetchedStories = storiesRes.data.data || [];
+        
+        setBrands(fetchedBrands);
+        setSuccessStories(fetchedStories);
+        
+        localStorage.setItem('ybex_brands', JSON.stringify(fetchedBrands));
+        localStorage.setItem('ybex_success_stories', JSON.stringify(fetchedStories));
       } catch (error) {
         console.error('Error fetching data:', error);
-        setBrands([]);
-        setSuccessStories([]);
+      } finally {
+        setDataLoading(false);
       }
     };
     fetchData();
@@ -739,8 +760,8 @@ export default function Academy() {
     }
   };
 
-  const displayBrands = brands.length > 0 ? brands : staticPlacementBrands.map((name, i) => ({ name, logoUrl: null, websiteLink: null, _id: i }));
-  const displayStories = successStories.length > 0 ? successStories : staticSuccessStories;
+  const displayBrands = brands;
+  const displayStories = successStories;
 
   return (
     <div style={{ 
@@ -1176,7 +1197,17 @@ export default function Academy() {
         </motion.div>
 
         {/* 3D Spiral Galaxy Carousel */}
-        <BrandSpiralGalaxy brands={displayBrands} />
+        {dataLoading ? (
+          <div className="flex items-center justify-center h-48">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#a855f7] animate-bounce" style={{ animationDelay: '0ms' }} />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#a855f7] animate-bounce" style={{ animationDelay: '150ms' }} />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#a855f7] animate-bounce" style={{ animationDelay: '300ms' }} />
+          </div>
+        ) : displayBrands.length > 0 ? (
+          <BrandSpiralGalaxy brands={displayBrands} />
+        ) : (
+          <div className="text-center text-white/35 py-12">No placement partners yet.</div>
+        )}
 
         {/* Stats Row */}
         <motion.div
@@ -1300,307 +1331,315 @@ export default function Academy() {
           </p>
         </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: '24px', maxWidth: '1400px', margin: '0 auto', padding: '0 16px' }}>
-          {displayStories.map((story, i) => {
-            // Split quote into lines of max 5 words each
-            const words = story.quote ? story.quote.split(' ') : [];
-            const lines = [];
-            for (let j = 0; j < words.length; j += 5) {
-              lines.push(words.slice(j, j + 5).join(' '));
-            }
+        {dataLoading ? (
+          <div className="flex items-center justify-center h-48">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#a855f7] animate-bounce" style={{ animationDelay: '0ms' }} />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#a855f7] animate-bounce" style={{ animationDelay: '150ms' }} />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#a855f7] animate-bounce" style={{ animationDelay: '300ms' }} />
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: '24px', maxWidth: '1400px', margin: '0 auto', padding: '0 16px' }}>
+            {displayStories.map((story, i) => {
+              // Split quote into lines of max 5 words each
+              const words = story.quote ? story.quote.split(' ') : [];
+              const lines = [];
+              for (let j = 0; j < words.length; j += 5) {
+                lines.push(words.slice(j, j + 5).join(' '));
+              }
 
-            return (
-              <motion.div
-                key={i}
-                className="story-card"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                style={{
-                  borderRadius: '24px',
-                  background: 'linear-gradient(160deg, rgba(30,20,60,0.95) 0%, rgba(15,10,35,0.98) 100%)',
-                  border: '1px solid rgba(139,92,246,0.18)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  backdropFilter: 'blur(24px)',
-                  boxShadow: '0 8px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(139,92,246,0.08)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
-                }}
-              >
-                {/* Hover border glow */}
+              return (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
+                  key={i}
+                  className="story-card"
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.08 }}
+                  whileHover={{ y: -10, transition: { duration: 0.3 } }}
                   style={{
-                    position: 'absolute',
-                    inset: 0,
                     borderRadius: '24px',
-                    padding: '1px',
-                    background: 'linear-gradient(135deg, rgba(167,139,250,0.7) 0%, rgba(124,58,237,0.5) 50%, rgba(167,139,250,0.3) 100%)',
-                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                    WebkitMaskComposite: 'xor',
-                    maskComposite: 'exclude',
-                    pointerEvents: 'none',
-                    zIndex: 3
+                    background: 'linear-gradient(160deg, rgba(30,20,60,0.95) 0%, rgba(15,10,35,0.98) 100%)',
+                    border: '1px solid rgba(139,92,246,0.18)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    backdropFilter: 'blur(24px)',
+                    boxShadow: '0 8px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(139,92,246,0.08)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
                   }}
-                />
+                >
+                  {/* Hover border glow */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      borderRadius: '24px',
+                      padding: '1px',
+                      background: 'linear-gradient(135deg, rgba(167,139,250,0.7) 0%, rgba(124,58,237,0.5) 50%, rgba(167,139,250,0.3) 100%)',
+                      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                      WebkitMaskComposite: 'xor',
+                      maskComposite: 'exclude',
+                      pointerEvents: 'none',
+                      zIndex: 3
+                    }}
+                  />
 
-                {/* ── TOP HALF: IMAGE ── */}
-                <div style={{ position: 'relative', height: '240px', overflow: 'hidden', borderRadius: '24px 24px 0 0', flexShrink: 0 }}>
-                  {story.imageUrl ? (
-                    <img
-                      src={story.imageUrl}
-                      alt={story.name}
-                      className={`story-img-${i}`}
-                      style={{
+                  {/* ── TOP HALF: IMAGE ── */}
+                  <div style={{ position: 'relative', height: '240px', overflow: 'hidden', borderRadius: '24px 24px 0 0', flexShrink: 0 }}>
+                    {story.imageUrl ? (
+                      <img
+                        src={story.imageUrl}
+                        alt={story.name}
+                        className={`story-img-${i}`}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          objectPosition: 'center center',
+                          display: 'block',
+                          transition: 'transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94)',
+                        }}
+                      />
+                    ) : (
+                      <div style={{
                         width: '100%',
                         height: '100%',
-                        objectFit: 'cover',
-                        objectPosition: 'center center',
-                        display: 'block',
-                        transition: 'transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94)',
-                      }}
-                    />
-                  ) : (
-                    <div style={{
-                      width: '100%',
-                      height: '100%',
-                      background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a78bfa 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '4rem',
-                      fontWeight: 800,
-                      color: 'rgba(255,255,255,0.9)',
-                      letterSpacing: '-0.02em',
-                      textShadow: '0 4px 20px rgba(0,0,0,0.3)'
-                    }}>
-                      {story.initials || story.name?.charAt(0) || '?'}
-                    </div>
-                  )}
-
-                  {/* Gradient fade at bottom of image */}
-                  <div style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: '70px',
-                    background: 'linear-gradient(to bottom, transparent 0%, rgba(15,10,35,0.97) 100%)',
-                    pointerEvents: 'none',
-                    zIndex: 1
-                  }} />
-
-                  {/* Package badge — top-right corner */}
-                  {story.earning && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '12px',
-                      right: '12px',
-                      padding: '5px 12px',
-                      borderRadius: '999px',
-                      background: 'linear-gradient(135deg, rgba(124,58,237,0.92) 0%, rgba(167,139,250,0.88) 100%)',
-                      border: '1px solid rgba(255,255,255,0.25)',
-                      backdropFilter: 'blur(12px)',
-                      fontSize: '0.72rem',
-                      fontWeight: 800,
-                      color: '#fff',
-                      letterSpacing: '0.04em',
-                      boxShadow: '0 4px 16px rgba(124,58,237,0.55)',
-                      zIndex: 3,
-                      whiteSpace: 'nowrap'
-                    }}>
-                      {story.earning}
-                    </div>
-                  )}
-
-                  {/* Social link overlay on hover */}
-                  {story.socialLink && (
-                    <a
-                      href={story.socialLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        position: 'absolute',
-                        inset: 0,
+                        background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a78bfa 100%)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        background: 'rgba(0,0,0,0)',
-                        transition: 'background 0.35s ease',
-                        zIndex: 2,
-                        textDecoration: 'none'
-                      }}
-                      className="image-hover-overlay"
-                    >
-                      <span style={{
-                        opacity: 0,
-                        transform: 'translateY(8px)',
-                        transition: 'all 0.35s ease',
-                        color: '#fff',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        background: 'rgba(124,58,237,0.85)',
-                        padding: '8px 16px',
+                        fontSize: '4rem',
+                        fontWeight: 800,
+                        color: 'rgba(255,255,255,0.9)',
+                        letterSpacing: '-0.02em',
+                        textShadow: '0 4px 20px rgba(0,0,0,0.3)'
+                      }}>
+                        {story.initials || story.name?.charAt(0) || '?'}
+                      </div>
+                    )}
+
+                    {/* Gradient fade at bottom of image */}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: '70px',
+                      background: 'linear-gradient(to bottom, transparent 0%, rgba(15,10,35,0.97) 100%)',
+                      pointerEvents: 'none',
+                      zIndex: 1
+                    }} />
+
+                    {/* Package badge — top-right corner */}
+                    {story.earning && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '12px',
+                        right: '12px',
+                        padding: '5px 12px',
                         borderRadius: '999px',
-                        backdropFilter: 'blur(8px)',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        letterSpacing: '0.05em'
-                      }} className="profile-link-btn">
-                        🔗 View Profile
-                      </span>
-                    </a>
-                  )}
-                </div>
+                        background: 'linear-gradient(135deg, rgba(124,58,237,0.92) 0%, rgba(167,139,250,0.88) 100%)',
+                        border: '1px solid rgba(255,255,255,0.25)',
+                        backdropFilter: 'blur(12px)',
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        color: '#fff',
+                        letterSpacing: '0.04em',
+                        boxShadow: '0 4px 16px rgba(124,58,237,0.55)',
+                        zIndex: 3,
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {story.earning}
+                      </div>
+                    )}
 
-                {/* ── BOTTOM HALF: INFO ── */}
-                <div style={{ padding: '20px 22px 22px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-
-                  {/* Name */}
-                  <h4 style={{
-                    fontSize: '1.05rem',
-                    fontWeight: 800,
-                    color: '#fff',
-                    margin: '0 0 4px 0',
-                    letterSpacing: '0.01em',
-                    lineHeight: 1.2,
-                    WebkitFontSmoothing: 'antialiased'
-                  }}>
-                    {story.name}
-                  </h4>
-
-                  {/* Organization */}
-                  {story.company && (
-                    <p style={{
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      color: '#a78bfa',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.12em',
-                      margin: '0 0 14px 0',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}>
-                      <span style={{
-                        display: 'inline-block',
-                        width: '16px',
-                        height: '2px',
-                        background: 'linear-gradient(90deg, #7c3aed, #a78bfa)',
-                        borderRadius: '1px',
-                        flexShrink: 0
-                      }} />
-                      {story.company}
-                    </p>
-                  )}
-
-                  {/* Divider */}
-                  <div style={{
-                    width: '100%',
-                    height: '1px',
-                    background: 'linear-gradient(90deg, rgba(139,92,246,0.4) 0%, rgba(139,92,246,0.05) 100%)',
-                    marginBottom: '14px'
-                  }} />
-
-                  {/* Quote — auto-scrollable StoryQuote */}
-                  <StoryQuote lines={lines} />
-
-                  {/* Role tag at bottom */}
-                  <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{
-                      fontSize: '0.68rem',
-                      fontWeight: 700,
-                      color: 'rgba(167,139,250,0.7)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      padding: '4px 10px',
-                      borderRadius: '6px',
-                      background: 'rgba(124,58,237,0.12)',
-                      border: '1px solid rgba(124,58,237,0.2)'
-                    }}>
-                      {story.role}
-                    </span>
+                    {/* Social link overlay on hover */}
                     {story.socialLink && (
                       <a
                         href={story.socialLink}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
-                          fontSize: '0.68rem',
-                          fontWeight: 700,
-                          color: '#a78bfa',
-                          textDecoration: 'none',
-                          letterSpacing: '0.08em',
+                          position: 'absolute',
+                          inset: 0,
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '4px',
-                          transition: 'color 0.2s ease'
+                          justifyContent: 'center',
+                          background: 'rgba(0,0,0,0)',
+                          transition: 'background 0.35s ease',
+                          zIndex: 2,
+                          textDecoration: 'none'
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
-                        onMouseLeave={(e) => e.currentTarget.style.color = '#a78bfa'}
+                        className="image-hover-overlay"
                       >
-                        VIEW →
+                        <span style={{
+                          opacity: 0,
+                          transform: 'translateY(8px)',
+                          transition: 'all 0.35s ease',
+                          color: '#fff',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          background: 'rgba(124,58,237,0.85)',
+                          padding: '8px 16px',
+                          borderRadius: '999px',
+                          backdropFilter: 'blur(8px)',
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          letterSpacing: '0.05em'
+                        }} className="profile-link-btn">
+                          🔗 View Profile
+                        </span>
                       </a>
                     )}
                   </div>
-                </div>
-              </motion.div>
-            );
-          })}
 
-          {/* Your Story Card - CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: displayStories.length * 0.1 }}
-            whileHover={{ y: -8, borderColor: 'rgba(255,77,0,0.5)', boxShadow: '0 20px 40px rgba(255,77,0,0.15)' }}
-            style={{
-              padding: '32px',
-              borderRadius: '20px',
-              background: 'linear-gradient(135deg, rgba(255,77,0,0.1) 0%, rgba(255,107,53,0.05) 100%)',
-              border: '2px solid rgba(255,77,0,0.3)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center'
-            }}
-          >
-            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'linear-gradient(135deg, #ff4d00, #ff6b35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', marginBottom: '16px' }}>
-              🚀
-            </div>
-            <h4 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>YOUR STORY</h4>
-            <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', marginBottom: '20px' }}>NEXT?</p>
-            <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginBottom: '20px' }}>APPLY NOW</p>
-            <motion.button
-              onClick={() => handleApplyClick('enrollment')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+                  {/* ── BOTTOM HALF: INFO ── */}
+                  <div style={{ padding: '20px 22px 22px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+
+                    {/* Name */}
+                    <h4 style={{
+                      fontSize: '1.05rem',
+                      fontWeight: 800,
+                      color: '#fff',
+                      margin: '0 0 4px 0',
+                      letterSpacing: '0.01em',
+                      lineHeight: 1.2,
+                      WebkitFontSmoothing: 'antialiased'
+                    }}>
+                      {story.name}
+                    </h4>
+
+                    {/* Organization */}
+                    {story.company && (
+                      <p style={{
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        color: '#a78bfa',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.12em',
+                        margin: '0 0 14px 0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}>
+                        <span style={{
+                          display: 'inline-block',
+                          width: '16px',
+                          height: '2px',
+                          background: 'linear-gradient(90deg, #7c3aed, #a78bfa)',
+                          borderRadius: '1px',
+                          flexShrink: 0
+                        }} />
+                        {story.company}
+                      </p>
+                    )}
+
+                    {/* Divider */}
+                    <div style={{
+                      width: '100%',
+                      height: '1px',
+                      background: 'linear-gradient(90deg, rgba(139,92,246,0.4) 0%, rgba(139,92,246,0.05) 100%)',
+                      marginBottom: '14px'
+                    }} />
+
+                    {/* Quote — auto-scrollable StoryQuote */}
+                    <StoryQuote lines={lines} />
+
+                    {/* Role tag at bottom */}
+                    <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        color: 'rgba(167,139,250,0.7)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.1em',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        background: 'rgba(124,58,237,0.12)',
+                        border: '1px solid rgba(124,58,237,0.2)'
+                      }}>
+                        {story.role}
+                      </span>
+                      {story.socialLink && (
+                        <a
+                          href={story.socialLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            fontSize: '0.68rem',
+                            fontWeight: 700,
+                            color: '#a78bfa',
+                            textDecoration: 'none',
+                            letterSpacing: '0.08em',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            transition: 'color 0.2s ease'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
+                          onMouseLeave={(e) => e.currentTarget.style.color = '#a78bfa'}
+                        >
+                          VIEW →
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+
+            {/* Your Story Card - CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: displayStories.length * 0.1 }}
+              whileHover={{ y: -8, borderColor: 'rgba(255,77,0,0.5)', boxShadow: '0 20px 40px rgba(255,77,0,0.15)' }}
               style={{
-                padding: '12px 28px',
-                borderRadius: '999px',
-                background: 'linear-gradient(135deg, #ff4d00, #ff6b35)',
-                color: '#fff',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '0 8px 32px rgba(255,77,0,0.4)'
+                padding: '32px',
+                borderRadius: '20px',
+                background: 'linear-gradient(135deg, rgba(255,77,0,0.1) 0%, rgba(255,107,53,0.05) 100%)',
+                border: '2px solid rgba(255,77,0,0.3)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center'
               }}
             >
-              APPLY NOW →
-            </motion.button>
-          </motion.div>
-        </div>
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'linear-gradient(135deg, #ff4d00, #ff6b35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', marginBottom: '16px' }}>
+                🚀
+              </div>
+              <h4 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>YOUR STORY</h4>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', marginBottom: '20px' }}>NEXT?</p>
+              <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginBottom: '20px' }}>APPLY NOW</p>
+              <motion.button
+                onClick={() => handleApplyClick('enrollment')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  padding: '12px 28px',
+                  borderRadius: '999px',
+                  background: 'linear-gradient(135deg, #ff4d00, #ff6b35)',
+                  color: '#fff',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 32px rgba(255,77,0,0.4)'
+                }}
+              >
+                APPLY NOW →
+              </motion.button>
+            </motion.div>
+          </div>
+        )}
       </section>
 
       {/* ── YBEX TALENT FUND ── */}

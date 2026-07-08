@@ -60,10 +60,10 @@ export default function PartnerSection({ creators = [], brands = [] }) {
     });
   }
 
-  const displayTrailImages = customImages.length > 0 ? customImages : gifImages;
+  const displayTrailImages = customImages.length > 0 ? customImages : [];
 
   const handleMouseMove = (e) => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || displayTrailImages.length === 0) return;
     const now = Date.now();
     
     // Spawn at most every 80ms
