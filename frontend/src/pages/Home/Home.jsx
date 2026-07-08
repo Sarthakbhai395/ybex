@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useInView, useScroll } from 'motion/react';
+import { REAL_BRANDS, REAL_CREATORS } from '../../content/realDbData';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { animate } from 'animejs/animation';
@@ -1345,9 +1346,9 @@ export default function Home() {
   const [brands, setBrands] = useState(() => {
     try {
       const cached = localStorage.getItem('ybex_brands');
-      return cached ? JSON.parse(cached) : [];
+      return cached ? JSON.parse(cached) : REAL_BRANDS;
     } catch {
-      return [];
+      return REAL_BRANDS;
     }
   });
   const [brandsLoading, setBrandsLoading] = useState(brands.length === 0);
@@ -1355,9 +1356,9 @@ export default function Home() {
   const [creators, setCreators] = useState(() => {
     try {
       const cached = localStorage.getItem('ybex_creators');
-      return cached ? JSON.parse(cached) : [];
+      return cached ? JSON.parse(cached) : REAL_CREATORS;
     } catch {
-      return [];
+      return REAL_CREATORS;
     }
   });
   const [creatorsLoading, setCreatorsLoading] = useState(creators.length === 0);

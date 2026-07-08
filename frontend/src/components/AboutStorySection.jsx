@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect, useRef } from 'react';
 import axiosInstance from '../api/axiosInstance';
+import { REAL_BRANDS, REAL_TEAM_MEMBERS } from '../content/realDbData';
 import {
   aboutJoinStrip,
   aboutStats,
@@ -768,18 +769,18 @@ export default function AboutStorySection() {
   const [teamMembers, setTeamMembers] = useState(() => {
     try {
       const cached = localStorage.getItem('ybex_team_members');
-      return cached ? JSON.parse(cached) : [];
+      return cached ? JSON.parse(cached) : REAL_TEAM_MEMBERS;
     } catch {
-      return [];
+      return REAL_TEAM_MEMBERS;
     }
   });
   const [teamLoading, setTeamLoading] = useState(teamMembers.length === 0);
   const [brands, setBrands] = useState(() => {
     try {
       const cached = localStorage.getItem('ybex_brands');
-      return cached ? JSON.parse(cached) : [];
+      return cached ? JSON.parse(cached) : REAL_BRANDS;
     } catch {
-      return [];
+      return REAL_BRANDS;
     }
   });
   const [brandsLoading, setBrandsLoading] = useState(brands.length === 0);

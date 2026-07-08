@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import axiosInstance from '../../api/axiosInstance';
+import { REAL_BRANDS, REAL_SUCCESS_STORIES } from '../../content/realDbData';
 
 /* ─── DATA ─────────────────────────────────────────────────────────── */
 const pillars = [
@@ -611,17 +612,17 @@ export default function Academy() {
   const [brands, setBrands] = useState(() => {
     try {
       const cached = localStorage.getItem('ybex_brands');
-      return cached ? JSON.parse(cached) : [];
+      return cached ? JSON.parse(cached) : REAL_BRANDS;
     } catch {
-      return [];
+      return REAL_BRANDS;
     }
   });
   const [successStories, setSuccessStories] = useState(() => {
     try {
       const cached = localStorage.getItem('ybex_success_stories');
-      return cached ? JSON.parse(cached) : [];
+      return cached ? JSON.parse(cached) : REAL_SUCCESS_STORIES;
     } catch {
-      return [];
+      return REAL_SUCCESS_STORIES;
     }
   });
   const [dataLoading, setDataLoading] = useState(brands.length === 0 || successStories.length === 0);

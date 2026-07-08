@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { motion, AnimatePresence } from "motion/react";
 import axiosInstance from "../../api/axiosInstance";
+import { REAL_PROJECTS } from "../../content/realDbData";
 import { getUploadUrl } from "../../api/getUploadUrl";
 
 const CATEGORIES = ['Brand Identity', 'Social Media', 'Campaigns', 'Product'];
@@ -122,9 +123,9 @@ export default function Portfolio() {
   const [projects, setProjects] = useState(() => {
     try {
       const cached = localStorage.getItem('ybex_projects');
-      return cached ? JSON.parse(cached) : [];
+      return cached ? JSON.parse(cached) : REAL_PROJECTS;
     } catch {
-      return [];
+      return REAL_PROJECTS;
     }
   });
   const [loading, setLoading] = useState(projects.length === 0);
