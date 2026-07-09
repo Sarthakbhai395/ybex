@@ -5218,4 +5218,41 @@ img {
   .animate-marquee-css {
     animation: animate-marquee 10s linear infinite;
   }
-}
+}
+
+/* ANTIGRAVITY GLOBAL TYPOGRAPHY OVERRIDES */
+/* Enforce Montserrat font family globally across all elements */
+*, *::before, *::after, html, body, div, span, p, a, button, input, select, textarea, li, ul, ol, section, footer, header, nav, blockquote, label {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+/* Make all standard text light (font-weight: 300) and not bold */
+body, p, span, div, a, button, input, textarea, select, li, label, section, footer, header, nav, blockquote, option {
+  font-weight: 300 !important;
+}
+
+/* Only headings will be bold (font-weight: 700) */
+h1, h2, h3, h4, h5, h6,
+h1 *, h2 *, h3 *, h4 *, h5 *, h6 * {
+  font-weight: 700 !important;
+}
+
+/* Force headings to capitalize only the first letter, and have all other letters lowercase (Sentence case) */
+h1, h2, h3, h4, h5, h6 {
+  text-transform: lowercase !important;
+}
+h1::first-letter, h2::first-letter, h3::first-letter, h4::first-letter, h5::first-letter, h6::first-letter {
+  text-transform: uppercase !important;
+}
+
+/* For nested spans/containers inside headers, make sure they align to the lowercase style */
+h1 *, h2 *, h3 *, h4 *, h5 *, h6 * {
+  text-transform: lowercase !important;
+}
+h1 span, h2 span, h3 span, h4 span, h5 span, h6 span {
+  display: inline-block;
+}
+h1 *::first-letter, h2 *::first-letter, h3 *::first-letter, h4 *::first-letter, h5 *::first-letter, h6 *::first-letter {
+  text-transform: uppercase !important;
+}
+

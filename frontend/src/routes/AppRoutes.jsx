@@ -23,6 +23,7 @@ import AdminSuccessStories from '../pages/Admin/AdminSuccessStories';
 import AdminScholarship from '../pages/Admin/AdminScholarship';
 import AdminRoute from '../components/common/AdminRoute';
 import SubAdminDashboard from '../pages/Admin/SubAdminDashboard';
+import AdminSaasRequests from '../pages/Admin/AdminSaasRequests';
 
 const AppRoutes = () => {
   return (
@@ -54,6 +55,7 @@ const AppRoutes = () => {
       <Route path="/admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
       <Route path="/admin/portfolio" element={<AdminRoute><AdminPlaceholder title="Portfolio" icon="port" description="Manage portfolio projects and case studies." /></AdminRoute>} />
       <Route path="/admin/bin" element={<AdminRoute><AdminPlaceholder title="Bin" icon="bin" description="Review and restore deleted items." /></AdminRoute>} />
+      <Route path="/admin/saas-requests" element={<AdminRoute><AdminSaasRequests /></AdminRoute>} />
       <Route path="/admin/website-settings" element={<AdminRoute><AdminPlaceholder title="Website Settings" icon="set" description="Configure global website settings and preferences." /></AdminRoute>} />
     </Routes>
   );

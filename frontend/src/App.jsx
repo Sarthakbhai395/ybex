@@ -32,6 +32,7 @@ import AdminSuccessStories from './pages/Admin/AdminSuccessStories';
 import AdminActivity from './pages/Admin/AdminActivity';
 import AdminBin from './pages/Admin/AdminBin';
 import SubAdminDashboard from './pages/Admin/SubAdminDashboard';
+import AdminSaasRequests from './pages/Admin/AdminSaasRequests';
 
 // Wraps public pages with Navbar + Footer
 function PublicLayout() {
@@ -79,6 +80,7 @@ export default function App() {
       <Route path="/admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
       <Route path="/admin/portfolio" element={<AdminRoute><AdminPortfolio /></AdminRoute>} />
       <Route path="/admin/bin" element={<AdminRoute><AdminBin /></AdminRoute>} />
+      <Route path="/admin/saas-requests" element={<AdminRoute><AdminSaasRequests /></AdminRoute>} />
       <Route path="/admin/website-settings" element={<AdminRoute><AdminPlaceholder title="Website Settings" icon="⚙️" description="Configure global website settings and preferences." /></AdminRoute>} />
     </Routes>
   );

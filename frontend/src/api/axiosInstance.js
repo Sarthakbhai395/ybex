@@ -1,9 +1,7 @@
 
 import axios from 'axios';
 
-// Dynamically resolve API base URL:
-// - On PC (localhost): use Vite proxy → '/api'
-// - On mobile/other device (IP access): use same host IP with backend port 5000
+
 function getBaseURL() {
   let envUrl = import.meta.env.VITE_API_URL;
   if (envUrl && envUrl !== '/api') {

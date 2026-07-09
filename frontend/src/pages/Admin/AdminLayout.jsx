@@ -22,6 +22,7 @@ const NAV_TABS = [
   { label: 'Invoices',         path: '/admin/invoices',         icon: '🧾', hoverColor: '#3b82f6' },
   { label: 'Portfolio',        path: '/admin/portfolio',        icon: '🗂️', hoverColor: '#3b82f6' },
   { label: 'Bin',              path: '/admin/bin',              icon: '🗑️', hoverColor: '#ef4444' },
+  { label: 'Ybex SaaS',        path: '/admin/saas-requests',    icon: '🚀', hoverColor: '#E4F141' },
 ];
 
 /* ── smooth page wrapper — fades content only, no layout shift ── */

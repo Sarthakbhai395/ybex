@@ -908,7 +908,129 @@ function ThreePillarsSection() {
   );
 }
 
+// Premium Gold Hexagon Crown Icon
+function GoldHexCrownIcon({ className = "w-6 h-6" }) {
+  return (
+    <svg 
+      viewBox="0 0 100 100" 
+      className={className}
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFE082" />
+          <stop offset="30%" stopColor="#FFD54F" />
+          <stop offset="70%" stopColor="#FFB300" />
+          <stop offset="100%" stopColor="#FF8F00" />
+        </linearGradient>
+        <linearGradient id="goldHexGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFF9C4" />
+          <stop offset="50%" stopColor="#FFD54F" />
+          <stop offset="100%" stopColor="#FF8F00" />
+        </linearGradient>
+      </defs>
+      
+      {/* Hexagon Border */}
+      <path 
+        d="M 50 8 L 88 30 L 88 70 L 50 92 L 12 70 L 12 30 Z" 
+        stroke="url(#goldHexGradient)" 
+        strokeWidth="5" 
+        strokeLinejoin="round"
+        fill="none"
+      />
+      
+      {/* Crown */}
+      <path 
+        d="M 28 66 
+           C 28 66, 32 63, 50 63 
+           C 68 63, 72 66, 72 66 
+           L 75 48 
+           L 62 55 
+           L 50 36 
+           L 38 55 
+           L 25 48 Z" 
+        fill="url(#goldGradient)"
+      />
+      
+      {/* Little crown circles */}
+      <circle cx="25" cy="48" r="3" fill="url(#goldGradient)" />
+      <circle cx="50" cy="36" r="3.5" fill="url(#goldGradient)" />
+      <circle cx="75" cy="48" r="3" fill="url(#goldGradient)" />
+      
+      {/* Crown bottom base shadow line */}
+      <path 
+        d="M 28 68 C 28 68, 35 71, 50 71 C 65 71, 72 68, 72 68" 
+        stroke="url(#goldHexGradient)" 
+        strokeWidth="3" 
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// Premium Silver User Star Icon
+function SilverUserStarIcon({ className = "w-6 h-6" }) {
+  return (
+    <svg 
+      viewBox="0 0 100 100" 
+      className={className}
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <linearGradient id="silverGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="30%" stopColor="#E0E0E0" />
+          <stop offset="70%" stopColor="#9E9E9E" />
+          <stop offset="100%" stopColor="#616161" />
+        </linearGradient>
+        <linearGradient id="silverRingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="50%" stopColor="#BDBDBD" />
+          <stop offset="100%" stopColor="#424242" />
+        </linearGradient>
+      </defs>
+      
+      {/* Circular Border with Gap for the star */}
+      <path 
+        d="M 72 26 
+           A 37 37 0 1 1 85 48" 
+        stroke="url(#silverRingGradient)" 
+        strokeWidth="5" 
+        strokeLinecap="round"
+        fill="none"
+      />
+      
+      {/* User head */}
+      <circle cx="50" cy="44" r="12" fill="url(#silverGradient)" />
+      
+      {/* User body */}
+      <path 
+        d="M 30 72 
+           C 30 60, 38 56, 50 56 
+           C 62 56, 70 60, 70 72 
+           Z" 
+        fill="url(#silverGradient)" 
+      />
+      
+      {/* Four-pointed Star */}
+      <path 
+        d="M 80 14 
+           Q 80 24 88 24 
+           Q 80 24 80 34 
+           Q 80 24 72 24 
+           Q 80 24 80 14 
+           Z" 
+        fill="url(#silverGradient)" 
+      />
+    </svg>
+  );
+}
+
 function ProblemSection() {
+  const [activeTab, setActiveTab] = useState(null); // null, 'brand', 'creator'
+
   const brandProblems = [
     { title: "Vague Pricing", text: "Opaque pricing structures and hidden agency markups inflate your ad spend." },
     { title: "Fake Engagement", text: "Bloated follower metrics, bot accounts, and inorganic comment pools skew results." },
@@ -924,154 +1046,218 @@ function ProblemSection() {
   ];
 
   return (
-    <section className="py-32 px-6 md:px-14 bg-black border-t border-b border-white/5 relative overflow-hidden">
+    <section className="py-20 px-0 bg-black border-t border-b border-white/5 relative overflow-hidden">
       {/* Subtle lighting backdrop */}
-      <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-[#E4F141]/[0.01] rounded-full filter blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-white/[0.01] rounded-full filter blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#E4F141]/[0.01] rounded-full filter blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-white/[0.01] rounded-full filter blur-[150px] pointer-events-none" />
 
-      <div className="max-w-[1400px] mx-auto">
-        <FadeUp className="mb-20 text-center" is3D={true}>
-          <div className="inline-flex items-center gap-3 mb-4">
-            <span className="w-2 h-2 rounded-full bg-[#E4F141] animate-ping" />
-            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#E4F141]">The Challenge</span>
-          </div>
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase max-w-4xl mx-auto">
-            The Creator Economy Is Growing.<br />
-            <span className="accent-yellow-text">But The System Is Still Broken.</span>
-          </h2>
-          <p className="text-white/50 text-xs sm:text-sm mt-6 max-w-xl mx-auto leading-relaxed">
-            Brands struggle with verification, and creators struggle with transparency. We fix the plumbing.
-          </p>
-        </FadeUp>
-
-        <div className="grid md:grid-cols-2 gap-10 relative z-10">
-          {/* Brand Problems Card */}
-          <FadeUp delay={0.1} is3D={true} className="h-full">
-            <div className="p-10 rounded-[32px] border border-white/5 bg-gradient-to-b from-white/[0.015] to-transparent h-full flex flex-col justify-between hover:border-[#E4F141]/30 transition-all duration-500">
-              <div>
-                <div className="inline-flex items-center gap-3.5 mb-8">
-                  <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#E4F141]">
-                    <XCircle className="w-4 h-4" />
-                  </div>
-                  <h3 className="text-xl font-black uppercase text-white tracking-wider">For Brands</h3>
-                </div>
-                
-                <div className="space-y-6">
-                  {brandProblems.map((prob, i) => (
-                    <div key={i} className="flex gap-4">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#E4F141]/60 mt-2 shrink-0" />
-                      <div>
-                        <h4 className="text-white font-bold text-sm tracking-wide mb-1 uppercase">{prob.title}</h4>
-                        <p className="text-white/50 text-xs leading-relaxed">{prob.text}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <span className="text-white/30 text-[9px] font-mono tracking-widest uppercase">CRITICAL PATH DETECTED</span>
-                <div className="bg-[#E4F141]/10 border border-[#E4F141]/20 text-[#E4F141] text-[10px] font-mono font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-lg w-fit">
-                  Result // Inefficient spend & low ROI
-                </div>
-              </div>
+      <div className="w-full mx-auto">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-14">
+          <FadeUp className="mb-14 text-center" is3D={true}>
+            <div className="inline-flex items-center gap-3 mb-4">
+              <span className="w-2 h-2 rounded-full bg-[#E4F141] animate-ping" />
+              <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#E4F141]">The Challenge</span>
             </div>
-          </FadeUp>
-
-          {/* Creator Problems Card */}
-          <FadeUp delay={0.2} is3D={true} className="h-full">
-            <div className="p-10 rounded-[32px] border border-white/5 bg-gradient-to-b from-white/[0.015] to-transparent h-full flex flex-col justify-between hover:border-[#E4F141]/30 transition-all duration-500">
-              <div>
-                <div className="inline-flex items-center gap-3.5 mb-8">
-                  <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#E4F141]">
-                    <AlertCircle className="w-4 h-4" />
-                  </div>
-                  <h3 className="text-xl font-black uppercase text-white tracking-wider">For Creators</h3>
-                </div>
-                
-                <div className="space-y-6">
-                  {creatorProblems.map((prob, i) => (
-                    <div key={i} className="flex gap-4">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#E4F141]/60 mt-2 shrink-0" />
-                      <div>
-                        <h4 className="text-white font-bold text-sm tracking-wide mb-1 uppercase">{prob.title}</h4>
-                        <p className="text-white/50 text-xs leading-relaxed">{prob.text}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <span className="text-white/30 text-[9px] font-mono tracking-widest uppercase">ADMINISTRATIVE LOOP</span>
-                <div className="bg-[#E4F141]/10 border border-[#E4F141]/20 text-[#E4F141] text-[10px] font-mono font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-lg w-fit">
-                  Result // Income instability & admin drag
-                </div>
-              </div>
-            </div>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase max-w-4xl mx-auto">
+              The Creator Economy Is Growing.<br />
+              <span className="accent-yellow-text">But The System Is Still Broken.</span>
+            </h2>
+            <p className="text-white/50 text-xs sm:text-sm mt-6 max-w-xl mx-auto leading-relaxed">
+              Brands struggle with verification, and creators struggle with transparency. We fix the plumbing.
+            </p>
           </FadeUp>
         </div>
 
-        {/* Bridge the Gap Callout */}
-        <FadeUp delay={0.3} is3D={true} className="mt-20 relative z-10 max-w-5xl mx-auto">
-          <div className="relative p-[1px] rounded-[36px] bg-gradient-to-r from-white/10 via-[#E4F141]/40 to-white/10 overflow-hidden shadow-[0_0_50px_rgba(228,241,65,0.05)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(228,241,65,0.04)_0%,transparent_70%)] pointer-events-none" />
+        {/* Interactive Redesigned Widget Container - Full Width edge-to-edge */}
+        <div 
+          className="relative w-full overflow-hidden"
+          onMouseLeave={() => setActiveTab(null)}
+        >
+          <div className="w-full flex flex-col lg:flex-row items-center lg:items-stretch gap-0 min-h-[420px] lg:min-h-[520px]">
             
-            {/* Main content body */}
-            <div className="px-6 md:px-10 py-12 md:py-16 bg-black/90 backdrop-blur-xl rounded-[35px] border border-white/5 flex flex-col items-center text-center relative z-10">
+            {/* Left Column / Center Image Container */}
+            <motion.div 
+              layout
+              transition={{ type: "spring", stiffness: 180, damping: 25 }}
+              className={`relative overflow-hidden flex-shrink-0 transition-all duration-500 ${
+                activeTab === null 
+                  ? 'w-full h-[400px] lg:h-[500px] border-none' 
+                  : 'w-full lg:w-[460px] h-[280px] lg:h-[520px] border-y border-r border-white/10 lg:rounded-r-[32px]'
+              }`}
+            >
+              {/* Default Banner Layer (Fades out when tab is hovered) */}
+              <motion.div 
+                className="absolute inset-0 w-full h-full"
+                style={{
+                  backgroundImage: "url('/light-grid-banner.png')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center center",
+                  backgroundRepeat: "no-repeat",
+                }}
+                animate={{
+                  opacity: activeTab === null ? 1 : 0
+                }}
+                transition={{ duration: 0.4 }}
+              />
+
+              {/* Brand & Creator Logos Layer (Fades in when tab is hovered) */}
+              <motion.div 
+                className="absolute inset-0 w-full h-full"
+                style={{
+                  backgroundImage: "url('/brand-creator-logos.jpg')",
+                  backgroundRepeat: "no-repeat",
+                }}
+                animate={{
+                  opacity: activeTab !== null ? 1 : 0,
+                  backgroundPosition: 
+                    activeTab === "brand" 
+                      ? "10% center" 
+                      : activeTab === "creator"
+                      ? "90% center"
+                      : "center center",
+                  backgroundSize: 
+                    activeTab === null 
+                      ? "contain" 
+                      : "180%",
+                }}
+                transition={{ 
+                  opacity: { duration: 0.4 },
+                  backgroundPosition: { type: "spring", stiffness: 120, damping: 20 },
+                  backgroundSize: { type: "spring", stiffness: 120, damping: 20 }
+                }}
+              />
               
-              {/* Pulsing glow pipeline indicator */}
-              <div className="flex items-center justify-center gap-6 md:gap-16 mb-10 w-full overflow-hidden">
-                {/* Brand Side Node */}
-                <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#E4F141] shadow-[0_0_15px_rgba(228,241,65,0.15)] animate-pulse">
-                    <Building2 className="w-4 h-4" />
+              {/* Background overlay - Lighter overlay in default view */}
+              <div className={`absolute inset-0 bg-black transition-all duration-500 ${activeTab !== null ? 'opacity-45 backdrop-blur-0' : 'opacity-25 backdrop-blur-[1px]'}`} />
+
+              {/* Default State content (activeTab === null) */}
+              {activeTab === null && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10">
+                  <h3 className="text-xl md:text-2xl font-black text-white uppercase mb-6 tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+                    Inspect the challenges we solve
+                  </h3>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md px-4">
+                    {/* Brand Hover Card */}
+                    <div 
+                      onMouseEnter={() => setActiveTab('brand')}
+                      className="flex-1 cursor-pointer bg-zinc-950/90 hover:bg-[#FFD54F]/10 border border-white/10 hover:border-[#FFD54F]/60 p-4 rounded-2xl transition-all duration-300 group flex flex-col items-center justify-center hover:shadow-[0_0_30px_rgba(255,213,79,0.15)]"
+                    >
+                      <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#FFD54F] mb-2 group-hover:scale-110 transition-transform">
+                        <GoldHexCrownIcon className="w-5.5 h-5.5" />
+                      </div>
+                      <span className="text-xs font-black text-white uppercase tracking-wider">For Brands</span>
+                      <span className="text-[9px] text-white/40 mt-1">Hover to inspect →</span>
+                    </div>
+
+                    {/* Creator Hover Card */}
+                    <div 
+                      onMouseEnter={() => setActiveTab('creator')}
+                      className="flex-1 cursor-pointer bg-zinc-950/90 hover:bg-white/10 border border-white/10 hover:border-white/60 p-4 rounded-2xl transition-all duration-300 group flex flex-col items-center justify-center hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+                    >
+                      <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#E0E0E0] mb-2 group-hover:scale-110 transition-transform">
+                        <SilverUserStarIcon className="w-5.5 h-5.5" />
+                      </div>
+                      <span className="text-xs font-black text-white uppercase tracking-wider">For Creators</span>
+                      <span className="text-[9px] text-white/40 mt-1">Hover to inspect →</span>
+                    </div>
                   </div>
-                  <span className="text-[9px] font-mono tracking-widest text-white/50 uppercase">BRANDS</span>
                 </div>
-                
-                {/* Connecting Laser Conduit */}
-                <div className="h-[2px] flex-grow max-w-[120px] relative bg-gradient-to-r from-white/10 via-[#E4F141] to-white/10 overflow-hidden rounded-full">
-                  <div className="absolute top-0 left-0 h-full w-10 bg-gradient-to-r from-transparent via-white to-transparent animate-laser-flow" />
-                </div>
+              )}
 
-                {/* Center YBEX Portal Badge */}
-                <div className="px-5 py-2.5 bg-[#E4F141] text-black rounded-2xl font-black text-[10px] sm:text-xs tracking-[0.25em] uppercase shadow-[0_0_30px_rgba(228,241,65,0.4)] transform hover:scale-105 transition-all flex-shrink-0">
-                  YBEX PORTAL
+              {/* Perspective Badge on activeTab !== null */}
+              {activeTab !== null && (
+                <div className="absolute top-4 left-4 z-10 bg-black/75 border border-white/10 rounded-full px-3.5 py-1.5 text-[9px] font-black uppercase text-[#E4F141] tracking-widest shadow-lg select-none">
+                  {activeTab === 'brand' ? 'Brand Challenges' : 'Creator Challenges'}
                 </div>
+              )}
+            </motion.div>
 
-                {/* Connecting Laser Conduit */}
-                <div className="h-[2px] flex-grow max-w-[120px] relative bg-gradient-to-r from-white/10 via-[#E4F141] to-white/10 overflow-hidden rounded-full">
-                  <div className="absolute top-0 left-0 h-full w-10 bg-gradient-to-r from-transparent via-white to-transparent animate-laser-flow-reverse" />
-                </div>
+            {/* Right Column / Challenges details list */}
+            <AnimatePresence mode="wait">
+              {activeTab !== null && (
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -40 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 22 }}
+                  className="flex-1 flex flex-col justify-between p-6 md:p-10 bg-zinc-950/95 border-y border-white/10"
+                >
+                  <div>
+                    {/* Top quick selector pills */}
+                    <div className="flex gap-2.5 mb-8 w-full max-w-xs">
+                      <button
+                        onMouseEnter={() => setActiveTab('brand')}
+                        className={`flex-1 py-2 px-3.5 rounded-xl border text-[9px] font-black tracking-widest uppercase transition-all duration-300 ${
+                          activeTab === 'brand'
+                            ? 'bg-[#FFD54F] text-black border-[#FFD54F] shadow-[0_0_15px_rgba(255,213,79,0.2)]'
+                            : 'bg-white/5 text-white/60 border-white/10 hover:border-white/20'
+                        }`}
+                      >
+                        Brands
+                      </button>
+                      <button
+                        onMouseEnter={() => setActiveTab('creator')}
+                        className={`flex-1 py-2 px-3.5 rounded-xl border text-[9px] font-black tracking-widest uppercase transition-all duration-300 ${
+                          activeTab === 'creator'
+                            ? 'bg-[#E0E0E0] text-black border-[#E0E0E0] shadow-[0_0_15px_rgba(255,255,255,0.2)]'
+                            : 'bg-white/5 text-white/60 border-white/10 hover:border-white/20'
+                        }`}
+                      >
+                        Creators
+                      </button>
+                    </div>
 
-                {/* Creator Side Node */}
-                <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#E4F141] shadow-[0_0_15px_rgba(228,241,65,0.15)] animate-pulse">
-                    <Sparkles className="w-4 h-4" />
+                    {/* Header title */}
+                    <div className="inline-flex items-center gap-3 mb-6">
+                      <div className={`w-8.5 h-8.5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center ${activeTab === 'brand' ? 'text-[#FFD54F]' : 'text-[#E0E0E0]'}`}>
+                        {activeTab === 'brand' ? <GoldHexCrownIcon className="w-5 h-5" /> : <SilverUserStarIcon className="w-5 h-5" />}
+                      </div>
+                      <h3 className="text-sm font-black uppercase text-white tracking-widest">
+                        Challenges for <span className={activeTab === 'brand' ? 'text-[#FFD54F]' : 'text-[#E0E0E0]'}>{activeTab === 'brand' ? 'Brands' : 'Creators'}</span>
+                      </h3>
+                    </div>
+
+                    {/* Problems grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-2">
+                      {(activeTab === 'brand' ? brandProblems : creatorProblems).map((prob, i) => (
+                        <motion.div
+                          key={prob.title}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.05, duration: 0.25 }}
+                          className="p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors group/item flex flex-col justify-start"
+                        >
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${activeTab === 'brand' ? 'bg-[#FFD54F]' : 'bg-[#E0E0E0]'}`} />
+                            <h4 className={`font-bold text-xs tracking-wide uppercase transition-colors ${activeTab === 'brand' ? 'text-white group-hover/item:text-[#FFD54F]' : 'text-white group-hover/item:text-[#E0E0E0]'}`}>{prob.title}</h4>
+                          </div>
+                          <p className="text-white/50 text-[10px] leading-relaxed">{prob.text}</p>
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
-                  <span className="text-[9px] font-mono tracking-widest text-white/50 uppercase">CREATORS</span>
-                </div>
-              </div>
 
-              {/* Text Callout */}
-              <span className="text-[9px] font-mono tracking-widest bg-[#E4F141]/10 text-[#E4F141] border border-[#E4F141]/20 px-4 py-2 rounded-full mb-6">
-                THE SOLUTION // METRIC BRIDGE
-              </span>
-              
-              <h3 className="text-xl md:text-3xl font-black tracking-tight text-white uppercase max-w-3xl leading-snug">
-                YBEX bridges the gap by linking <span className="accent-yellow-text">verified data</span>, <span className="accent-yellow-text">transparent rates</span>, and <span className="accent-yellow-text">automated campaigns</span>.
-              </h3>
-              
-              <p className="text-white/50 text-xs sm:text-sm mt-5 max-w-xl leading-relaxed">
-                By integrating our core metrics engines directly with social APIs, we eliminate middle-man markups, verify active creators, and pay out instantly.
-              </p>
-            </div>
+                  {/* Bottom Status / Path indicator */}
+                  <div className="mt-8 pt-4 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <span className="text-white/30 text-[9px] font-mono tracking-widest uppercase">
+                      {activeTab === 'brand' ? 'SYSTEMIC EXPOSURE DETECTED' : 'INCOME DRAIN LOOP'}
+                    </span>
+                    <div className="bg-[#E4F141]/10 border border-[#E4F141]/20 text-[#E4F141] text-[9px] font-mono font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-lg w-fit">
+                      {activeTab === 'brand' ? 'Result // Inefficient spend & low ROI' : 'Result // Income instability & admin drag'}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
           </div>
-        </FadeUp>
+        </div>
       </div>
     </section>
   );
+
 }
 
 function EarlyAccessFormSection() {
@@ -1089,15 +1275,10 @@ function EarlyAccessFormSection() {
     }
     setLoading(true);
     setError('');
-
     try {
-      // Use existing endpoint `/contact`
-      await axiosInstance.post('/contact', {
-        name: 'Private Beta Applicant',
+      await axiosInstance.post('/saas-requests', {
         email: email.trim(),
-        phone: phone.trim() || 'N/A',
-        subject: 'YBEX Private Beta early access request',
-        message: 'Requested early access for YBEX private beta launching soon for selected brands and creators.'
+        phone: phone.trim()
       });
       setSuccess(true);
       setEmail('');
@@ -1285,62 +1466,7 @@ function BrandBuildingSection() {
   );
 }
 
-function FinalCTASection() {
-  const scrollToEarlyAccess = () => {
-    const el = document.getElementById('early-access');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
-  return (
-    <section className="py-28 px-6 md:px-14 bg-gradient-to-b from-[#030303] to-black border-t border-white/5 relative overflow-hidden text-center">
-      {/* Animated subtle particle circle background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#E4F141]/3 rounded-full filter blur-[120px] pointer-events-none animate-pulse" />
-
-      <div className="max-w-4xl mx-auto relative z-10">
-        <FadeUp is3D={true}>
-          <div className="inline-flex items-center gap-3 mb-6">
-            <span className="h-px w-8" style={{ background: ACCENT }} />
-            <span className="text-[10px] font-black tracking-[0.3em] uppercase" style={{ color: ACCENT }}>Join Us</span>
-            <span className="h-px w-8" style={{ background: ACCENT }} />
-          </div>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight leading-none text-white max-w-3xl mx-auto mb-6">
-            Be a part of the next chapter of the <span style={{ color: ACCENT }}>creator economy</span>.
-          </h2>
-          <p className="text-white/60 text-xs sm:text-sm md:text-base font-medium max-w-xl mx-auto mb-12 leading-relaxed">
-            YBEX brings technology, data transparency, and human creativity together. Sign up today.
-          </p>
-        </FadeUp>
-
-        <FadeUp delay={0.15} is3D={true}>
-          <div className="flex flex-wrap gap-4 justify-center items-center">
-            <Link
-              to="/get-started?role=brand"
-              className="btn-yellow px-8 py-4 rounded-full text-xs uppercase tracking-widest font-bold"
-            >
-              I'm a Brand
-            </Link>
-
-            <Link
-              to="/get-started?role=creator"
-              className="btn-outline px-8 py-4 rounded-full text-xs uppercase tracking-widest font-bold border border-white/10 hover:border-[#E4F141] hover:text-[#E4F141] transition-all"
-            >
-              I'm a Creator
-            </Link>
-
-            <button
-              onClick={scrollToEarlyAccess}
-              className="btn-outline px-8 py-4 rounded-full text-xs uppercase tracking-widest font-bold border border-[#E4F141]/30 text-[#E4F141] hover:bg-[#E4F141]/10 transition-all cursor-pointer"
-            >
-              Get Early Access
-            </button>
-          </div>
-        </FadeUp>
-      </div>
-    </section>
-  );
-}
 
 export default function Home() {
   const [brands, setBrands] = useState(() => {
@@ -1592,8 +1718,7 @@ export default function Home() {
       {/* ── TESTIMONIAL CAROUSEL ── */}
       <TestimonialCarousel />
 
-      {/* ── FINAL CTA ── */}
-      <FinalCTASection />
+
 
       {/* ── PARTNER SECTION ── */}
       <PartnerSection creators={creators} brands={brands} />

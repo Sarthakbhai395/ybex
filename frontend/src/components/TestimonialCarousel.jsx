@@ -167,7 +167,7 @@ export default function TestimonialCarousel() {
           font-size: clamp(1.5rem, 4vw, 2.4rem);
           font-weight: 700;
           color: #ffffff;
-          text-transform: uppercase;
+          text-transform: lowercase;
           font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
           letter-spacing: -0.01em;
         }
@@ -299,14 +299,14 @@ export default function TestimonialCarousel() {
       {/* Header — ganox removed */}
       <div className="ganox-review-header">
         <div className="ganox-title-row-1">
-          <span className="ganox-title-our">our</span>
+          <span className="ganox-title-our">Our</span>
           <span className="ganox-title-clients">clients</span>
           <span className="ganox-title-line-right"></span>
         </div>
         <div className="ganox-title-row-2">
           <span className="ganox-title-line-left"></span>
           <span className="ganox-title-story">story</span>
-          <span className="ganox-title-highlights">HIGHLIGHTS</span>
+          <span className="ganox-title-highlights">highlights</span>
         </div>
       </div>
 

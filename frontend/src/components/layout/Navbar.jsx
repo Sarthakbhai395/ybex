@@ -330,14 +330,7 @@ export default function Navbar() {
         @media (max-width: 960px) {
           .desktop-nav { display: none !important; }
           .nav-cta {
-            display: flex !important;
-            padding: 8px 16px !important;
-            font-size: 0.72rem !important;
-            min-height: 36px !important;
-            border-radius: 20px !important;
-            margin-right: 12px;
-            white-space: nowrap;
-            letter-spacing: 0.05em !important;
+            display: none !important;
           }
           .nav-actions {
             flex: 1;

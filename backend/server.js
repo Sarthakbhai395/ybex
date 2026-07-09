@@ -17,6 +17,7 @@ const activityRoutes = require('./routes/activityRoutes');
 const binRoutes = require('./routes/binRoutes');
 const scholarshipRoutes = require('./routes/scholarshipRoutes');
 const hiringRoutes = require('./routes/hiringRoutes');
+const saasRequestRoutes = require('./routes/saasRequestRoutes');
 
 dotenv.config();
 connectDB();
@@ -43,6 +44,7 @@ app.use('/api/activity', activityRoutes);
 app.use('/api/bin', binRoutes);
 app.use('/api/scholarships', scholarshipRoutes);
 app.use('/api/hiring', hiringRoutes);
+app.use('/api/saas-requests', saasRequestRoutes);
 
 // Public brands endpoint (no auth required)
 const Brand = require('./models/Brand');

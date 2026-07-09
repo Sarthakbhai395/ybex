@@ -1576,8 +1576,8 @@ export default function AboutStorySection() {
           left: 0;
           top: 0;
           bottom: 0;
-          width: 120px;
-          background: linear-gradient(to right, #000000 20%, transparent 100%);
+          width: 250px;
+          background: linear-gradient(to right, #000000 45%, transparent 100%);
           z-index: 20;
           pointer-events: none;
         }
