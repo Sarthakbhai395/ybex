@@ -819,7 +819,7 @@ function ThreePillarsSection() {
   ];
 
   return (
-    <section className="py-32 px-6 md:px-14 bg-black relative overflow-hidden">
+    <section className="pt-24 pb-32 px-6 md:px-14 bg-black relative overflow-hidden">
       {/* Decorative background grid and spots */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,rgba(228,241,65,0.015)_0%,transparent_60%)] pointer-events-none" />
       
@@ -1494,11 +1494,11 @@ export default function Home() {
       <CursorParticlesBackground />
 
       {/* ── HERO SECTION ── */}
-      <section className="relative pt-[36px] md:pt-[64px] pb-12 px-4 md:px-8 border-b border-white/5 z-10 overflow-hidden">
-        <div className="max-w-7xl mx-auto flex flex-col items-center">
+      <section className="relative pt-[36px] md:pt-[64px] pb-12 px-0 border-b border-white/5 z-10 overflow-hidden">
+        <div className="w-full flex flex-col items-center">
 
           {/* Centered Column: Text & Action Hub */}
-          <div className="text-center flex flex-col items-center justify-center pt-0 pb-6 px-2 max-w-4xl">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 text-center flex flex-col items-center justify-center pt-0 pb-6 px-2 max-w-4xl">
             <div className="hero-badge-anim hidden"></div>
 
             <h1 className="hero-title-anim text-4xl sm:text-5xl md:text-[64px] font-black text-white tracking-tight leading-[1.05] uppercase">
@@ -1531,19 +1531,21 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Centered 3D curved gallery with scanning left/right split */}
-          {creatorsLoading || brandsLoading ? (
-            <div className="three-d-gallery-wrapper mt-16 flex flex-col items-center justify-center h-[350px] w-full max-w-4xl border border-white/5 bg-white/[0.01] rounded-[32px] backdrop-blur-md">
-              <div className="flex gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-2 h-2 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-2 h-2 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '300ms' }} />
+          {/* Centered 3D curved gallery with scanning left/right split - spans full width */}
+          <div className="w-full mt-10">
+            {creatorsLoading || brandsLoading ? (
+              <div className="three-d-gallery-wrapper mt-16 flex flex-col items-center justify-center h-[350px] w-full max-w-4xl border border-white/5 bg-white/[0.01] rounded-[32px] backdrop-blur-md mx-auto">
+                <div className="flex gap-2">
+                  <div className="w-2 h-2 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+                <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase mt-4">Connecting to secure database...</span>
               </div>
-              <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase mt-4">Connecting to secure database...</span>
-            </div>
-          ) : galleryCreators.length > 0 && displayBrands.length > 0 ? (
-            <ThreeDCurvedGallery creators={galleryCreators} brands={displayBrands} />
-          ) : null}
+            ) : galleryCreators.length > 0 && displayBrands.length > 0 ? (
+              <ThreeDCurvedGallery creators={galleryCreators} brands={displayBrands} />
+            ) : null}
+          </div>
 
         </div>
       </section>
@@ -1571,8 +1573,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── TRUST SECTION ── */}
-      <TrustSection />
 
       {/* ── THREE PILLARS ── */}
       <ThreePillarsSection />

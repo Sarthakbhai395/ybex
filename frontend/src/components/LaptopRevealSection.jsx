@@ -25,12 +25,13 @@ export default function LaptopRevealSection() {
     >
       <style>{`
         .laptop-reveal-section {
-          min-height: 110vh;
+          min-height: 130vh;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
           background: #000000;
-          padding: 80px 20px;
+          padding: 120px 20px 80px 20px;
           position: relative;
           overflow: hidden;
         }
@@ -42,6 +43,11 @@ export default function LaptopRevealSection() {
           display: flex;
           flex-direction: column;
           align-items: center;
+        }
+        
+        .accent-yellow-text {
+          color: #E4F141 !important;
+          text-shadow: 0 0 25px rgba(228, 241, 65, 0.25);
         }
 
         /* The screen lid that rotates open */
@@ -292,8 +298,8 @@ export default function LaptopRevealSection() {
 
         @media (max-width: 768px) {
           .laptop-reveal-section {
-            min-height: 80vh;
-            padding: 60px 16px;
+            min-height: 90vh;
+            padding: 80px 16px 60px 16px;
           }
           .laptop-wrapper {
             max-width: 100%;
@@ -313,6 +319,22 @@ export default function LaptopRevealSection() {
           }
         }
       `}</style>
+
+      {/* Heading Block above the Laptop Animation */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="text-center mb-20 max-w-4xl z-10 px-4"
+      >
+        <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-white mb-6 leading-none">
+          Something new is happening in the <span className="accent-yellow-text">creator economy</span>.
+        </h2>
+        <p className="text-white/50 text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+          The future of transparent brand & creator collaborations is almost here.
+        </p>
+      </motion.div>
 
       <div className="laptop-wrapper">
         {/* Laptop Lid (rotates open on scroll) */}
