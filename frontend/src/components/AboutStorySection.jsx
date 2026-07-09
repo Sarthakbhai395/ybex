@@ -1052,7 +1052,7 @@ export default function AboutStorySection() {
           font-size: 0.85rem;
           letter-spacing: 0.22em;
           text-transform: uppercase;
-          color: #E4F141;
+          color: #ffffff;
           font-weight: 800;
           margin-bottom: 16px;
         }
@@ -1154,7 +1154,7 @@ export default function AboutStorySection() {
           font-size: 0.8rem;
           letter-spacing: 0.15em;
           text-transform: uppercase;
-          color: #E4F141;
+          color: #ffffff;
           font-weight: 800;
           margin-bottom: 8px;
         }
@@ -1229,7 +1229,7 @@ export default function AboutStorySection() {
         .sparkle-icon {
           width: 38px;
           height: 38px;
-          fill: #E4F141;
+          fill: #ffffff;
           animation: sparkle-pulse 4s infinite ease-in-out;
         }
 
@@ -1661,7 +1661,7 @@ export default function AboutStorySection() {
 
         .team-section-subtitle {
           font-size: 1.1rem;
-          color: #E4F141;
+          color: #ffffff;
           text-transform: uppercase;
           letter-spacing: 0.15em;
           font-weight: 800;
@@ -1717,7 +1717,7 @@ export default function AboutStorySection() {
 
         .coverflow-role {
           font-size: 0.85rem;
-          color: #E4F141;
+          color: #ffffff;
           margin: 0;
           font-style: italic;
           font-weight: 800;
@@ -1931,7 +1931,7 @@ export default function AboutStorySection() {
                   transition={{ duration: 0.4 }}
                   style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
                 >
-                  <span style={{ fontSize: '0.85rem', color: '#E4F141', fontWeight: '900', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '0.85rem', color: '#ffffff', fontWeight: '900', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
                     {aboutTimeline[sliderIndex].phase}
                   </span>
                   <h2 style={{ fontSize: '2.5rem', fontWeight: '900', margin: 0, textTransform: 'uppercase', letterSpacing: '-0.02em', color: '#ffffff' }}>
@@ -1995,7 +1995,7 @@ export default function AboutStorySection() {
                 fontSize: '0.72rem',
                 letterSpacing: '0.2em',
                 fontWeight: 800,
-                color: '#E4F141',
+                color: '#ffffff',
                 textTransform: 'uppercase'
               }}>
                 EXPLORE ECOSYSTEM
@@ -2093,7 +2093,7 @@ export default function AboutStorySection() {
                   <span className="marquee-card-header">Our Brand Partners</span>
                   {brandsLoading ? (
                     <div className="flex items-center justify-center h-20">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#E4F141] animate-ping" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#ffffff] animate-ping" />
                     </div>
                   ) : marqueeBrands.length > 0 ? (
                     <div className="marquee-container">
@@ -2121,9 +2121,9 @@ export default function AboutStorySection() {
               <p className="team-section-subtitle">Loading Founders...</p>
             </div>
             <div className="flex items-center justify-center h-40">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-2.5 h-2.5 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-2.5 h-2.5 rounded-full bg-[#E4F141] animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#ffffff] animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#ffffff] animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#ffffff] animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </section>
         ) : displayFounders.length > 0 ? (

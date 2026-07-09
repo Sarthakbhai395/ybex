@@ -9,10 +9,10 @@ import { stagger } from 'animejs/utils';
 import Lenis from 'lenis';
 import axiosInstance from '../../api/axiosInstance';
 import '../../styles/MinimalHome.css';
-import { 
-  Eye, Users, Share2, Tags, MapPin, 
-  Building2, Sparkles, Cpu, 
-  XCircle, AlertCircle 
+import {
+  Eye, Users, Share2, Tags, MapPin,
+  Building2, Sparkles, Cpu,
+  XCircle, AlertCircle
 } from 'lucide-react';
 
 // siteData imports
@@ -96,7 +96,7 @@ function useCounter(target, duration = 2000, active = false) {
 function FadeUp({ children, delay = 0, className = "", is3D = false }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  
+
   if (is3D) {
     return (
       <motion.div
@@ -699,21 +699,21 @@ function TrustStatCard({ stat, index }) {
       }}
     >
       {/* Glow effect on hover */}
-      <div 
+      <div
         className="absolute -inset-px rounded-[28px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{
           background: `radial-gradient(150px circle at 50% 50%, rgba(228, 241, 65, 0.12), transparent 70%)`
         }}
       />
-      
+
       {/* Decorative vertical glowing line on hover */}
-      <div 
+      <div
         className="absolute top-0 left-0 w-[3px] h-full transform scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-top rounded-l-[28px] bg-[#E4F141]"
       />
 
       <div className="relative z-10">
         {/* Icon & Mini Badge */}
-        <div 
+        <div
           className="w-12 h-12 rounded-2xl flex items-center justify-center mb-8 border border-white/5 bg-white/[0.02] text-white/50 group-hover:text-white transition-all duration-300"
         >
           <Icon className="w-5 h-5 group-hover:scale-110 transition-transform text-[#E4F141]" />
@@ -724,12 +724,12 @@ function TrustStatCard({ stat, index }) {
           {count}
           <span className="text-[#E4F141]">{stat.suffix}</span>
         </div>
-        
+
         {/* Label */}
         <div className="text-white font-bold text-sm tracking-wide mb-2 group-hover:text-[#E4F141] transition-colors">
           {stat.label}
         </div>
-        
+
         {/* Description */}
         <p className="text-white/40 text-xs leading-relaxed group-hover:text-white/60 transition-colors">
           {stat.desc}
@@ -759,7 +759,7 @@ function TrustSection() {
       {/* Decorative cyber grids/lines */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(228,241,65,0.02)_0%,transparent_60%)] pointer-events-none" />
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#E4F141]/25 to-transparent" />
-      
+
       <div className="max-w-[1400px] mx-auto">
         <FadeUp className="mb-20 text-center" is3D={true}>
           <div className="inline-flex items-center gap-3 mb-4">
@@ -822,7 +822,7 @@ function ThreePillarsSection() {
     <section className="pt-24 pb-32 px-6 md:px-14 bg-black relative overflow-hidden">
       {/* Decorative background grid and spots */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,rgba(228,241,65,0.015)_0%,transparent_60%)] pointer-events-none" />
-      
+
       <div className="max-w-[1400px] mx-auto">
         <FadeUp className="mb-20 text-center" is3D={true}>
           <div className="inline-flex items-center gap-3 mb-4">
@@ -842,19 +842,19 @@ function ThreePillarsSection() {
             const Icon = pillar.icon;
             return (
               <FadeUp key={index} delay={index * 0.1} is3D={true} className="h-full">
-                <TiltCard 
-                  className="p-10 rounded-[32px] border border-white/5 bg-white/[0.01] flex flex-col justify-between group relative overflow-hidden backdrop-blur-md cursor-default transition-all duration-500 hover:border-[#E4F141]/35 h-full" 
+                <TiltCard
+                  className="p-10 rounded-[32px] border border-white/5 bg-white/[0.01] flex flex-col justify-between group relative overflow-hidden backdrop-blur-md cursor-default transition-all duration-500 hover:border-[#E4F141]/35 h-full"
                   index={index}
                   brandGlow={{ rgb: "228, 241, 65" }}
                 >
                   {/* Background Large Number Watermark */}
                   <div className="absolute -top-4 -right-4 text-9xl font-black font-mono select-none pointer-events-none transition-all duration-500 opacity-[0.02] group-hover:opacity-[0.06] group-hover:scale-105"
-                       style={{ 
-                         color: '#ffffff',
-                         WebkitTextStrokeWidth: '1px',
-                         WebkitTextStrokeColor: pillar.themeColor,
-                         fill: 'none'
-                       }}>
+                    style={{
+                      color: '#ffffff',
+                      WebkitTextStrokeWidth: '1px',
+                      WebkitTextStrokeColor: pillar.themeColor,
+                      fill: 'none'
+                    }}>
                     {pillar.number}
                   </div>
 
@@ -864,19 +864,19 @@ function ThreePillarsSection() {
                   <div className="relative z-10">
                     {/* Glowing Icon Wrapper */}
                     <div className="w-16 h-16 rounded-2xl bg-white/[0.02] border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300"
-                         style={{ 
-                           boxShadow: `0 0 20px rgba(0,0,0,0.5)`,
-                           borderColor: `rgba(255, 255, 255, 0.08)`
-                         }}>
+                      style={{
+                        boxShadow: `0 0 20px rgba(0,0,0,0.5)`,
+                        borderColor: `rgba(255, 255, 255, 0.08)`
+                      }}>
                       <Icon className="w-7 h-7 text-[#E4F141]" />
                     </div>
 
                     <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase block mb-3">{pillar.subtitle}</span>
-                    
+
                     <h3 className="text-3xl font-black text-white uppercase tracking-wide mb-5 group-hover:text-[#E4F141] transition-colors">
                       {pillar.title}
                     </h3>
-                    
+
                     <p className="text-white/55 text-sm leading-relaxed mb-10 group-hover:text-white/70 transition-colors">
                       {pillar.desc}
                     </p>
@@ -887,11 +887,11 @@ function ThreePillarsSection() {
                     <div className="h-[1px] w-full bg-white/5 mb-6" />
                     <div className="flex flex-wrap gap-2.5">
                       {pillar.features.map((feature, idx) => (
-                        <span key={idx} 
-                              className="text-[10px] font-bold bg-white/[0.02] border border-white/15 hover:border-white/35 px-3.5 py-2 rounded-full text-white/70 hover:text-white transition-all duration-300 flex items-center gap-1.5"
-                              style={{
-                                boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.02)'
-                              }}>
+                        <span key={idx}
+                          className="text-[10px] font-bold bg-white/[0.02] border border-white/15 hover:border-white/35 px-3.5 py-2 rounded-full text-white/70 hover:text-white transition-all duration-300 flex items-center gap-1.5"
+                          style={{
+                            boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.02)'
+                          }}>
                           <span className="w-1.5 h-1.5 rounded-full bg-[#E4F141]" />
                           {feature}
                         </span>
@@ -911,10 +911,10 @@ function ThreePillarsSection() {
 // Premium Gold Hexagon Crown Icon
 function GoldHexCrownIcon({ className = "w-6 h-6" }) {
   return (
-    <svg 
-      viewBox="0 0 100 100" 
+    <svg
+      viewBox="0 0 100 100"
       className={className}
-      fill="none" 
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
@@ -930,18 +930,18 @@ function GoldHexCrownIcon({ className = "w-6 h-6" }) {
           <stop offset="100%" stopColor="#FF8F00" />
         </linearGradient>
       </defs>
-      
+
       {/* Hexagon Border */}
-      <path 
-        d="M 50 8 L 88 30 L 88 70 L 50 92 L 12 70 L 12 30 Z" 
-        stroke="url(#goldHexGradient)" 
-        strokeWidth="5" 
+      <path
+        d="M 50 8 L 88 30 L 88 70 L 50 92 L 12 70 L 12 30 Z"
+        stroke="url(#goldHexGradient)"
+        strokeWidth="5"
         strokeLinejoin="round"
         fill="none"
       />
-      
+
       {/* Crown */}
-      <path 
+      <path
         d="M 28 66 
            C 28 66, 32 63, 50 63 
            C 68 63, 72 66, 72 66 
@@ -949,20 +949,20 @@ function GoldHexCrownIcon({ className = "w-6 h-6" }) {
            L 62 55 
            L 50 36 
            L 38 55 
-           L 25 48 Z" 
+           L 25 48 Z"
         fill="url(#goldGradient)"
       />
-      
+
       {/* Little crown circles */}
       <circle cx="25" cy="48" r="3" fill="url(#goldGradient)" />
       <circle cx="50" cy="36" r="3.5" fill="url(#goldGradient)" />
       <circle cx="75" cy="48" r="3" fill="url(#goldGradient)" />
-      
+
       {/* Crown bottom base shadow line */}
-      <path 
-        d="M 28 68 C 28 68, 35 71, 50 71 C 65 71, 72 68, 72 68" 
-        stroke="url(#goldHexGradient)" 
-        strokeWidth="3" 
+      <path
+        d="M 28 68 C 28 68, 35 71, 50 71 C 65 71, 72 68, 72 68"
+        stroke="url(#goldHexGradient)"
+        strokeWidth="3"
         strokeLinecap="round"
       />
     </svg>
@@ -972,10 +972,10 @@ function GoldHexCrownIcon({ className = "w-6 h-6" }) {
 // Premium Silver User Star Icon
 function SilverUserStarIcon({ className = "w-6 h-6" }) {
   return (
-    <svg 
-      viewBox="0 0 100 100" 
+    <svg
+      viewBox="0 0 100 100"
       className={className}
-      fill="none" 
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
@@ -991,38 +991,38 @@ function SilverUserStarIcon({ className = "w-6 h-6" }) {
           <stop offset="100%" stopColor="#424242" />
         </linearGradient>
       </defs>
-      
+
       {/* Circular Border with Gap for the star */}
-      <path 
+      <path
         d="M 72 26 
-           A 37 37 0 1 1 85 48" 
-        stroke="url(#silverRingGradient)" 
-        strokeWidth="5" 
+           A 37 37 0 1 1 85 48"
+        stroke="url(#silverRingGradient)"
+        strokeWidth="5"
         strokeLinecap="round"
         fill="none"
       />
-      
+
       {/* User head */}
       <circle cx="50" cy="44" r="12" fill="url(#silverGradient)" />
-      
+
       {/* User body */}
-      <path 
+      <path
         d="M 30 72 
            C 30 60, 38 56, 50 56 
            C 62 56, 70 60, 70 72 
-           Z" 
-        fill="url(#silverGradient)" 
+           Z"
+        fill="url(#silverGradient)"
       />
-      
+
       {/* Four-pointed Star */}
-      <path 
+      <path
         d="M 80 14 
            Q 80 24 88 24 
            Q 80 24 80 34 
            Q 80 24 72 24 
            Q 80 24 80 14 
-           Z" 
-        fill="url(#silverGradient)" 
+           Z"
+        fill="url(#silverGradient)"
       />
     </svg>
   );
@@ -1069,24 +1069,23 @@ function ProblemSection() {
         </div>
 
         {/* Interactive Redesigned Widget Container - Full Width edge-to-edge */}
-        <div 
+        <div
           className="relative w-full overflow-hidden"
           onMouseLeave={() => setActiveTab(null)}
         >
           <div className="w-full flex flex-col lg:flex-row items-center lg:items-stretch gap-0 min-h-[420px] lg:min-h-[520px]">
-            
+
             {/* Left Column / Center Image Container */}
-            <motion.div 
+            <motion.div
               layout
               transition={{ type: "spring", stiffness: 180, damping: 25 }}
-              className={`relative overflow-hidden flex-shrink-0 transition-all duration-500 ${
-                activeTab === null 
-                  ? 'w-full h-[400px] lg:h-[500px] border-none' 
-                  : 'w-full lg:w-[460px] h-[280px] lg:h-[520px] border-y border-r border-white/10 lg:rounded-r-[32px]'
-              }`}
+              className={`relative overflow-hidden flex-shrink-0 transition-all duration-500 ${activeTab === null
+                ? 'w-full h-[400px] lg:h-[500px] border-none'
+                : 'w-full lg:w-[460px] h-[280px] lg:h-[520px] border-y border-r border-white/10 lg:rounded-r-[32px]'
+                }`}
             >
               {/* Default Banner Layer (Fades out when tab is hovered) */}
-              <motion.div 
+              <motion.div
                 className="absolute inset-0 w-full h-full"
                 style={{
                   backgroundImage: "url('/light-grid-banner.png')",
@@ -1101,7 +1100,7 @@ function ProblemSection() {
               />
 
               {/* Brand & Creator Logos Layer (Fades in when tab is hovered) */}
-              <motion.div 
+              <motion.div
                 className="absolute inset-0 w-full h-full"
                 style={{
                   backgroundImage: "url('/brand-creator-logos.jpg')",
@@ -1109,24 +1108,24 @@ function ProblemSection() {
                 }}
                 animate={{
                   opacity: activeTab !== null ? 1 : 0,
-                  backgroundPosition: 
-                    activeTab === "brand" 
-                      ? "10% center" 
+                  backgroundPosition:
+                    activeTab === "brand"
+                      ? "10% center"
                       : activeTab === "creator"
-                      ? "90% center"
-                      : "center center",
-                  backgroundSize: 
-                    activeTab === null 
-                      ? "contain" 
+                        ? "90% center"
+                        : "center center",
+                  backgroundSize:
+                    activeTab === null
+                      ? "contain"
                       : "180%",
                 }}
-                transition={{ 
+                transition={{
                   opacity: { duration: 0.4 },
                   backgroundPosition: { type: "spring", stiffness: 120, damping: 20 },
                   backgroundSize: { type: "spring", stiffness: 120, damping: 20 }
                 }}
               />
-              
+
               {/* Background overlay - Lighter overlay in default view */}
               <div className={`absolute inset-0 bg-black transition-all duration-500 ${activeTab !== null ? 'opacity-45 backdrop-blur-0' : 'opacity-25 backdrop-blur-[1px]'}`} />
 
@@ -1136,10 +1135,10 @@ function ProblemSection() {
                   <h3 className="text-xl md:text-2xl font-black text-white uppercase mb-6 tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
                     Inspect the challenges we solve
                   </h3>
-                  
+
                   <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md px-4">
                     {/* Brand Hover Card */}
-                    <div 
+                    <div
                       onMouseEnter={() => setActiveTab('brand')}
                       className="flex-1 cursor-pointer bg-zinc-950/90 hover:bg-[#FFD54F]/10 border border-white/10 hover:border-[#FFD54F]/60 p-4 rounded-2xl transition-all duration-300 group flex flex-col items-center justify-center hover:shadow-[0_0_30px_rgba(255,213,79,0.15)]"
                     >
@@ -1147,11 +1146,11 @@ function ProblemSection() {
                         <GoldHexCrownIcon className="w-5.5 h-5.5" />
                       </div>
                       <span className="text-xs font-black text-white uppercase tracking-wider">For Brands</span>
-                      <span className="text-[9px] text-white/40 mt-1">Hover to inspect →</span>
+
                     </div>
 
                     {/* Creator Hover Card */}
-                    <div 
+                    <div
                       onMouseEnter={() => setActiveTab('creator')}
                       className="flex-1 cursor-pointer bg-zinc-950/90 hover:bg-white/10 border border-white/10 hover:border-white/60 p-4 rounded-2xl transition-all duration-300 group flex flex-col items-center justify-center hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
                     >
@@ -1159,7 +1158,7 @@ function ProblemSection() {
                         <SilverUserStarIcon className="w-5.5 h-5.5" />
                       </div>
                       <span className="text-xs font-black text-white uppercase tracking-wider">For Creators</span>
-                      <span className="text-[9px] text-white/40 mt-1">Hover to inspect →</span>
+
                     </div>
                   </div>
                 </div>
@@ -1189,21 +1188,19 @@ function ProblemSection() {
                     <div className="flex gap-2.5 mb-8 w-full max-w-xs">
                       <button
                         onMouseEnter={() => setActiveTab('brand')}
-                        className={`flex-1 py-2 px-3.5 rounded-xl border text-[9px] font-black tracking-widest uppercase transition-all duration-300 ${
-                          activeTab === 'brand'
-                            ? 'bg-[#FFD54F] text-black border-[#FFD54F] shadow-[0_0_15px_rgba(255,213,79,0.2)]'
-                            : 'bg-white/5 text-white/60 border-white/10 hover:border-white/20'
-                        }`}
+                        className={`flex-1 py-2 px-3.5 rounded-xl border text-[9px] font-black tracking-widest uppercase transition-all duration-300 ${activeTab === 'brand'
+                          ? 'bg-[#FFD54F] text-black border-[#FFD54F] shadow-[0_0_15px_rgba(255,213,79,0.2)]'
+                          : 'bg-white/5 text-white/60 border-white/10 hover:border-white/20'
+                          }`}
                       >
                         Brands
                       </button>
                       <button
                         onMouseEnter={() => setActiveTab('creator')}
-                        className={`flex-1 py-2 px-3.5 rounded-xl border text-[9px] font-black tracking-widest uppercase transition-all duration-300 ${
-                          activeTab === 'creator'
-                            ? 'bg-[#E0E0E0] text-black border-[#E0E0E0] shadow-[0_0_15px_rgba(255,255,255,0.2)]'
-                            : 'bg-white/5 text-white/60 border-white/10 hover:border-white/20'
-                        }`}
+                        className={`flex-1 py-2 px-3.5 rounded-xl border text-[9px] font-black tracking-widest uppercase transition-all duration-300 ${activeTab === 'creator'
+                          ? 'bg-[#E0E0E0] text-black border-[#E0E0E0] shadow-[0_0_15px_rgba(255,255,255,0.2)]'
+                          : 'bg-white/5 text-white/60 border-white/10 hover:border-white/20'
+                          }`}
                       >
                         Creators
                       </button>
@@ -1245,7 +1242,7 @@ function ProblemSection() {
                       {activeTab === 'brand' ? 'SYSTEMIC EXPOSURE DETECTED' : 'INCOME DRAIN LOOP'}
                     </span>
                     <div className="bg-[#E4F141]/10 border border-[#E4F141]/20 text-[#E4F141] text-[9px] font-mono font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-lg w-fit">
-                      {activeTab === 'brand' ? 'Result // Inefficient spend & low ROI' : 'Result // Income instability & admin drag'}
+
                     </div>
                   </div>
                 </motion.div>
@@ -1489,8 +1486,8 @@ export default function Home() {
   });
   const [creatorsLoading, setCreatorsLoading] = useState(creators.length === 0);
 
-  const hoverOn = () => {};
-  const hoverOff = () => {};
+  const hoverOn = () => { };
+  const hoverOff = () => { };
 
   // Fetch brands from database
   useEffect(() => {
