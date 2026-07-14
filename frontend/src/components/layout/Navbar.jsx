@@ -40,25 +40,6 @@ function MagneticLink({ children, to, className, isActive, onClick, highlight })
     >
       <Link to={to} className={className} onClick={onClick}>
         {children}
-        {isActive && (
-          <motion.div
-            layoutId="navUnderline"
-            className="nav-underline"
-            style={{
-              position: 'absolute',
-              bottom: '-4px',
-              left: '0',
-              right: '0',
-              height: '2px',
-              background: highlight
-                ? 'linear-gradient(90deg, #ffd700, #ffa500)'
-                : 'linear-gradient(90deg, #d2f53c, #bbf32c)',
-              borderRadius: '2px',
-              boxShadow: highlight ? '0 0 8px rgba(255, 215, 0, 0.6)' : '0 0 8px rgba(210, 245, 60, 0.6)',
-            }}
-            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-          />
-        )}
       </Link>
     </motion.div>
   );
@@ -102,17 +83,7 @@ export default function Navbar() {
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
         .navbar-glassy-backdrop {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 120px;
-          background: rgba(0, 0, 0, 0.7) !important;
-          backdrop-filter: blur(25px) saturate(180%) !important;
-          -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
-          z-index: 980;
-          pointer-events: none;
-          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          display: none !important;
         }
         .navbar-glassy-backdrop.is-scrolled {
           height: 96px;
@@ -221,7 +192,7 @@ export default function Navbar() {
           left: -10px;
           width: 110px;
           height: 55px;
-          background: radial-gradient(circle at center, rgba(228, 241, 65, 0.4) 0%, transparent 75%);
+          background: transparent;
           filter: blur(16px);
           opacity: 0.5;
           z-index: -1;
@@ -277,12 +248,12 @@ export default function Navbar() {
           letter-spacing: 0.05rem;
           transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
           border-radius: 12px !important;
-          background: linear-gradient(135deg, #d2f53c, #bbf32c) !important;
+          background: linear-gradient(135deg, #c8f01e, #a8e600) !important;
           color: #000000 !important;
           text-decoration: none;
-          border: 1px solid rgba(0, 0, 0, 0.1) !important;
+          border: 1px solid rgba(0, 0, 0, 0.15) !important;
           text-shadow: none;
-          box-shadow: 0 4px 20px rgba(210, 245, 60, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          box-shadow: 0 4px 22px rgba(168, 230, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
         }
         @keyframes shine-sweep {
           0% {
@@ -694,15 +665,15 @@ export default function Navbar() {
                       width: '100%',
                       minHeight: '48px',
                       borderRadius: '14px',
-                      background: 'linear-gradient(135deg, #d2f53c, #bbf32c)',
+                      background: 'linear-gradient(135deg, #c8f01e, #a8e600)',
                       color: '#000',
                       fontWeight: 800,
                       fontSize: '0.88rem',
                       letterSpacing: '0.08em',
                       textTransform: 'uppercase',
                       textDecoration: 'none',
-                      boxShadow: '0 8px 24px rgba(210, 245, 60, 0.35)',
-                      border: '1px solid rgba(0, 0, 0, 0.1)'
+                      boxShadow: '0 8px 24px rgba(168, 230, 0, 0.4)',
+                      border: '1px solid rgba(0, 0, 0, 0.15)'
                     }}
                   >
                     GET STARTED

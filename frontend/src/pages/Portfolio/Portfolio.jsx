@@ -154,14 +154,27 @@ export default function Portfolio() {
       <style>{`
         .portfolio-page-container {
           background-color: #000000 !important;
-          background-image: radial-gradient(circle at 50% 0%, rgba(228, 241, 65, 0.18) 0%, rgba(228, 241, 65, 0.05) 30%, transparent 65%) !important;
+          background-image: radial-gradient(circle at 50% 0%, rgba(228, 241, 65, 0.22) 0%, rgba(228, 241, 65, 0.08) 35%, transparent 65%) !important;
           min-height: 100vh;
-          padding-top: 0px !important;
+          padding-top: 130px !important;
           padding-bottom: 6rem;
           position: relative;
         }
       `}</style>
-      <div className="container">
+      
+      {/* Top glowing ambient spot to blend navbar seamlessly */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '240px',
+        background: 'radial-gradient(ellipse at 50% 0%, rgba(228, 241, 65, 0.35) 0%, rgba(228, 241, 65, 0.12) 55%, transparent 100%)',
+        pointerEvents: 'none',
+        zIndex: 2
+      }} />
+
+      <div className="container" style={{ position: 'relative', zIndex: 10 }}>
 
         {/* Hero */}
         <motion.div

@@ -51,7 +51,7 @@ body {
   position: absolute;
   border-radius: 50%;
   filter: blur(150px);
-  background: #E4F141;
+  background: transparent;
   opacity: 0.12;
 }
 
@@ -168,7 +168,7 @@ button {
 .site-header.is-scrolled {
   background: rgba(6, 6, 6, 0.88);
   backdrop-filter: blur(18px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: none !important;
 }
 
 .nav-shell {
@@ -5255,4 +5255,21 @@ h1 span, h2 span, h3 span, h4 span, h5 span, h6 span {
 h1 *::first-letter, h2 *::first-letter, h3 *::first-letter, h4 *::first-letter, h5 *::first-letter, h6 *::first-letter {
   text-transform: uppercase !important;
 }
+
+/* Force marquee texts, badges, trust indicators, and specific spans to be bold Montserrat */
+.separated-marquee-section,
+.separated-marquee-section *,
+.marquee-brand-item,
+.marquee-brand-item *,
+.trust-static-label,
+.trust-badge,
+.trust-marquee-item,
+.trust-marquee-item *,
+.minimal-home-container span.inline-flex,
+.minimal-home-container span.inline-flex * {
+  font-family: 'Montserrat', sans-serif !important;
+  font-weight: 850 !important;
+  text-transform: uppercase !important;
+}
+
 

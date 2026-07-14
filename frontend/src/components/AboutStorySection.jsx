@@ -726,7 +726,7 @@ function TrustBanner({ brands }) {
     <div className="trust-marquee-container">
       {/* Left static label */}
       <div className="trust-static-label">
-        THEY TRUST US
+        <span className="trust-badge">THEY TRUST US</span>
       </div>
       
       {/* Right scrolling brands with fade effects */}
@@ -1543,19 +1543,31 @@ export default function AboutStorySection() {
 
         .trust-static-label {
           background: #000000;
-          color: #E4F141; /* Accent Yellow */
-          font-weight: 900;
-          font-size: 0.95rem;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
           display: flex;
           align-items: center;
-          padding: 0 35px;
+          padding: 0 25px;
           height: 100%;
-          white-space: nowrap;
           border-right: 1px solid rgba(255,255,255,0.08);
           z-index: 30;
           position: relative;
+          white-space: nowrap;
+          flex-shrink: 0 !important;
+        }
+
+        .trust-badge {
+          background: #E4F141 !important;
+          color: #000000 !important;
+          font-weight: 850 !important;
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 0.82rem !important;
+          letter-spacing: 0.12em !important;
+          text-transform: uppercase !important;
+          padding: 7px 16px !important;
+          border-radius: 12px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          box-shadow: 0 4px 15px rgba(228, 241, 65, 0.25) !important;
         }
 
         .trust-marquee-track-container {

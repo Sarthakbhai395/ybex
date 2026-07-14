@@ -772,11 +772,23 @@ export default function Academy() {
       overflowX: 'hidden',
       backgroundColor: '#050510',
       backgroundImage: `
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(30, 60, 150, 0.25), transparent),
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(30, 60, 150, 0.4), transparent),
         radial-gradient(ellipse 60% 40% at 80% 50%, rgba(20, 40, 120, 0.15), transparent),
         radial-gradient(ellipse 50% 30% at 20% 80%, rgba(25, 50, 130, 0.12), transparent)
       `,
     }}>
+      {/* Top glowing ambient spot (Blue/Indigo theme) to blend navbar seamlessly */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '240px',
+        background: 'radial-gradient(ellipse at 50% 0%, rgba(59, 130, 246, 0.45) 0%, rgba(30, 60, 150, 0.18) 60%, transparent 100%)',
+        pointerEvents: 'none',
+        zIndex: 3
+      }} />
+
       {/* Purple Grid Overlay - Full Page */}
       <div style={{ 
         position: 'fixed', 

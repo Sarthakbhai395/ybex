@@ -286,9 +286,39 @@ function ThreeDCurvedGallery({ creators, brands }) {
 
     let scrollX = 0;
     let animationFrameId;
-    const cardWidthWithGap = 280; // cardWidth (250px) + gap (30px)
-    const totalWidth = activeCreators.length * cardWidthWithGap;
+
+    // Responsive card dimensions matching CSS media queries
+    const getCardWidth = () => {
+      const w = window.innerWidth;
+      if (w <= 360) return 130;
+      if (w <= 480) return 150;
+      if (w <= 768) return 180;
+      if (w <= 1024) return 210;
+      return 250;
+    };
+
+    const getGap = () => {
+      const w = window.innerWidth;
+      if (w <= 480) return 20;
+      if (w <= 768) return 24;
+      if (w <= 1024) return 26;
+      return 30;
+    };
+
+    let cardWidth = getCardWidth();
+    let gap = getGap();
+    let cardWidthWithGap = cardWidth + gap;
+    let totalWidth = activeCreators.length * cardWidthWithGap;
     const speed = 1.3; // scroll speed from left to right
+
+    // Recalculate on resize
+    const handleResize = () => {
+      cardWidth = getCardWidth();
+      gap = getGap();
+      cardWidthWithGap = cardWidth + gap;
+      totalWidth = activeCreators.length * cardWidthWithGap;
+    };
+    window.addEventListener('resize', handleResize);
 
     const update = () => {
       scrollX += speed;
@@ -298,6 +328,7 @@ function ThreeDCurvedGallery({ creators, brands }) {
 
       const containerWidth = container.offsetWidth || window.innerWidth;
       const centerX = containerWidth / 2;
+      const halfCard = cardWidth / 2;
 
       for (let i = 0; i < cards.length; i++) {
         const card = cards[i];
@@ -310,16 +341,16 @@ function ThreeDCurvedGallery({ creators, brands }) {
         }
 
         // Apply shift so cards wrap outside the container edges
-        let cardX = relativeX - 280;
+        let cardX = relativeX - cardWidthWithGap;
 
-        if (cardX > containerWidth + 280) {
+        if (cardX > containerWidth + cardWidthWithGap) {
           cardX -= totalWidth;
-        } else if (cardX < -280) {
+        } else if (cardX < -cardWidthWithGap) {
           cardX += totalWidth;
         }
 
         // Horizontal center of card relative to container center
-        const cardCenterX = cardX + 125;
+        const cardCenterX = cardX + halfCard;
         const distFromCenter = cardCenterX - centerX;
         const normDist = distFromCenter / (containerWidth / 2 || 1);
         const clampedDist = Math.max(-1.5, Math.min(1.5, normDist));
@@ -330,7 +361,14 @@ function ThreeDCurvedGallery({ creators, brands }) {
         const rotateY = -clampedDist * maxRotation;
         const translateZ = -Math.abs(clampedDist) * maxDepth;
         const translateY = Math.abs(clampedDist) * 18;
-        const scale = 1 - Math.min(0.12, Math.abs(clampedDist) * 0.08);
+        let scale = 1.0;
+        if (clampedDist < 0) {
+          // Creator card (left side): starts bigger at the fade-in and shrinks slightly towards the partition
+          scale = 1.0 + Math.abs(clampedDist) * 0.12;
+        } else {
+          // Brand card (right side): starts small and gets larger towards the fade-out
+          scale = 1.0 + clampedDist * 0.18;
+        }
 
         // Hardware-accelerated hardware mutations
         card.style.transform = `translate3d(${cardX}px, ${translateY}px, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
@@ -345,7 +383,7 @@ function ThreeDCurvedGallery({ creators, brands }) {
 
         if (influencerSide && brandSide) {
           const localSplitX = centerX - cardX;
-          const splitPercent = Math.max(0, Math.min(100, (localSplitX / 250) * 100));
+          const splitPercent = Math.max(0, Math.min(100, (localSplitX / cardWidth) * 100));
 
           if (splitPercent === 100) {
             // Entirely on the left of laser (Influencer)
@@ -382,7 +420,10 @@ function ThreeDCurvedGallery({ creators, brands }) {
     };
 
     animationFrameId = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(animationFrameId);
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', handleResize);
+    };
   }, [activeCreators.length, activeBrands.length]);
 
   return (
@@ -825,12 +866,9 @@ function ThreePillarsSection() {
 
       <div className="max-w-[1400px] mx-auto">
         <FadeUp className="mb-20 text-center" is3D={true}>
-          <div className="inline-flex items-center gap-3 mb-4">
-            <span className="w-2 h-2 rounded-full bg-[#E4F141] animate-ping" />
-            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#E4F141]">Our Core Pillars</span>
-          </div>
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase">
-            The Three <span className="accent-yellow-text">Pillars</span> of YBEX
+
+          <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none">
+            The Three <span className="accent-yellow-text">Pillars</span> of Yb<span style={{ color: '#E4F141' }}>e</span>x
           </h2>
           <p className="text-white/50 text-xs sm:text-sm mt-6 max-w-2xl mx-auto leading-relaxed">
             A cohesive three-way ecosystem that links brand campaign scaling, creator career optimization, and absolute metrics verification.
@@ -1029,8 +1067,6 @@ function SilverUserStarIcon({ className = "w-6 h-6" }) {
 }
 
 function ProblemSection() {
-  const [activeTab, setActiveTab] = useState(null); // null, 'brand', 'creator'
-
   const brandProblems = [
     { title: "Vague Pricing", text: "Opaque pricing structures and hidden agency markups inflate your ad spend." },
     { title: "Fake Engagement", text: "Bloated follower metrics, bot accounts, and inorganic comment pools skew results." },
@@ -1046,215 +1082,89 @@ function ProblemSection() {
   ];
 
   return (
-    <section className="py-20 px-0 bg-black border-t border-b border-white/5 relative overflow-hidden">
+    <section className="py-20 px-4 md:px-8 lg:px-14 bg-black border-t border-b border-white/5 relative overflow-hidden">
       {/* Subtle lighting backdrop */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#E4F141]/[0.01] rounded-full filter blur-[150px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#E4F141]/[0.02] rounded-full filter blur-[150px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-white/[0.01] rounded-full filter blur-[150px] pointer-events-none" />
 
-      <div className="w-full mx-auto">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-14">
-          <FadeUp className="mb-14 text-center" is3D={true}>
-            <div className="inline-flex items-center gap-3 mb-4">
-              <span className="w-2 h-2 rounded-full bg-[#E4F141] animate-ping" />
-              <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#E4F141]">The Challenge</span>
-            </div>
-            <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase max-w-4xl mx-auto">
-              The Creator Economy Is Growing.<br />
-              <span className="accent-yellow-text">But The System Is Still Broken.</span>
-            </h2>
-            <p className="text-white/50 text-xs sm:text-sm mt-6 max-w-xl mx-auto leading-relaxed">
-              Brands struggle with verification, and creators struggle with transparency. We fix the plumbing.
-            </p>
-          </FadeUp>
-        </div>
-
-        {/* Interactive Redesigned Widget Container - Full Width edge-to-edge */}
-        <div
-          className="relative w-full overflow-hidden"
-          onMouseLeave={() => setActiveTab(null)}
-        >
-          <div className="w-full flex flex-col lg:flex-row items-center lg:items-stretch gap-0 min-h-[420px] lg:min-h-[520px]">
-
-            {/* Left Column / Center Image Container */}
-            <motion.div
-              layout
-              transition={{ type: "spring", stiffness: 180, damping: 25 }}
-              className={`relative overflow-hidden flex-shrink-0 transition-all duration-500 ${activeTab === null
-                ? 'w-full h-[400px] lg:h-[500px] border-none'
-                : 'w-full lg:w-[460px] h-[280px] lg:h-[520px] border-y border-r border-white/10 lg:rounded-r-[32px]'
-                }`}
-            >
-              {/* Default Banner Layer (Fades out when tab is hovered) */}
-              <motion.div
-                className="absolute inset-0 w-full h-full"
-                style={{
-                  backgroundImage: "url('/light-grid-banner.png')",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center center",
-                  backgroundRepeat: "no-repeat",
-                }}
-                animate={{
-                  opacity: activeTab === null ? 1 : 0
-                }}
-                transition={{ duration: 0.4 }}
-              />
-
-              {/* Brand & Creator Logos Layer (Fades in when tab is hovered) */}
-              <motion.div
-                className="absolute inset-0 w-full h-full"
-                style={{
-                  backgroundImage: "url('/brand-creator-logos.jpg')",
-                  backgroundRepeat: "no-repeat",
-                }}
-                animate={{
-                  opacity: activeTab !== null ? 1 : 0,
-                  backgroundPosition:
-                    activeTab === "brand"
-                      ? "10% center"
-                      : activeTab === "creator"
-                        ? "90% center"
-                        : "center center",
-                  backgroundSize:
-                    activeTab === null
-                      ? "contain"
-                      : "180%",
-                }}
-                transition={{
-                  opacity: { duration: 0.4 },
-                  backgroundPosition: { type: "spring", stiffness: 120, damping: 20 },
-                  backgroundSize: { type: "spring", stiffness: 120, damping: 20 }
-                }}
-              />
-
-              {/* Background overlay - Lighter overlay in default view */}
-              <div className={`absolute inset-0 bg-black transition-all duration-500 ${activeTab !== null ? 'opacity-45 backdrop-blur-0' : 'opacity-25 backdrop-blur-[1px]'}`} />
-
-              {/* Default State content (activeTab === null) */}
-              {activeTab === null && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10">
-                  <h3 className="text-xl md:text-2xl font-black text-white uppercase mb-6 tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
-                    Inspect the challenges we solve
-                  </h3>
-
-                  <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md px-4">
-                    {/* Brand Hover Card */}
-                    <div
-                      onMouseEnter={() => setActiveTab('brand')}
-                      className="flex-1 cursor-pointer bg-zinc-950/90 hover:bg-[#FFD54F]/10 border border-white/10 hover:border-[#FFD54F]/60 p-4 rounded-2xl transition-all duration-300 group flex flex-col items-center justify-center hover:shadow-[0_0_30px_rgba(255,213,79,0.15)]"
-                    >
-                      <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#FFD54F] mb-2 group-hover:scale-110 transition-transform">
-                        <GoldHexCrownIcon className="w-5.5 h-5.5" />
-                      </div>
-                      <span className="text-xs font-black text-white uppercase tracking-wider">For Brands</span>
-
-                    </div>
-
-                    {/* Creator Hover Card */}
-                    <div
-                      onMouseEnter={() => setActiveTab('creator')}
-                      className="flex-1 cursor-pointer bg-zinc-950/90 hover:bg-white/10 border border-white/10 hover:border-white/60 p-4 rounded-2xl transition-all duration-300 group flex flex-col items-center justify-center hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
-                    >
-                      <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#E0E0E0] mb-2 group-hover:scale-110 transition-transform">
-                        <SilverUserStarIcon className="w-5.5 h-5.5" />
-                      </div>
-                      <span className="text-xs font-black text-white uppercase tracking-wider">For Creators</span>
-
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Perspective Badge on activeTab !== null */}
-              {activeTab !== null && (
-                <div className="absolute top-4 left-4 z-10 bg-black/75 border border-white/10 rounded-full px-3.5 py-1.5 text-[9px] font-black uppercase text-[#E4F141] tracking-widest shadow-lg select-none">
-                  {activeTab === 'brand' ? 'Brand Challenges' : 'Creator Challenges'}
-                </div>
-              )}
-            </motion.div>
-
-            {/* Right Column / Challenges details list */}
-            <AnimatePresence mode="wait">
-              {activeTab !== null && (
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, x: 40 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -40 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 22 }}
-                  className="flex-1 flex flex-col justify-between p-6 md:p-10 bg-zinc-950/95 border-y border-white/10"
-                >
-                  <div>
-                    {/* Top quick selector pills */}
-                    <div className="flex gap-2.5 mb-8 w-full max-w-xs">
-                      <button
-                        onMouseEnter={() => setActiveTab('brand')}
-                        className={`flex-1 py-2 px-3.5 rounded-xl border text-[9px] font-black tracking-widest uppercase transition-all duration-300 ${activeTab === 'brand'
-                          ? 'bg-[#FFD54F] text-black border-[#FFD54F] shadow-[0_0_15px_rgba(255,213,79,0.2)]'
-                          : 'bg-white/5 text-white/60 border-white/10 hover:border-white/20'
-                          }`}
-                      >
-                        Brands
-                      </button>
-                      <button
-                        onMouseEnter={() => setActiveTab('creator')}
-                        className={`flex-1 py-2 px-3.5 rounded-xl border text-[9px] font-black tracking-widest uppercase transition-all duration-300 ${activeTab === 'creator'
-                          ? 'bg-[#E0E0E0] text-black border-[#E0E0E0] shadow-[0_0_15px_rgba(255,255,255,0.2)]'
-                          : 'bg-white/5 text-white/60 border-white/10 hover:border-white/20'
-                          }`}
-                      >
-                        Creators
-                      </button>
-                    </div>
-
-                    {/* Header title */}
-                    <div className="inline-flex items-center gap-3 mb-6">
-                      <div className={`w-8.5 h-8.5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center ${activeTab === 'brand' ? 'text-[#FFD54F]' : 'text-[#E0E0E0]'}`}>
-                        {activeTab === 'brand' ? <GoldHexCrownIcon className="w-5 h-5" /> : <SilverUserStarIcon className="w-5 h-5" />}
-                      </div>
-                      <h3 className="text-sm font-black uppercase text-white tracking-widest">
-                        Challenges for <span className={activeTab === 'brand' ? 'text-[#FFD54F]' : 'text-[#E0E0E0]'}>{activeTab === 'brand' ? 'Brands' : 'Creators'}</span>
-                      </h3>
-                    </div>
-
-                    {/* Problems grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-2">
-                      {(activeTab === 'brand' ? brandProblems : creatorProblems).map((prob, i) => (
-                        <motion.div
-                          key={prob.title}
-                          initial={{ opacity: 0, y: 12 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.05, duration: 0.25 }}
-                          className="p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors group/item flex flex-col justify-start"
-                        >
-                          <div className="flex items-center gap-2 mb-1.5">
-                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${activeTab === 'brand' ? 'bg-[#FFD54F]' : 'bg-[#E0E0E0]'}`} />
-                            <h4 className={`font-bold text-xs tracking-wide uppercase transition-colors ${activeTab === 'brand' ? 'text-white group-hover/item:text-[#FFD54F]' : 'text-white group-hover/item:text-[#E0E0E0]'}`}>{prob.title}</h4>
-                          </div>
-                          <p className="text-white/50 text-[10px] leading-relaxed">{prob.text}</p>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Bottom Status / Path indicator */}
-                  <div className="mt-8 pt-4 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <span className="text-white/30 text-[9px] font-mono tracking-widest uppercase">
-                      {activeTab === 'brand' ? 'SYSTEMIC EXPOSURE DETECTED' : 'INCOME DRAIN LOOP'}
-                    </span>
-                    <div className="bg-[#E4F141]/10 border border-[#E4F141]/20 text-[#E4F141] text-[9px] font-mono font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-lg w-fit">
-
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
+      <div className="max-w-[1400px] mx-auto">
+        <FadeUp className="mb-16 text-center" is3D={true}>
+          <div className="inline-flex items-center gap-3 mb-4">
+            <span className="w-2 h-2 rounded-full bg-[#E4F141] animate-ping" />
+            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#E4F141]">The Challenge</span>
           </div>
+          <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase max-w-4xl mx-auto">
+            The Creator Economy Is Growing.<br />
+            <span className="accent-yellow-text">But The System Is Still Broken.</span>
+          </h2>
+          <p className="text-white/50 text-xs sm:text-sm mt-6 max-w-xl mx-auto leading-relaxed">
+            Brands struggle with verification, and creators struggle with transparency. We fix the plumbing.
+          </p>
+        </FadeUp>
+
+        {/* Simplified Two-Column Layout with Glowing Divider */}
+        <div className="relative flex flex-col md:flex-row items-stretch gap-8 md:gap-12 lg:gap-16 mt-12">
+          
+          {/* Brand Problems (Left Column) */}
+          <div className="flex-1 flex flex-col items-center text-center md:items-start md:text-left">
+            {/* Brand Logo */}
+            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-[#FFD54F]/20 flex items-center justify-center text-[#FFD54F] mb-6 shadow-[0_0_20px_rgba(255,213,79,0.05)]">
+              <GoldHexCrownIcon className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-bold uppercase text-[#FFD54F] tracking-wider mb-8">
+              For Brands
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+              {brandProblems.map((prob) => (
+                <div key={prob.title} className="p-5 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors group flex flex-col justify-start">
+                  <div className="flex items-center gap-2 mb-2 justify-center md:justify-start">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#FFD54F]" />
+                    <h4 className="font-bold text-xs tracking-wide uppercase text-white group-hover:text-[#FFD54F] transition-colors">{prob.title}</h4>
+                  </div>
+                  <p className="text-white/50 text-[10px] sm:text-xs leading-relaxed">{prob.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Glowing Separator Line in the middle */}
+          <div className="hidden md:block relative w-[2px] self-stretch">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#E4F141]/30 to-transparent" />
+            <div className="absolute top-1/4 bottom-1/4 left-1/2 -translate-x-1/2 w-[4px] bg-[#E4F141]/40 rounded-full filter blur-[1px] shadow-[0_0_12px_#E4F141]" />
+          </div>
+          
+          {/* Mobile separator */}
+          <div className="block md:hidden w-full h-[1px] relative my-4">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#E4F141]/30 to-transparent" />
+            <div className="absolute left-1/4 right-1/4 top-1/2 -translate-y-1/2 h-[2px] bg-[#E4F141]/40 rounded-full filter blur-[1px] shadow-[0_0_12px_#E4F141]" />
+          </div>
+
+          {/* Creator Problems (Right Column) */}
+          <div className="flex-1 flex flex-col items-center text-center md:items-start md:text-left">
+            {/* Creator Logo */}
+            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-[#E0E0E0]/20 flex items-center justify-center text-[#E0E0E0] mb-6 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+              <SilverUserStarIcon className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-bold uppercase text-[#E0E0E0] tracking-wider mb-8">
+              For Creators
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+              {creatorProblems.map((prob) => (
+                <div key={prob.title} className="p-5 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors group flex flex-col justify-start">
+                  <div className="flex items-center gap-2 mb-2 justify-center md:justify-start">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E0E0E0]" />
+                    <h4 className="font-bold text-xs tracking-wide uppercase text-white group-hover:text-white transition-colors">{prob.title}</h4>
+                  </div>
+                  <p className="text-white/50 text-[10px] sm:text-xs leading-relaxed">{prob.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
   );
-
 }
 
 function EarlyAccessFormSection() {
@@ -1606,7 +1516,7 @@ export default function Home() {
       `}</style>
 
       {/* Background ambient spots */}
-      <div className="glow-spot glow-spot-yellow" />
+      <div className="glow-spot glow-spot-yellow" style={{ top: '280px', left: '15%' }} />
       <div className="glow-spot glow-spot-yellow opacity-30" style={{ top: '45%', right: '15%' }} />
       <div className="glow-spot glow-spot-yellow opacity-20" style={{ bottom: '20%', left: '10%' }} />
 
@@ -1618,7 +1528,12 @@ export default function Home() {
 
       {/* ── HERO SECTION ── */}
       <section className="relative pt-[36px] md:pt-[64px] pb-12 px-0 border-b border-white/5 z-10 overflow-hidden">
-        <div className="w-full flex flex-col items-center">
+        {/* Hero Background Glows */}
+        <div className="absolute top-[280px] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#E4F141]/[0.08] filter blur-[140px] pointer-events-none z-0" />
+        <div className="absolute top-[360px] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#E4F141]/[0.06] filter blur-[140px] pointer-events-none z-0" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] rounded-full bg-[#E4F141]/[0.05] filter blur-[150px] pointer-events-none z-0" />
+
+        <div className="w-full flex flex-col items-center relative z-10">
 
           {/* Centered Column: Text & Action Hub */}
           <div className="max-w-7xl mx-auto px-4 md:px-8 text-center flex flex-col items-center justify-center pt-0 pb-6 px-2 max-w-4xl">
