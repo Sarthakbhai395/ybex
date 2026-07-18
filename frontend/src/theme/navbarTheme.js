@@ -1,4 +1,4 @@
-// Centralized theme mapping for navbar background glow
+
 export const GLOW_THEMES = {
   '/': '#000000',           // Home: Black background / No Glow
   '/creators': '#000000',    // Creators: Black background / No Glow
@@ -23,12 +23,12 @@ export function getGlowColor(pathname) {
   if (GLOW_THEMES[pathname]) {
     return GLOW_THEMES[pathname];
   }
-  
+
   // Handle sub-pages (e.g., /inhouse-team should use the services theme)
   if (pathname === '/inhouse-team') {
     return GLOW_THEMES['/services'];
   }
-  
+
   // Default fallback
   return DEFAULT_GLOW;
 }

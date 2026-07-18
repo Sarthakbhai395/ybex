@@ -99,7 +99,7 @@ export default function PartnerSection({ creators = [], brands = [] }) {
       <div
         ref={containerRef}
         onMouseMove={handleMouseMove}
-        className="w-full max-w-7xl bg-[#0a0a0a] border border-white/5 rounded-[24px] md:rounded-[40px] shadow-[0_4px_30px_rgba(0,0,0,0.4)] py-20 md:py-48 px-4 md:px-6 flex flex-col items-center justify-center relative overflow-hidden cursor-crosshair select-none"
+        className="w-full max-w-7xl bg-[#0a0a0a] partner-container-card rounded-[24px] md:rounded-[40px] py-20 md:py-48 px-4 md:px-6 flex flex-col items-center justify-center relative overflow-hidden cursor-crosshair select-none"
       >
         {/* Spawned thumbnails */}
         {spawns.map((spawn) => (
@@ -128,6 +128,20 @@ export default function PartnerSection({ creators = [], brands = [] }) {
           </h2>
         </div>
       </div>
+
+      <style>{`
+        .partner-container-card {
+          position: relative;
+          background: #0a0a0a;
+          border: 1px solid rgba(228, 241, 65, 0.18) !important;
+          box-shadow: 0 0 25px rgba(228, 241, 65, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+          transition: border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        .partner-container-card:hover {
+          border-color: rgba(228, 241, 65, 0.55) !important;
+          box-shadow: 0 0 35px rgba(228, 241, 65, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+        }
+      `}</style>
     </section>
   );
 }
