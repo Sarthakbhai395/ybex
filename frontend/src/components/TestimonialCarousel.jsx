@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../api/axiosInstance';
 
 const testimonialsData = [
   {
@@ -85,9 +86,23 @@ const testimonialsData = [
 ];
 
 export default function TestimonialCarousel() {
-  const doubleTestimonials = [...testimonialsData, ...testimonialsData, ...testimonialsData, ...testimonialsData];
+  const [dbTestimonials, setDbTestimonials] = useState([]);
+
+  useEffect(() => {
+    axiosInstance.get('/reviews')
+      .then(res => {
+        if (res.data && res.data.reviews && res.data.reviews.length > 0) {
+          setDbTestimonials(res.data.reviews);
+        }
+      })
+      .catch(err => console.error("Error fetching reviews from DB:", err));
+  }, []);
+
+  const activeTestimonials = dbTestimonials.length > 0 ? dbTestimonials : testimonialsData;
+  const doubleTestimonials = [...activeTestimonials, ...activeTestimonials, ...activeTestimonials, ...activeTestimonials];
 
   const renderQuote = (text) => {
+    if (!text) return '';
     if (!text.includes('YBEX') && !text.includes('Ybex')) return text;
     const parts = text.split(/(YBEX|Ybex)/);
     return parts.map((part, i) => 
@@ -262,12 +277,13 @@ export default function TestimonialCarousel() {
           100% { transform: translateX(-50%); }
         }
 
+        /* Resized review card - Smaller/standard dimensions */
         .ganox-review-card {
-          width: 420px;
-          min-height: 380px;
+          width: 320px;
+          min-height: 280px;
           background: #f8f8f6;
-          border-radius: 0 24px 0 0;
-          padding: 36px 34px 32px 44px;
+          border-radius: 0 20px 0 0;
+          padding: 24px 22px 20px 28px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
@@ -312,15 +328,15 @@ export default function TestimonialCarousel() {
         .card-header-row {
           display: flex;
           align-items: center;
-          gap: 16px;
-          margin-bottom: 22px;
+          gap: 12px;
+          margin-bottom: 12px;
         }
 
         .card-avatar {
-          width: 90px;
-          height: 90px;
+          width: 60px;
+          height: 60px;
           border-radius: 50%;
-          border: 4px solid #E4F141;
+          border: 3px solid #E4F141;
           object-fit: cover;
           flex-shrink: 0;
         }
@@ -331,18 +347,19 @@ export default function TestimonialCarousel() {
         }
 
         .card-reviewer-name {
-          font-size: 1.28rem;
+          font-size: 1.05rem;
           font-weight: 800;
           color: #E4F141;
           margin: 0;
           font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
           letter-spacing: -0.01em;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
 
         .card-reviewer-role {
-          font-size: 0.85rem;
+          font-size: 0.75rem;
           color: #888888;
-          margin: 4px 0 0 0;
+          margin: 3px 0 0 0;
           font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
           font-weight: 500;
         }
@@ -353,11 +370,11 @@ export default function TestimonialCarousel() {
         }
 
         .card-quote-text {
-          font-size: 1.08rem;
-          line-height: 1.7;
+          font-size: 0.88rem;
+          line-height: 1.6;
           color: #222222;
           font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-          margin: 0 0 26px 0;
+          margin: 0 0 16px 0;
           font-weight: 400;
         }
 
@@ -371,26 +388,25 @@ export default function TestimonialCarousel() {
           align-items: center;
           justify-content: space-between;
           margin-top: auto;
-          padding-bottom: 32px;
         }
 
         .card-stars-row {
           display: flex;
-          gap: 5px;
+          gap: 3px;
         }
 
         .card-star-icon {
-          width: 30px;
-          height: 30px;
+          width: 20px;
+          height: 20px;
           fill: #E4F141;
         }
 
         .card-badge-since {
           background-color: #E4F141;
           color: #000000;
-          padding: 7px 16px;
+          padding: 5px 12px;
           border-radius: 999px;
-          font-size: 0.8rem;
+          font-size: 0.7rem;
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.02em;
@@ -399,38 +415,38 @@ export default function TestimonialCarousel() {
 
         @media (max-width: 768px) {
           .ganox-review-card {
-            width: 320px;
-            min-height: 340px;
-            padding: 28px 24px 0 36px;
+            width: 270px;
+            min-height: 250px;
+            padding: 20px 16px 14px 22px;
           }
           .card-avatar {
-            width: 70px;
-            height: 70px;
+            width: 48px;
+            height: 48px;
           }
           .card-reviewer-name {
-            font-size: 1.08rem;
+            font-size: 0.9rem;
           }
           .card-quote-text {
-            font-size: 0.95rem;
+            font-size: 0.78rem;
           }
           .card-star-icon {
-            width: 24px;
-            height: 24px;
+            width: 16px;
+            height: 16px;
           }
         }
       `}</style>
 
-      {/* Header — ganox removed */}
+      {/* Header - Heading updated to "Trusted by Creators & Brands" */}
       <div className="ganox-review-header">
         <div className="ganox-title-row-1">
-          <span className="ganox-title-our">Our</span>
-          <span className="ganox-title-clients">clients</span>
+          <span className="ganox-title-our">Trusted</span>
+          <span className="ganox-title-clients">by</span>
           <span className="ganox-title-line-right"></span>
         </div>
         <div className="ganox-title-row-2">
           <span className="ganox-title-line-left"></span>
-          <span className="ganox-title-story">story</span>
-          <span className="ganox-title-highlights">highlights</span>
+          <span className="ganox-title-story">Creators</span>
+          <span className="ganox-title-highlights">& Brands</span>
         </div>
       </div>
 
@@ -441,7 +457,11 @@ export default function TestimonialCarousel() {
             <div key={idx} className="ganox-review-card">
               <div>
                 <div className="card-header-row">
-                  <img src={item.avatar} alt={item.name} className="card-avatar" />
+                  {item.avatar ? (
+                    <img src={item.avatar} alt={item.name} className="card-avatar" />
+                  ) : (
+                    <div className="card-avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0e0e0e', fontSize: '1.5rem' }}>👤</div>
+                  )}
                   <div className="card-reviewer-info">
                     <h4 className="card-reviewer-name">{item.name}</h4>
                     <p className="card-reviewer-role">
@@ -453,7 +473,7 @@ export default function TestimonialCarousel() {
               </div>
               <div className="card-footer-row">
                 <div className="card-stars-row">
-                  {[...Array(item.stars)].map((_, i) => (
+                  {[...Array(item.stars || 5)].map((_, i) => (
                     <svg key={i} className="card-star-icon" viewBox="0 0 24 24">
                       <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                     </svg>

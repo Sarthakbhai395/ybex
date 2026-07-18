@@ -22,23 +22,79 @@ const inp = {
 const focus = (e) => { e.target.style.borderColor = ACCENT; e.target.style.boxShadow = '0 0 0 3px rgba(228,241,65,0.08)'; };
 const blur  = (e) => { e.target.style.borderColor = DIM;    e.target.style.boxShadow = 'none'; };
 
+// Canvas-based client-side image compression
+const compressImage = (file, maxWidth = 300, maxHeight = 300, quality = 0.85) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedBase64);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+};
+
 function AddInfluencerModal({ open, onClose, onAdd }) {
   const [form, setForm] = useState({ name: '', profileLink: '', imageUrl: '' });
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (open) { setForm({ name: '', profileLink: '', imageUrl: '' }); setErr(''); }
   }, [open]);
 
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    setErr('');
+    try {
+      const compressed = await compressImage(file, 300, 300, 0.85);
+      setForm(prev => ({ ...prev, imageUrl: compressed }));
+    } catch (e) {
+      setErr('Error loading/compressing image. Try another file.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!form.name.trim()) { setErr('Name is required'); return; }
+    if (!form.imageUrl) { setErr('Photo image is required'); return; }
     setSaving(true); setErr('');
     try {
       const res = await axiosInstance.post('/admin/influencers', {
         name: form.name.trim(),
         profileLink: form.profileLink.trim(),
-        imageUrl: form.imageUrl.trim() || null,
+        imageUrl: form.imageUrl,
       });
       onAdd(res.data.influencer);
       onClose();
@@ -67,7 +123,7 @@ function AddInfluencerModal({ open, onClose, onAdd }) {
             <div style={{ padding: '1.5rem 1.75rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(228,241,65,0.04)' }}>
               <div>
                 <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#fff' }}>Add Influencer</div>
-                <div style={{ fontSize: '0.7rem', color: MUTED, marginTop: '2px' }}>Paste an image URL for the photo</div>
+                <div style={{ fontSize: '0.7rem', color: MUTED, marginTop: '2px' }}>Upload photo from your device</div>
               </div>
               <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={onClose}
                 style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -80,23 +136,40 @@ function AddInfluencerModal({ open, onClose, onAdd }) {
                 <div style={{ background: 'rgba(255,61,16,0.1)', border: '1px solid rgba(255,61,16,0.3)', borderRadius: '8px', padding: '0.6rem 1rem', color: '#FF3D10', fontSize: '0.8rem' }}>⚠ {err}</div>
               )}
 
-              {/* Image URL + live preview */}
+              {/* Local File upload */}
               <div>
                 <label style={{ display: 'block', color: MUTED, fontSize: '0.68rem', fontWeight: 700, marginBottom: '0.45rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  Photo URL <span style={{ color: 'rgba(255,255,255,0.25)', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(optional)</span>
+                  Photo Image <span style={{ color: ACCENT }}>*</span>
                 </label>
-                <input type="url" placeholder="https://example.com/photo.jpg" value={form.imageUrl}
-                  onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} style={inp} onFocus={focus} onBlur={blur} />
-                {form.imageUrl.trim() && (
-                  <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                    style={{ marginTop: '10px', display: 'flex', justifyContent: 'center' }}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} id="influencer-file-input" />
+                  <label htmlFor="influencer-file-input" style={{
+                    padding: '0.65rem 1.25rem',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: '9px',
+                    color: '#fff',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'background 0.2s',
+                  }}
+                  onMouseEnter={e => e.target.style.background = 'rgba(255,255,255,0.1)'}
+                  onMouseLeave={e => e.target.style.background = 'rgba(255,255,255,0.05)'}
                   >
-                    <img src={form.imageUrl} alt="preview"
-                      onError={(e) => { e.target.style.display = 'none'; }}
-                      style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${ACCENT}` }}
-                    />
-                  </motion.div>
-                )}
+                    {uploading ? 'Processing...' : 'Choose File'}
+                  </label>
+                  {form.imageUrl && (
+                    <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} style={{ position: 'relative' }}>
+                      <img src={form.imageUrl} alt="preview"
+                        style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${ACCENT}` }}
+                      />
+                      <button onClick={() => setForm(p => ({ ...p, imageUrl: '' }))} style={{
+                        position: 'absolute', top: '-4px', right: '-4px', background: '#FF3D10', border: 'none', color: '#fff', width: '18px', height: '18px', borderRadius: '50%', fontSize: '0.6rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>✕</button>
+                    </motion.div>
+                  )}
+                </div>
               </div>
 
               {/* Name */}
@@ -122,10 +195,10 @@ function AddInfluencerModal({ open, onClose, onAdd }) {
             <div style={{ padding: '1.1rem 1.75rem', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', gap: '0.65rem', justifyContent: 'flex-end' }}>
               <button onClick={onClose} style={{ padding: '0.65rem 1.25rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '9px', color: 'rgba(255,255,255,0.6)', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
               <motion.button
-                whileHover={!saving ? { scale: 1.03, boxShadow: '0 6px 20px rgba(228,241,65,0.25)' } : {}}
-                whileTap={!saving ? { scale: 0.97 } : {}}
-                onClick={handleSubmit} disabled={saving}
-                style={{ padding: '0.65rem 1.5rem', background: saving ? 'rgba(228,241,65,0.4)' : ACCENT, border: 'none', borderRadius: '9px', color: '#000', fontSize: '0.82rem', fontWeight: 800, cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                whileHover={!saving && !uploading ? { scale: 1.03, boxShadow: '0 6px 20px rgba(228,241,65,0.25)' } : {}}
+                whileTap={!saving && !uploading ? { scale: 0.97 } : {}}
+                onClick={handleSubmit} disabled={saving || uploading}
+                style={{ padding: '0.65rem 1.5rem', background: saving || uploading ? 'rgba(228,241,65,0.4)' : ACCENT, border: 'none', borderRadius: '9px', color: '#000', fontSize: '0.82rem', fontWeight: 800, cursor: saving || uploading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
               >
                 {saving ? (
                   <>

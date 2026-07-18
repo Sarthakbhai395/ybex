@@ -2160,9 +2160,12 @@ export default function AboutStorySection() {
             <CoverflowCarousel members={displayPowerhouse} />
           </section>
         )}
+
+        {showHiringModal && <HiringModal onClose={() => setShowHiringModal(false)} />}
       </div>
     </>
   );
 }
+
 
 

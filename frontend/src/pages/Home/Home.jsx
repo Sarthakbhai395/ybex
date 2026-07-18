@@ -868,7 +868,7 @@ function ThreePillarsSection() {
         <FadeUp className="mb-20 text-center" is3D={true}>
 
           <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none">
-            The Three <span className="accent-yellow-text">Pillars</span> of Yb<span style={{ color: '#E4F141' }}>e</span>x
+            The Three <span className="accent-yellow-text">Pillars</span> of <span style={{ color: '#E4F141' }}>Ybex</span>
           </h2>
           <p className="text-white/50 text-xs sm:text-sm mt-6 max-w-2xl mx-auto leading-relaxed">
             A cohesive three-way ecosystem that links brand campaign scaling, creator career optimization, and absolute metrics verification.
@@ -946,7 +946,7 @@ function ThreePillarsSection() {
   );
 }
 
-// Premium Gold Hexagon Crown Icon
+// Premium Gold Hexagon Building Icon (for Brands)
 function GoldHexCrownIcon({ className = "w-6 h-6" }) {
   return (
     <svg
@@ -978,34 +978,32 @@ function GoldHexCrownIcon({ className = "w-6 h-6" }) {
         fill="none"
       />
 
-      {/* Crown */}
-      <path
-        d="M 28 66 
-           C 28 66, 32 63, 50 63 
-           C 68 63, 72 66, 72 66 
-           L 75 48 
-           L 62 55 
-           L 50 36 
-           L 38 55 
-           L 25 48 Z"
-        fill="url(#goldGradient)"
-      />
+      {/* Skyscraper Buildings */}
+      {/* Middle/Main Building */}
+      <rect x="42" y="30" width="16" height="42" rx="1" fill="url(#goldGradient)" />
+      {/* Left Building */}
+      <rect x="28" y="40" width="12" height="32" rx="1" fill="url(#goldGradient)" opacity="0.85" />
+      {/* Right Building */}
+      <rect x="60" y="36" width="12" height="36" rx="1" fill="url(#goldGradient)" opacity="0.85" />
 
-      {/* Little crown circles */}
-      <circle cx="25" cy="48" r="3" fill="url(#goldGradient)" />
-      <circle cx="50" cy="36" r="3.5" fill="url(#goldGradient)" />
-      <circle cx="75" cy="48" r="3" fill="url(#goldGradient)" />
+      {/* Horizontal Windows details */}
+      <line x1="31" y1="48" x2="37" y2="48" stroke="#000" strokeWidth="1.5" opacity="0.6" />
+      <line x1="31" y1="56" x2="37" y2="56" stroke="#000" strokeWidth="1.5" opacity="0.6" />
+      <line x1="31" y1="64" x2="37" y2="64" stroke="#000" strokeWidth="1.5" opacity="0.6" />
 
-      {/* Crown bottom base shadow line */}
-      <path
-        d="M 28 68 C 28 68, 35 71, 50 71 C 65 71, 72 68, 72 68"
-        stroke="url(#goldHexGradient)"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
+      <line x1="46" y1="38" x2="54" y2="38" stroke="#000" strokeWidth="1.5" opacity="0.6" />
+      <line x1="46" y1="46" x2="54" y2="46" stroke="#000" strokeWidth="1.5" opacity="0.6" />
+      <line x1="46" y1="54" x2="54" y2="54" stroke="#000" strokeWidth="1.5" opacity="0.6" />
+      <line x1="46" y1="62" x2="54" y2="62" stroke="#000" strokeWidth="1.5" opacity="0.6" />
+
+      <line x1="63" y1="44" x2="69" y2="44" stroke="#000" strokeWidth="1.5" opacity="0.6" />
+      <line x1="63" y1="52" x2="69" y2="52" stroke="#000" strokeWidth="1.5" opacity="0.6" />
+      <line x1="63" y1="60" x2="69" y2="60" stroke="#000" strokeWidth="1.5" opacity="0.6" />
+      <line x1="63" y1="68" x2="69" y2="68" stroke="#000" strokeWidth="1.5" opacity="0.6" />
     </svg>
   );
 }
+
 
 // Premium Silver User Star Icon
 function SilverUserStarIcon({ className = "w-6 h-6" }) {
@@ -1089,12 +1087,9 @@ function ProblemSection() {
 
       <div className="max-w-[1400px] mx-auto">
         <FadeUp className="mb-16 text-center" is3D={true}>
-          <div className="inline-flex items-center gap-3 mb-4">
-            <span className="w-2 h-2 rounded-full bg-[#E4F141] animate-ping" />
-            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#E4F141]">The Challenge</span>
-          </div>
+
           <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase max-w-4xl mx-auto">
-            The Creator Economy Is Growing.<br />
+            The Creator Economy Is Growing.
             <span className="accent-yellow-text">But The System Is Still Broken.</span>
           </h2>
           <p className="text-white/50 text-xs sm:text-sm mt-6 max-w-xl mx-auto leading-relaxed">
@@ -1104,7 +1099,7 @@ function ProblemSection() {
 
         {/* Simplified Two-Column Layout with Glowing Divider */}
         <div className="relative flex flex-col md:flex-row items-stretch gap-8 md:gap-12 lg:gap-16 mt-12">
-          
+
           {/* Brand Problems (Left Column) */}
           <div className="flex-1 flex flex-col items-center text-center md:items-start md:text-left">
             {/* Brand Logo */}
@@ -1132,7 +1127,7 @@ function ProblemSection() {
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#E4F141]/30 to-transparent" />
             <div className="absolute top-1/4 bottom-1/4 left-1/2 -translate-x-1/2 w-[4px] bg-[#E4F141]/40 rounded-full filter blur-[1px] shadow-[0_0_12px_#E4F141]" />
           </div>
-          
+
           {/* Mobile separator */}
           <div className="block md:hidden w-full h-[1px] relative my-4">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#E4F141]/30 to-transparent" />
@@ -1209,7 +1204,7 @@ function EarlyAccessFormSection() {
             <span className="text-[10px] font-black uppercase tracking-widest text-[#E4F141]">Private Beta Launching Soon</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight mb-4">
-            Get Early Access to <span style={{ color: ACCENT }}>YBEX SaaS</span>
+            Get Early Access to <span style={{ color: ACCENT }}>YBEX Plateform</span>
           </h2>
           <p className="text-white/60 text-xs sm:text-sm mb-10 max-w-md mx-auto leading-relaxed">
             Submit your contact information below to request an invite. Access real-time creator discovery, rates transparency, and campaign analytics.

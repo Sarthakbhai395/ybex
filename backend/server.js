@@ -97,6 +97,16 @@ app.get('/api/creators', async (req, res) => {
   } catch (e) { res.status(500).json({ message: 'Server error' }); }
 });
 
+// Public reviews endpoint (no auth required)
+const Review = require('./models/Review');
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const reviews = await Review.find({ deletedAt: null, published: true }).sort({ createdAt: -1 });
+    res.json({ success: true, reviews });
+  } catch (e) { res.status(500).json({ message: 'Server error' }); }
+});
+
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });

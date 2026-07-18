@@ -15,6 +15,8 @@ const Brand = require('../models/Brand');
 const Project = require('../models/Project');
 const HiringApplication = require('../models/HiringApplication');
 const Creator = require('../models/Creator');
+const Review = require('../models/Review');
+
 
 const router = express.Router();
 
@@ -320,4 +322,45 @@ router.delete('/creators/:id', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+// ── Reviews ────────────────────────────────────────────────────────
+router.get('/reviews', async (req, res, next) => {
+  try {
+    const reviews = await Review.find({ deletedAt: null }).sort({ createdAt: -1 });
+    res.json({ success: true, reviews });
+  } catch (e) { next(e); }
+});
+
+router.post('/reviews', async (req, res, next) => {
+  try {
+    const { name, role, followers, quote, stars, avatar, since, published } = req.body;
+    if (!name?.trim()) return res.status(400).json({ message: 'Name is required' });
+    if (!quote?.trim()) return res.status(400).json({ message: 'Message/quote is required' });
+
+    const review = await Review.create({
+      name: name.trim(),
+      role: role?.trim() || 'Creator',
+      followers: followers?.trim() || '',
+      quote: quote.trim(),
+      stars: parseInt(stars) || 5,
+      avatar: avatar || null,
+      since: since?.trim() || 'Since 2022',
+      published: published !== undefined ? published : true,
+    });
+    res.status(201).json({ success: true, review });
+  } catch (e) { next(e); }
+});
+
+router.delete('/reviews/:id', async (req, res, next) => {
+  try {
+    const review = await Review.findByIdAndUpdate(
+      req.params.id,
+      { deletedAt: new Date(), deletedBy: req.user._id },
+      { new: true }
+    );
+    if (!review) return res.status(404).json({ message: 'Not found' });
+    res.json({ success: true });
+  } catch (e) { next(e); }
+});
+
 module.exports = router;
+

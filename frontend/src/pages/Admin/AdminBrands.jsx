@@ -21,25 +21,80 @@ const inp = {
 const focus = (e) => { e.target.style.borderColor = ACCENT; e.target.style.boxShadow = '0 0 0 3px rgba(228,241,65,0.08)'; };
 const blur  = (e) => { e.target.style.borderColor = DIM;    e.target.style.boxShadow = 'none'; };
 
+// Canvas-based client-side image compression
+const compressImage = (file, maxWidth = 400, maxHeight = 250, quality = 0.82) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedBase64);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+};
+
 function AddBrandModal({ open, onClose, onAdd }) {
   const [name, setName]           = useState('');
   const [logoUrl, setLogoUrl]     = useState('');
   const [websiteLink, setWebsite] = useState('');
   const [saving, setSaving]       = useState(false);
   const [err, setErr]             = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (open) { setName(''); setLogoUrl(''); setWebsite(''); setErr(''); }
   }, [open]);
 
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    setErr('');
+    try {
+      const compressed = await compressImage(file, 400, 250, 0.82);
+      setLogoUrl(compressed);
+    } catch (e) {
+      setErr('Error loading/compressing image. Try another file.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const submit = async () => {
     if (!name.trim())        { setErr('Brand name is required');     return; }
-    if (!logoUrl.trim())     { setErr('Logo image URL is required'); return; }
+    if (!logoUrl)            { setErr('Logo image is required');     return; }
     if (!websiteLink.trim()) { setErr('Website link is required');   return; }
     setSaving(true); setErr('');
     try {
       const { data } = await axiosInstance.post('/admin/brands', {
-        name: name.trim(), logoUrl: logoUrl.trim(), websiteLink: websiteLink.trim(),
+        name: name.trim(), logoUrl: logoUrl, websiteLink: websiteLink.trim(),
       });
       onAdd(data.brand);
       onClose();
@@ -65,7 +120,7 @@ function AddBrandModal({ open, onClose, onAdd }) {
               <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'rgba(228,241,65,0.1)', border: '1px solid rgba(228,241,65,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>🏷️</div>
               <div>
                 <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>Add New Brand</div>
-                <div style={{ fontSize: '0.68rem', color: MUTED, marginTop: '2px' }}>All fields are required</div>
+                <div style={{ fontSize: '0.68rem', color: MUTED, marginTop: '2px' }}>Upload logo from your device</div>
               </div>
             </div>
             <motion.button whileHover={{ scale: 1.12 }} whileTap={{ scale: 0.9 }} onClick={onClose}
@@ -82,16 +137,36 @@ function AddBrandModal({ open, onClose, onAdd }) {
               )}
             </AnimatePresence>
 
+            {/* Local Logo File Upload */}
             <div>
-              <label style={{ display: 'block', color: MUTED, fontSize: '0.67rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Logo Image URL <span style={{ color: ACCENT }}>*</span></label>
-              <input type="url" placeholder="https://example.com/logo.png" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} style={inp} onFocus={focus} onBlur={blur} />
-              {logoUrl.trim() && (
-                <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                  style={{ marginTop: '10px', padding: '12px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${DIM}`, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80px' }}
+              <label style={{ display: 'block', color: MUTED, fontSize: '0.67rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Logo Image <span style={{ color: ACCENT }}>*</span></label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} id="brand-logo-file-input" />
+                <label htmlFor="brand-logo-file-input" style={{
+                  padding: '0.65rem 1.25rem',
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  borderRadius: '9px',
+                  color: '#fff',
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                }}
+                onMouseEnter={e => e.target.style.background = 'rgba(255,255,255,0.1)'}
+                onMouseLeave={e => e.target.style.background = 'rgba(255,255,255,0.05)'}
                 >
-                  <img src={logoUrl} alt="preview" onError={(e) => { e.target.style.display = 'none'; }} style={{ maxWidth: '100%', maxHeight: '70px', objectFit: 'contain' }} />
-                </motion.div>
-              )}
+                  {uploading ? 'Processing...' : 'Choose File'}
+                </label>
+                {logoUrl && (
+                  <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${DIM}`, borderRadius: '10px' }}>
+                    <img src={logoUrl} alt="preview" style={{ maxHeight: '60px', maxWidth: '120px', objectFit: 'contain' }} />
+                    <button onClick={() => setLogoUrl('')} style={{
+                      position: 'absolute', top: '-6px', right: '-6px', background: '#FF3D10', border: 'none', color: '#fff', width: '18px', height: '18px', borderRadius: '50%', fontSize: '0.6rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>✕</button>
+                  </motion.div>
+                )}
+              </div>
             </div>
 
             <div>
@@ -107,9 +182,9 @@ function AddBrandModal({ open, onClose, onAdd }) {
 
           <div style={{ padding: '1.2rem 1.8rem', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', background: 'rgba(255,255,255,0.01)' }}>
             <button onClick={onClose} style={{ padding: '0.7rem 1.4rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'rgba(255,255,255,0.55)', fontSize: '0.83rem', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-            <motion.button whileHover={!saving ? { scale: 1.04, boxShadow: '0 8px 26px rgba(228,241,65,0.32)' } : {}} whileTap={!saving ? { scale: 0.97 } : {}}
-              onClick={submit} disabled={saving}
-              style={{ padding: '0.7rem 1.7rem', background: saving ? 'rgba(228,241,65,0.45)' : ACCENT, border: 'none', borderRadius: '10px', color: '#000', fontSize: '0.83rem', fontWeight: 800, cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '7px' }}
+            <motion.button whileHover={!saving && !uploading ? { scale: 1.04, boxShadow: '0 8px 26px rgba(228,241,65,0.32)' } : {}} whileTap={!saving && !uploading ? { scale: 0.97 } : {}}
+              onClick={submit} disabled={saving || uploading}
+              style={{ padding: '0.7rem 1.7rem', background: saving || uploading ? 'rgba(228,241,65,0.45)' : ACCENT, border: 'none', borderRadius: '10px', color: '#000', fontSize: '0.83rem', fontWeight: 800, cursor: saving || uploading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '7px' }}
             >
               {saving ? (
                 <><motion.span animate={{ rotate: 360 }} transition={{ duration: 0.85, repeat: Infinity, ease: 'linear' }} style={{ display: 'inline-block', width: '13px', height: '13px', border: '2px solid rgba(0,0,0,0.25)', borderTopColor: '#000', borderRadius: '50%' }} />Adding...</>

@@ -8,9 +8,9 @@ import { getUploadUrl } from "../../api/getUploadUrl";
 const CATEGORIES = ['Brand Identity', 'Social Media', 'Campaigns', 'Product'];
 const CAT_COLORS = {
   'Brand Identity': '#a78bfa',
-  'Social Media':   '#60a5fa',
-  'Campaigns':      '#f97316',
-  'Product':        '#4ade80',
+  'Social Media': '#60a5fa',
+  'Campaigns': '#f97316',
+  'Product': '#4ade80',
 };
 
 function getImageUrl(img) {
@@ -154,25 +154,68 @@ export default function Portfolio() {
       <style>{`
         .portfolio-page-container {
           background-color: #000000 !important;
-          background-image: radial-gradient(circle at 50% 0%, rgba(228, 241, 65, 0.22) 0%, rgba(228, 241, 65, 0.08) 35%, transparent 65%) !important;
+          background-image: none !important;
           min-height: 100vh;
           padding-top: 130px !important;
           padding-bottom: 6rem;
           position: relative;
+          overflow: hidden;
+        }
+
+        .portfolio-glow-orb {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(130px);
+          pointer-events: none;
+          z-index: 1;
+          opacity: 0.65;
+          background: radial-gradient(circle, rgba(228, 241, 65, 0.28) 0%, rgba(228, 241, 65, 0.08) 45%, transparent 70%);
+        }
+
+        .orb-top-left {
+          width: 450px;
+          height: 450px;
+          top: -120px;
+          left: -150px;
+        }
+
+        .orb-top-right {
+          width: 450px;
+          height: 450px;
+          top: -120px;
+          right: -150px;
+        }
+
+        .orb-bottom-left {
+          width: 500px;
+          height: 500px;
+          bottom: -150px;
+          left: -150px;
+        }
+
+        .orb-bottom-right {
+          width: 500px;
+          height: 500px;
+          bottom: -150px;
+          right: -150px;
+        }
+
+        .orb-middle {
+          width: 650px;
+          height: 650px;
+          top: 45%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: radial-gradient(circle, rgba(228, 241, 65, 0.24) 0%, rgba(228, 241, 65, 0.07) 45%, transparent 70%);
         }
       `}</style>
-      
-      {/* Top glowing ambient spot to blend navbar seamlessly */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '240px',
-        background: 'radial-gradient(ellipse at 50% 0%, rgba(228, 241, 65, 0.35) 0%, rgba(228, 241, 65, 0.12) 55%, transparent 100%)',
-        pointerEvents: 'none',
-        zIndex: 2
-      }} />
+
+      {/* Glowing backdrop orbs */}
+      <div className="portfolio-glow-orb orb-top-left" />
+      <div className="portfolio-glow-orb orb-top-right" />
+      <div className="portfolio-glow-orb orb-middle" />
+      <div className="portfolio-glow-orb orb-bottom-left" />
+      <div className="portfolio-glow-orb orb-bottom-right" />
 
       <div className="container" style={{ position: 'relative', zIndex: 10 }}>
 
@@ -181,7 +224,7 @@ export default function Portfolio() {
           initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}
           style={{ paddingTop: '0px', paddingBottom: '3rem' }}
         >
-          <h1 style={{ fontSize: 'clamp(2.5rem, 7vw, 5rem)', fontWeight: 900, color: '#fff', lineHeight: 1.0, letterSpacing: '-0.04em', margin: '0 0 1rem' }}>
+          <h1 style={{ fontSize: 'clamp(2.5rem, 7vw, 5rem)', fontWeight: 900, color: '#ffffff', lineHeight: 1.0, letterSpacing: '-0.04em', margin: '0 0 1rem' }}>
             Work That<br />
             <span style={{ color: '#e4f141' }}>Speaks Loud.</span>
           </h1>
@@ -214,9 +257,9 @@ export default function Portfolio() {
                 onClick={() => setActiveFilter(cat)}
                 style={{
                   padding: '0.5rem 1.25rem', borderRadius: '50px', cursor: 'pointer',
-                  background: isActive ? (cat === 'all' ? '#e4f141' : `${col}20`) : 'rgba(255,255,255,0.04)',
-                  border: `1px solid ${isActive ? col : 'rgba(255,255,255,0.1)'}`,
-                  color: isActive ? (cat === 'all' ? '#000' : col) : 'rgba(255,255,255,0.5)',
+                  background: isActive ? '#e4f141' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${isActive ? '#e4f141' : 'rgba(255,255,255,0.1)'}`,
+                  color: isActive ? '#000000' : 'rgba(255,255,255,0.5)',
                   fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.04em',
                   transition: 'all 0.2s',
                 }}
@@ -289,3 +332,7 @@ export default function Portfolio() {
     </section>
   );
 }
+
+
+
+
