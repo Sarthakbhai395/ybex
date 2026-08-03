@@ -806,14 +806,10 @@ export default function AboutStorySection() {
   const [hoveredHero, setHoveredHero] = useState(false);
   const lastScrollTime = useRef(0);
 
-  // 1. Auto-scroll hero slider every 5 seconds (paused on hover)
+  // 1. Automatic slider movement disabled to enforce manual user controls
   useEffect(() => {
-    if (hoveredHero) return;
-    const interval = setInterval(() => {
-      changeSlide((sliderIndexRef.current + 1) % 3);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [hoveredHero]);
+    // Automatic slide changes disabled - manual navigation only via buttons/pills
+  }, []);
 
   // 2. Scroll-jacking logic disabled to prevent automatic scroll-jacking resets
   useEffect(() => {
@@ -1035,7 +1031,7 @@ export default function AboutStorySection() {
 
         /* Hero styles */
         .about-hero-slider-section {
-          padding: 100px 0 120px;
+          padding: 104px 0 120px;
           background-color: #000000;
           overflow: visible;
           position: relative;

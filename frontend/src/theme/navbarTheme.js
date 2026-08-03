@@ -4,7 +4,7 @@ export const GLOW_THEMES = {
   '/creators': '#000000',    // Creators: Black background / No Glow
   '/services': '#000000',    // Services: Black background / No Glow
   '/portfolio': '#000000',   // Portfolio: Black background / No Glow
-  '/academy': '#000000',     // Academy: Black background / No Glow
+  '/academy': '#050510',     // Academy: #050510 matching Academy page background
   '/invoice': '#000000',     // Invoice: Black background / No Glow
   '/about': '#000000',       // About: Black background / No Glow
 };

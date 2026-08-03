@@ -22,7 +22,8 @@ const ITEM_CONFIG = {
   HIRING: { icon: '💼', color: '#f97316', label: 'Job Application' },
   INVOICE: { icon: '🧾', color: '#06b6d4', label: 'Client Invoice' },
   PORTFOLIO: { icon: '🗂️', color: '#6366f1', label: 'Portfolio Project' },
-  SCHOLARSHIP: { icon: '🎖️', color: '#ef4444', label: 'Scholarship App' }
+  SCHOLARSHIP: { icon: '🎖️', color: '#ef4444', label: 'Scholarship App' },
+  SCHOOL_MENTOR: { icon: '🎓', color: '#8b5cf6', label: 'School Mentor' }
 };
 
 // Animation variants
@@ -89,6 +90,7 @@ export default function AdminBin() {
   // Available filter tabs
   const filters = [
     { key: 'ALL', label: 'All Items', icon: '🗑️' },
+    { key: 'SCHOOL_MENTOR', label: 'Mentors', icon: '🎓' },
     { key: 'PORTFOLIO', label: 'Portfolio', icon: '🗂️' },
     { key: 'INVOICE', label: 'Invoices', icon: '🧾' },
     { key: 'SCHOLARSHIP', label: 'Scholarships', icon: '🎖️' },

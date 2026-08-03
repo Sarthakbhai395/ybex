@@ -106,6 +106,15 @@ app.get('/api/reviews', async (req, res) => {
   } catch (e) { res.status(500).json({ message: 'Server error' }); }
 });
 
+// Public school mentors endpoint (no auth required)
+const SchoolMentor = require('./models/SchoolMentor');
+app.get('/api/school-mentors', async (req, res) => {
+  try {
+    const mentors = await SchoolMentor.find({ deletedAt: null, status: 'active' }).sort({ createdAt: -1 });
+    res.json({ success: true, mentors });
+  } catch (e) { res.status(500).json({ message: 'Server error' }); }
+});
+
 
 // Health check
 app.get('/api/health', (req, res) => {

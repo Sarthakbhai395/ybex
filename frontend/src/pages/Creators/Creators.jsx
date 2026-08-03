@@ -163,7 +163,7 @@ export default function Creators() {
           display: flex;
           flex-direction: column;
           gap: 4px;
-          padding: 110px 4px 4px 4px; /* Desktop navbar spacing */
+          padding: 104px 4px 4px 4px; /* Desktop navbar spacing */
           box-sizing: border-box;
         }
 

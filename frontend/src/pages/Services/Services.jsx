@@ -1069,14 +1069,14 @@ export default function Services() {
         /* ── HERO ── */
         .hero-universe {
           position: relative;
-          min-height: 100vh;
+          min-height: auto;
           width: 100%;
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           justify-content: center;
           overflow: hidden;
           z-index: 10;
-          padding: 160px 24px 120px;
+          padding: 104px 24px 80px;
           box-sizing: border-box;
           background-color: #000000;
           background-image: 

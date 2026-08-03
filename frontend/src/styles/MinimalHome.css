@@ -914,6 +914,7 @@ html.lenis body {
   display: block;
   flex: 1 1 auto;
   min-width: 0;
+  font-family: 'Montserrat', sans-serif !important;
   font-size: clamp(58px, 11.1vw, 214px);
   font-weight: 760;
   letter-spacing: -0.055em;

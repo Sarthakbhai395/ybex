@@ -340,11 +340,46 @@ export default function AdminLayout({ children }) {
     }
   }, []);
 
-  /* auto-scroll active tab into view */
+  /* ── Slider Position Persistence & Manual Scroll Retention ── */
+  const saveNavScroll = () => {
+    if (navRef.current) {
+      sessionStorage.setItem('adminNavScrollPos', navRef.current.scrollLeft.toString());
+      localStorage.setItem('adminNavScrollPos', navRef.current.scrollLeft.toString());
+    }
+  };
+
   useEffect(() => {
-    const active = navRef.current?.querySelector('[data-active="true"]');
-    if (active) active.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
-  });
+    const navEl = navRef.current;
+    if (!navEl) return;
+
+    const restorePos = () => {
+      const savedPos = sessionStorage.getItem('adminNavScrollPos') || localStorage.getItem('adminNavScrollPos');
+      if (savedPos !== null && parseInt(savedPos, 10) > 0) {
+        navEl.scrollLeft = parseInt(savedPos, 10);
+      } else {
+        const active = navEl.querySelector('[data-active="true"]');
+        if (active) {
+          active.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'instant' });
+        }
+      }
+    };
+
+    restorePos();
+    const rafId = requestAnimationFrame(restorePos);
+
+    const handleNavScroll = () => {
+      if (navRef.current) {
+        sessionStorage.setItem('adminNavScrollPos', navRef.current.scrollLeft.toString());
+        localStorage.setItem('adminNavScrollPos', navRef.current.scrollLeft.toString());
+      }
+    };
+
+    navEl.addEventListener('scroll', handleNavScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(rafId);
+      navEl.removeEventListener('scroll', handleNavScroll);
+    };
+  }, [location.pathname]);
 
   /* ── Browser Tab Animation ── */
   useEffect(() => {
@@ -712,7 +747,8 @@ export default function AdminLayout({ children }) {
                 key={tab.path}
                 to={tab.path}
                 className="adm-tab"
-                data-active={undefined}
+                onClick={saveNavScroll}
+                data-active={location.pathname === tab.path ? 'true' : 'false'}
                 style={({ isActive }) => {
                   return {
                     display: 'inline-flex', alignItems: 'center', gap: '5px',

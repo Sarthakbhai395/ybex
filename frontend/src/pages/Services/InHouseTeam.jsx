@@ -148,7 +148,7 @@ export default function InHouseTeam() {
       <style>{`
         .classic-inhouse-page {
           position: relative;
-          padding: 120px 0;
+          padding: 104px 0 120px;
           background-color: #050505;
           color: #ffffff;
           overflow: hidden;

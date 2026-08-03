@@ -13,6 +13,7 @@ const HiringApplication = require('../models/HiringApplication');
 const Invoice = require('../models/Invoice');
 const Project = require('../models/Project');
 const Scholarship = require('../models/Scholarship');
+const SchoolMentor = require('../models/SchoolMentor');
 const { protect, adminOnly } = require('../middleware/auth');
 const { logActivity } = require('../middleware/activityLogger');
 
@@ -151,6 +152,17 @@ router.get('/', async (req, res, next) => {
       );
     }
 
+    // School Mentors
+    if (!type || type === 'SCHOOL_MENTOR') {
+      queryPromises.push(
+        SchoolMentor.find(deletedFilter)
+          .populate('deletedBy', 'name email')
+          .sort({ deletedAt: -1 })
+          .lean()
+          .then(items => items.map(item => ({ ...item, itemType: 'SCHOOL_MENTOR', itemName: item.name })))
+      );
+    }
+
     const results = await Promise.all(queryPromises);
     const allItems = results.flat().sort((a, b) => new Date(b.deletedAt) - new Date(a.deletedAt));
 
@@ -158,7 +170,7 @@ router.get('/', async (req, res, next) => {
     const counts = {
       USER: 0, ENQUIRY: 0, TEAM_MEMBER: 0, SUGGESTION: 0,
       BRAND: 0, SUCCESS_STORY: 0, INFLUENCER: 0, HIRING: 0, INVOICE: 0,
-      PORTFOLIO: 0, SCHOLARSHIP: 0
+      PORTFOLIO: 0, SCHOLARSHIP: 0, SCHOOL_MENTOR: 0
     };
     allItems.forEach(item => {
       if (counts[item.itemType] !== undefined) {
@@ -191,7 +203,8 @@ router.get('/stats', async (req, res, next) => {
       HiringApplication.countDocuments(deletedFilter),
       Invoice.countDocuments(deletedFilter),
       Project.countDocuments(deletedFilter),
-      Scholarship.countDocuments(deletedFilter)
+      Scholarship.countDocuments(deletedFilter),
+      SchoolMentor.countDocuments(deletedFilter)
     ]);
 
     res.json({
@@ -208,6 +221,7 @@ router.get('/stats', async (req, res, next) => {
         INVOICE: counts[8],
         PORTFOLIO: counts[9],
         SCHOLARSHIP: counts[10],
+        SCHOOL_MENTOR: counts[11],
         total: counts.reduce((a, b) => a + b, 0)
       }
     });
@@ -232,6 +246,7 @@ router.post('/restore/:type/:id', async (req, res, next) => {
       case 'INVOICE': Model = Invoice; break;
       case 'PORTFOLIO': Model = Project; break;
       case 'SCHOLARSHIP': Model = Scholarship; break;
+      case 'SCHOOL_MENTOR': Model = SchoolMentor; break;
       default: return res.status(400).json({ message: 'Invalid item type' });
     }
 
@@ -292,6 +307,7 @@ router.delete('/:type/:id', async (req, res, next) => {
       case 'INVOICE': Model = Invoice; break;
       case 'PORTFOLIO': Model = Project; break;
       case 'SCHOLARSHIP': Model = Scholarship; break;
+      case 'SCHOOL_MENTOR': Model = SchoolMentor; break;
       default: return res.status(400).json({ message: 'Invalid item type' });
     }
 
@@ -358,7 +374,8 @@ router.delete('/clear', async (req, res, next) => {
       HiringApplication.deleteMany(deletedFilter),
       Invoice.deleteMany(deletedFilter),
       Project.deleteMany(deletedFilter),
-      Scholarship.deleteMany(deletedFilter)
+      Scholarship.deleteMany(deletedFilter),
+      SchoolMentor.deleteMany(deletedFilter)
     ];
 
     const results = await Promise.all(deletePromises);

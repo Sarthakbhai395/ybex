@@ -156,7 +156,7 @@ export default function Portfolio() {
           background-color: #000000 !important;
           background-image: none !important;
           min-height: 100vh;
-          padding-top: 130px !important;
+          padding-top: 104px !important;
           padding-bottom: 6rem;
           position: relative;
           overflow: hidden;

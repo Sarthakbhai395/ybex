@@ -67,10 +67,16 @@ export default function Footer() {
         {/* Column 1: Brand & Logo */}
         <motion.div className="footer-brand-block" variants={itemVariants}>
           <Link to="/" onClick={() => handleLinkClick('/')} style={{ textDecoration: 'none', display: 'inline-block' }}>
-            <div className="footer-brand-logo-container">
+            <motion.div
+              className="footer-brand-logo-container"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+            >
               <div className="yx-circle">YX</div>
               <span className="ybex-text">YBEX</span>
-            </div>
+            </motion.div>
           </Link>
           <p className="footer-brand-desc">
             India's sharpest creative marketing agency. We build brands, run campaigns, and scale creators — from zero to iconic.
@@ -186,10 +192,11 @@ export default function Footer() {
       {/* Giant Watermark Text */}
       <motion.div 
         className="footer-watermark"
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
+        style={{ fontFamily: "'Montserrat', sans-serif !important" }}
       >
         YBEX
       </motion.div>
@@ -308,6 +315,7 @@ export default function Footer() {
           display: flex;
           align-items: center;
           justify-content: center;
+          font-family: 'Montserrat', sans-serif !important;
           font-weight: 900;
           color: #000000;
           font-size: 0.95rem;
@@ -315,6 +323,7 @@ export default function Footer() {
           transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .ybex-text {
+          font-family: 'Montserrat', sans-serif !important;
           font-size: 1.7rem;
           font-weight: 900;
           letter-spacing: -0.02em;
@@ -568,7 +577,7 @@ export default function Footer() {
           position: absolute;
           inset: auto 0 -30px;
           text-align: center;
-          font-family: 'Montserrat', sans-serif;
+          font-family: 'Montserrat', sans-serif !important;
           font-weight: 900;
           font-size: clamp(8rem, 26vw, 18rem);
           line-height: 0.8;

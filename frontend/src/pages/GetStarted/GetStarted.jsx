@@ -36,7 +36,7 @@ export default function GetStarted() {
   };
 
   return (
-    <section className="page-shell auth-shell">
+    <section className="page-shell auth-shell" style={{ paddingTop: '104px' }}>
       <div className="container auth-layout">
         <motion.div className="section-heading align-left" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
           <p className="eyebrow">Get Started</p>

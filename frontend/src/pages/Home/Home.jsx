@@ -1087,13 +1087,17 @@ function ProblemSection() {
 
       <div className="max-w-[1400px] mx-auto">
         <FadeUp className="mb-16 text-center" is3D={true}>
-
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase max-w-4xl mx-auto">
-            The Creator Economy Is Growing.
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E4F141]/10 border border-[#E4F141]/25 text-[#E4F141] text-[11px] font-bold tracking-widest uppercase mb-4 shadow-[0_0_15px_rgba(228,241,65,0.15)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E4F141] animate-pulse" />
+            Problems & Pain Points
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight uppercase max-w-5xl mx-auto text-white">
+            The Creator Economy Is Growing.<br />
             <span className="accent-yellow-text">But The System Is Still Broken.</span>
           </h2>
-          <p className="text-white/50 text-xs sm:text-sm mt-6 max-w-xl mx-auto leading-relaxed">
-            Brands struggle with verification, and creators struggle with transparency. We fix the plumbing.
+          <p className="text-white/70 text-xs sm:text-sm md:text-base mt-6 max-w-3xl mx-auto leading-relaxed font-semibold">
+            Brands struggle with <span className="text-[#FFD54F]">verification</span>, and creators struggle with <span className="text-[#E0E0E0]">transparency</span>.{' '}
+            <span className="text-[#E4F141] font-black underline underline-offset-4 decoration-[#E4F141]/50">We fix the plumbing.</span>
           </p>
         </FadeUp>
 
@@ -1522,7 +1526,7 @@ export default function Home() {
       <CursorParticlesBackground />
 
       {/* ── HERO SECTION ── */}
-      <section className="relative pt-[36px] md:pt-[64px] pb-12 px-0 border-b border-white/5 z-10 overflow-hidden">
+      <section className="relative pt-[96px] md:pt-[108px] pb-12 px-0 border-b border-white/5 z-10 overflow-hidden">
         {/* Hero Background Glows */}
         <div className="absolute top-[280px] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#E4F141]/[0.08] filter blur-[140px] pointer-events-none z-0" />
         <div className="absolute top-[360px] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#E4F141]/[0.06] filter blur-[140px] pointer-events-none z-0" />

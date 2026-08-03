@@ -17,6 +17,7 @@ import AdminPlaceholder from '../pages/Admin/AdminPlaceholder';
 import AdminAboutTeam from '../pages/Admin/AdminAboutTeam';
 import AdminInfluencers from '../pages/Admin/AdminInfluencers';
 import AdminBrands from '../pages/Admin/AdminBrands';
+import AdminSchoolMentors from '../pages/Admin/AdminSchoolMentors';
 import AdminHiring from '../pages/Admin/AdminHiring';
 import AdminInvoices from '../pages/Admin/AdminInvoices';
 import AdminSuccessStories from '../pages/Admin/AdminSuccessStories';
@@ -48,7 +49,7 @@ const AppRoutes = () => {
       <Route path="/admin/hiring" element={<AdminRoute><AdminHiring /></AdminRoute>} />
       <Route path="/admin/influencers" element={<AdminRoute><AdminInfluencers /></AdminRoute>} />
       <Route path="/admin/brands" element={<AdminRoute><AdminBrands /></AdminRoute>} />
-      <Route path="/admin/school-mentors" element={<AdminRoute><AdminPlaceholder title="School Mentors" icon="edu" description="Manage school mentor profiles and assignments." /></AdminRoute>} />
+      <Route path="/admin/school-mentors" element={<AdminRoute><AdminSchoolMentors /></AdminRoute>} />
       <Route path="/admin/success-stories" element={<AdminRoute><AdminPlaceholder title="Success Stories" icon="win" description="Manage and publish success stories." /></AdminRoute>} />
       <Route path="/admin/scholarship" element={<AdminRoute><AdminScholarship /></AdminRoute>} />
       <Route path="/admin/activity-logs" element={<AdminRoute><AdminPlaceholder title="Activity Logs" icon="log" description="View all admin and user activity logs." /></AdminRoute>} />

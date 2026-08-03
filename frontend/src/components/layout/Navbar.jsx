@@ -427,10 +427,20 @@ export default function Navbar() {
           color: #ffffff;
           font-weight: 600;
         }
+        .site-header.is-academy {
+          background: #050510 !important;
+          border-color: rgba(139, 92, 246, 0.25) !important;
+          box-shadow: 0 8px 32px rgba(5, 5, 16, 0.9), 0 0 20px rgba(59, 130, 246, 0.15) !important;
+        }
+        .site-header.is-academy.is-scrolled {
+          background: #050510 !important;
+          border-color: rgba(139, 92, 246, 0.35) !important;
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.95), 0 0 25px rgba(59, 130, 246, 0.25) !important;
+        }
       `}</style>
 
       <motion.header
-        className={`site-header ${scrolled ? 'is-scrolled' : ''}`}
+        className={`site-header ${scrolled ? 'is-scrolled' : ''} ${location.pathname === '/academy' ? 'is-academy' : ''}`}
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}

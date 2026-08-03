@@ -4,7 +4,7 @@ import { services } from '../../content/siteData';
 
 export default function Offerings() {
   return (
-    <section className="page-shell">
+    <section className="page-shell" style={{ paddingTop: '104px' }}>
       <div className="container">
         <motion.div className="section-heading page-heading" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
           <p className="eyebrow">Offerings</p>

@@ -16,6 +16,7 @@ const Project = require('../models/Project');
 const HiringApplication = require('../models/HiringApplication');
 const Creator = require('../models/Creator');
 const Review = require('../models/Review');
+const SchoolMentor = require('../models/SchoolMentor');
 
 
 const router = express.Router();
@@ -358,6 +359,71 @@ router.delete('/reviews/:id', async (req, res, next) => {
       { new: true }
     );
     if (!review) return res.status(404).json({ message: 'Not found' });
+    res.json({ success: true });
+  } catch (e) { next(e); }
+});
+
+// ── School Mentors ────────────────────────────────────────────────
+router.get('/school-mentors', async (req, res, next) => {
+  try {
+    const mentors = await SchoolMentor.find({ deletedAt: null }).sort({ createdAt: -1 });
+    res.json({ success: true, mentors });
+  } catch (e) { next(e); }
+});
+
+router.post('/school-mentors', async (req, res, next) => {
+  try {
+    const { name, role, bio, track, imageUrl, email, phone, status, expertise } = req.body;
+    if (!name?.trim() || !role?.trim()) {
+      return res.status(400).json({ message: 'Name and Role are required' });
+    }
+    const mentor = await SchoolMentor.create({
+      name: name.trim(),
+      role: role.trim(),
+      bio: bio?.trim() || '',
+      track: track || 'Content Creation',
+      imageUrl: imageUrl || null,
+      email: email?.trim() || '',
+      phone: phone?.trim() || '',
+      status: status || 'active',
+      expertise: Array.isArray(expertise) ? expertise : [],
+    });
+    res.status(201).json({ success: true, mentor });
+  } catch (e) { next(e); }
+});
+
+router.patch('/school-mentors/:id', async (req, res, next) => {
+  try {
+    const { name, role, bio, track, imageUrl, email, phone, status, expertise } = req.body;
+    const updateData = {};
+    if (name !== undefined) updateData.name = name.trim();
+    if (role !== undefined) updateData.role = role.trim();
+    if (bio !== undefined) updateData.bio = bio.trim();
+    if (track !== undefined) updateData.track = track;
+    if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+    if (email !== undefined) updateData.email = email.trim();
+    if (phone !== undefined) updateData.phone = phone.trim();
+    if (status !== undefined) updateData.status = status;
+    if (expertise !== undefined) updateData.expertise = Array.isArray(expertise) ? expertise : [];
+
+    const mentor = await SchoolMentor.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+    if (!mentor) return res.status(404).json({ message: 'Mentor not found' });
+    res.json({ success: true, mentor });
+  } catch (e) { next(e); }
+});
+
+router.delete('/school-mentors/:id', async (req, res, next) => {
+  try {
+    const mentor = await SchoolMentor.findByIdAndUpdate(
+      req.params.id,
+      { deletedAt: new Date() },
+      { new: true }
+    );
+    if (!mentor) return res.status(404).json({ message: 'Mentor not found' });
     res.json({ success: true });
   } catch (e) { next(e); }
 });

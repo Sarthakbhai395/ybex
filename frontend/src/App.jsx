@@ -24,6 +24,7 @@ import AdminAboutTeam from './pages/Admin/AdminAboutTeam';
 import AdminInfluencers from './pages/Admin/AdminInfluencers';
 import AdminReviews from './pages/Admin/AdminReviews';
 import AdminBrands from './pages/Admin/AdminBrands';
+import AdminSchoolMentors from './pages/Admin/AdminSchoolMentors';
 import AdminPlaceholder from './pages/Admin/AdminPlaceholder';
 import AdminHiring from './pages/Admin/AdminHiring';
 import AdminPortfolio from './pages/Admin/AdminPortfolio';
@@ -73,7 +74,7 @@ export default function App() {
       <Route path="/admin/influencers" element={<AdminRoute><AdminInfluencers /></AdminRoute>} />
       <Route path="/admin/reviews" element={<AdminRoute><AdminReviews /></AdminRoute>} />
       <Route path="/admin/brands" element={<AdminRoute><AdminBrands /></AdminRoute>} />
-      <Route path="/admin/school-mentors" element={<AdminRoute><AdminPlaceholder title="School Mentors" icon="🎓" description="Manage school mentor profiles and assignments." /></AdminRoute>} />
+      <Route path="/admin/school-mentors" element={<AdminRoute><AdminSchoolMentors /></AdminRoute>} />
       <Route path="/admin/success-stories" element={<AdminRoute><AdminSuccessStories /></AdminRoute>} />
       <Route path="/admin/scholarship" element={<AdminRoute><AdminPlaceholder title="Scholarship" icon="🎖️" description="Manage scholarship applications and awards." /></AdminRoute>} />
       <Route path="/admin/activity-logs" element={<AdminRoute><AdminActivity /></AdminRoute>} />

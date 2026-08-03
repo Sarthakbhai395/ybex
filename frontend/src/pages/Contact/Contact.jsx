@@ -341,7 +341,7 @@ export default function Contact() {
   };
 
   return (
-    <section className="page-shell contact-page-shell" style={{ position: 'relative', overflow: 'hidden', paddingBottom: '3rem', paddingTop: '1.5rem' }}>
+    <section className="page-shell contact-page-shell" style={{ position: 'relative', overflow: 'hidden', paddingBottom: '3rem', paddingTop: '104px' }}>
 
       {/* Background grid */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(228,241,65,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(228,241,65,0.05) 1px,transparent 1px)', backgroundSize: '72px 72px', maskImage: 'radial-gradient(ellipse 90% 90% at 50% 40%,black 20%,transparent 100%)' }} />
