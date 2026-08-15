@@ -620,7 +620,7 @@ export default function AdminUsers() {
                   </span>
 
                   {/* actions */}
-                  <div style={{ display: 'flex', gap: '0.55rem', justifyContent: 'flex-end' }}>
+                  <div className="ut-actions" style={{ display: 'flex', gap: '0.55rem', justifyContent: 'flex-end' }}>
                     <motion.button
                       whileHover={{ scale: 1.12, background: 'rgba(228,241,65,0.18)', borderColor: 'rgba(228,241,65,0.6)' }}
                       whileTap={{ scale: 0.88 }}
@@ -646,6 +646,7 @@ export default function AdminUsers() {
           .users-search-input { width: 100% !important; }
           .ut-header { display: none !important; }
           .ut-row { grid-template-columns: 1fr !important; gap: 0.6rem !important; padding: 1rem !important; }
+          .ut-actions { justify-content: flex-start !important; margin-top: 0.25rem !important; }
         }
         @media (min-width: 641px) and (max-width: 900px) {
           .ut-header, .ut-row { grid-template-columns: 1fr 1.4fr 130px 90px !important; }

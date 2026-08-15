@@ -575,11 +575,11 @@ export default function Footer() {
 
         .footer-watermark {
           position: absolute;
-          inset: auto 0 -30px;
+          inset: auto 0 -20px;
           text-align: center;
           font-family: 'Montserrat', sans-serif !important;
           font-weight: 900;
-          font-size: clamp(8rem, 26vw, 18rem);
+          font-size: clamp(4rem, 22vw, 16rem);
           line-height: 0.8;
           letter-spacing: -0.06em;
           text-transform: uppercase;
@@ -587,6 +587,8 @@ export default function Footer() {
           user-select: none;
           pointer-events: none;
           z-index: 0;
+          max-width: 100%;
+          overflow: hidden;
         }
 
         @media (max-width: 960px) {
@@ -608,14 +610,21 @@ export default function Footer() {
             gap: 12px;
           }
           .footer-watermark {
-            font-size: clamp(6rem, 20vw, 12rem);
-            bottom: -20px;
+            font-size: clamp(4rem, 18vw, 10rem);
+            bottom: -10px;
           }
         }
         @media (max-width: 576px) {
+          .site-footer {
+            padding-bottom: 40px !important;
+          }
           .footer-grid-premium {
             grid-template-columns: 1fr;
-            gap: 32px;
+            gap: 28px;
+            padding: 0 1rem;
+          }
+          .footer-brand-block {
+            max-width: 100%;
           }
         }
       `}</style>

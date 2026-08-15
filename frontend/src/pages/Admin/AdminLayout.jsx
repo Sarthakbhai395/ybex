@@ -522,12 +522,8 @@ export default function AdminLayout({ children }) {
         .adm-nav {
           background: ${C.bgElevated} !important;
         }
-        
-        .adm-logo-text {
-          font-family: 'Space Grotesk', sans-serif;
-        }
-
         @media (max-width: 640px) {
+          .adm-header     { height: 64px !important; padding: 0 1rem !important; }
           .adm-logo-text  { display: none !important; }
           .adm-right      { display: none !important; }
           .adm-hamburger  { display: flex !important; }
@@ -540,6 +536,10 @@ export default function AdminLayout({ children }) {
         @media (min-width: 1025px) {
           .adm-hamburger  { display: none !important; }
         }
+        
+        .adm-logo-text {
+          font-family: 'Space Grotesk', sans-serif;
+        }
       `}</style>
 
       <div className="ybex-admin-shell" style={{ minHeight: '100vh', background: C.bg, fontFamily: C.font.sans, color: C.text }}>
@@ -548,9 +548,9 @@ export default function AdminLayout({ children }) {
         <header className="adm-header" style={{
           background: C.bgElevated,
           borderBottom: `1px solid ${C.border}`,
-          height: '80px',
+          height: '72px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0 2rem',
+          padding: '0 clamp(1rem, 3vw, 2rem)',
           position: 'sticky', top: 0, zIndex: 300,
           gap: '1rem',
         }}>
@@ -736,7 +736,7 @@ export default function AdminLayout({ children }) {
             background: C.bgElevated,
             borderBottom: `1px solid ${C.border}`,
             overflowX: 'auto',
-            position: 'sticky', top: '64px', zIndex: 200,
+            position: 'sticky', top: '72px', zIndex: 200,
             scrollbarWidth: 'thin',
             scrollbarColor: `${C.accent}33 transparent`,
           }}

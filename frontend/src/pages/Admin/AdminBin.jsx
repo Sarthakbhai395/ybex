@@ -835,11 +835,11 @@ export default function AdminBin() {
                 </div>
 
                 {/* Modal Actions */}
-                <div style={{ display: 'flex', gap: '12px', marginTop: '1.75rem', borderTop: `1px solid ${BORDER}`, paddingTop: '1.25rem' }}>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '1.75rem', borderTop: `1px solid ${BORDER}`, paddingTop: '1.25rem', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => setPreviewItem(null)}
                     style={{
-                      flex: 1, padding: '0.75rem', background: 'transparent',
+                      flex: '1 1 120px', padding: '0.75rem', background: 'transparent',
                       border: `1px solid ${BORDER}`, borderRadius: '12px',
                       color: '#fff', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer'
                     }}
@@ -853,7 +853,7 @@ export default function AdminBin() {
                       handleRestore(item.itemType, item._id, item.itemName);
                     }}
                     style={{
-                      flex: 1, padding: '0.75rem', background: 'rgba(16,185,129,0.15)',
+                      flex: '1 1 140px', padding: '0.75rem', background: 'rgba(16,185,129,0.15)',
                       border: '1px solid rgba(16,185,129,0.4)', borderRadius: '12px',
                       color: '#10b981', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer'
                     }}
@@ -867,7 +867,7 @@ export default function AdminBin() {
                       handlePermanentDelete(item.itemType, item._id, item.itemName);
                     }}
                     style={{
-                      flex: 1, padding: '0.75rem', background: 'rgba(239,68,68,0.15)',
+                      flex: '1 1 140px', padding: '0.75rem', background: 'rgba(239,68,68,0.15)',
                       border: '1px solid rgba(239,68,68,0.4)', borderRadius: '12px',
                       color: '#ef4444', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer'
                     }}

@@ -209,13 +209,13 @@ export default function AdminSaasRequests() {
                         </div>
 
                         {/* Email address */}
-                        <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#fff', marginBottom: '0.3rem', letterSpacing: '-0.01em' }}>
+                        <div style={{ fontSize: 'clamp(0.95rem, 3vw, 1.15rem)', fontWeight: 900, color: '#fff', marginBottom: '0.3rem', letterSpacing: '-0.01em', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                           {r.email}
                         </div>
 
                         {/* Phone details */}
                         {r.phone ? (
-                          <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: '6px', wordBreak: 'break-word' }}>
                             <span>📞</span> <span>{r.phone}</span>
                           </div>
                         ) : (
@@ -226,7 +226,7 @@ export default function AdminSaasRequests() {
                       </div>
 
                       {/* Right Action buttons */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                         {/* Status dropdown */}
                         <select
                           value={r.status}
